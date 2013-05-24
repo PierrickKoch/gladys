@@ -1,0 +1,26 @@
+GLADYS
+======
+
+*The Graph Library for Autonomous and DYnamic Systems*
+
+Concept
+-------
+
+Provide an API for high level robotic plainners from Georeferenced data.
+
+.. code::
+
+  +------+    +--------+    +-----+
+  |      |    |        |    |     |
+  | GDAL |--->| gladys |--->| BGL |
+  |      |    |        |    |     |
+  +------+    +--------+    +-----+
+
+
+Links
+-----
+
+* http://gdal.org
+* http://boost.org/libs/graph
+* http://www.openrobots.org/wiki
+
