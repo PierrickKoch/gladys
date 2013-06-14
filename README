@@ -6,7 +6,7 @@ GLADYS
 Concept
 -------
 
-Provide an API for high level robotic plainners from Georeferenced data.
+Provide an API for high level robotic planners from Georeferenced data.
 
 .. code::
 
@@ -15,6 +15,13 @@ Provide an API for high level robotic plainners from Georeferenced data.
   | GDAL |--->| gladys |--->| BGL |
   |      |    |        |    |     |
   +------+    +--------+    +-----+
+                  ^
+                  |
+             /~~~~~~~~~~\
+            /            \
+            | Wild World |
+            \            /
+             \~~~~~~~~~~/
 
 
 Links

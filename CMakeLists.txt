@@ -3,14 +3,18 @@ cmake_minimum_required(VERSION 2.6)
 set(PACKAGE_NAME gladys)
 set(PACKAGE_VERSION "0.1")
 
-find_package(Boost)
+# C++11 for GCC 4.6
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+
 find_package(GDAL)
+find_package(Boost)
 
-INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
-INCLUDE_DIRECTORIES( ${GDAL_INCLUDE_DIR} )
+include_directories(include)
+include_directories( ${Boost_INCLUDE_DIR} )
+include_directories( ${GDAL_INCLUDE_DIR} )
 
-ADD_EXECUTABLE( test src/gladys.cpp )
+add_executable( test_gladys src/gladys.cpp )
 
-TARGET_LINK_LIBRARIES( test ${Boost_LIBRARIES} )
-TARGET_LINK_LIBRARIES( test ${GDAL_LIBRARIES} )
+target_link_libraries( test_gladys ${Boost_LIBRARIES} )
+target_link_libraries( test_gladys ${GDAL_LIBRARIES} )
 

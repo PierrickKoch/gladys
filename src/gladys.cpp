@@ -1,29 +1,42 @@
 /*
  * Graph Library for Autonomous and Dynamic Systems
  */
-#include <iostream>         // for string
+#include <string>           // for string
+#include <cassert>          // for assert
+#include <vector>           // for vector
+
 #include <boost/graph/graph_traits.hpp>
 #include <boost/graph/adjacency_list.hpp>
-#include <gdal_priv.h>
+
+#include "gladys/gladys.hpp"
+
+namespace gladys {
 
 using namespace std;
 using namespace boost;
 
+int gladys::init() {
+    for (int band_id, idx = 0; idx < io.get_size(); idx++) {
+        vertex v = add_vertex(g);
+        edge e = add_edge(v1, v2, g);
+        for (band_id = 0; band_id < io.bands.size(); band_id++) {
+            // TODO arc[band_id] = band[idx];
+
+        }
+    }
+    return 0;
+}
+
+} // namespace gladys
+
 int main(int argc, char * argv[])
 {
-    GDALDataset  *dataset;
-    if (argc < 2)
+    if (argc < 3)
         return 1;
-    GDALAllRegister();
-    dataset = (GDALDataset *) GDALOpen( argv[1], GA_ReadOnly );
-    if (!dataset)
-        return 1;
-    // create a typedef for the Graph type
-    typedef adjacency_list<vecS, vecS, bidirectionalS> Graph;
-    // declare a graph object
-    Graph g();
-
-    //
+    gladys::gladys obj;
+    obj.load(argv[1]);
+    obj.init();
+    obj.save(argv[2]);
 
     std::cout<<"gladys!"<<std::endl;
     return 0;
