@@ -76,24 +76,20 @@ public:
         return weight < 0;
     }
 
-    /*
-    // properties
-    void set_vertex_property(const vertex_t& x, const point_xy_t& v) {
-        boost::put(boost::vertex_name_t(), g, x, v);
-    }
-    */
-
     /** Write graphviz .dot file
      *
      * @param out output stream to write .dot data
      *
-     * TIPS: use `display` [imagemagick] to visualize
+     * TIPS: use `neato -Tpng -Goverlap=false|display` to visualize
+     *       or see in tools/dot_to_json.py
      */
     void write_graphviz(std::ostream& out = std::cout) {
-        std::vector<std::string> name(vertices.size());
+        std::vector<std::string> vert_label(vertices.size());
         for (auto& kv : vertices)
-            name[kv.second] = to_string(kv.first);
-        boost::write_graphviz(out, g, boost::make_label_writer(name.data()));
+            vert_label[kv.second] = to_string(kv.first);
+        // TODO write edge weight as well
+        boost::write_graphviz( out, g,
+            boost::make_label_writer(vert_label.data()) );
     }
 
     int save(const std::string filepath) {

@@ -29,6 +29,7 @@ class weight_map {
     gdal map; // weight map (after inflating robot size)
     /* Names of the visual terrain classes */
     enum {NO_3D_CLASS, FLAT, OBSTACLE, ROUGH, SLOPE, N_RASTER};
+    enum {W_UNKNOWN=-2, W_OBSTACLE=-1};
 public:
     int load(const std::string filepath) {
         terrains.load(filepath);
@@ -46,7 +47,7 @@ public:
 
     float compute_weight(const raster& data) {
         if (data[OBSTACLE] > 0.4) // TODO tune this threshold
-            return -1;
+            return W_OBSTACLE;
         else // compute a mix of ponderated classes TODO
             return (data[FLAT] * 0.1 + data[ROUGH] * 0.3 + data[SLOPE] * 0.6 );
     }
