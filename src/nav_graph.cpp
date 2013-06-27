@@ -17,7 +17,7 @@
 
 namespace gladys {
 
-int nav_graph::load(const std::string filepath) {
+int nav_graph::load(const std::string& filepath) {
     map.load(filepath);
 
     size_t px_x, px_y, size_x = map.get_x();
@@ -75,7 +75,7 @@ int _test_raster_to_graph()
 {
     std::string path = "/tmp/gladys.tif";
     gladys::gdal tmp;
-    tmp.set_size(5, 4, 4);
+    tmp.set_size(5, 10, 10);
     tmp.save(path);
     gladys::nav_graph obj(path);
     obj.write_graphviz();
@@ -83,7 +83,7 @@ int _test_raster_to_graph()
     return EXIT_SUCCESS;
 }
 
-int main(int argc, char * argv[])
+int _main(int argc, char * argv[])
 {
     if (argc < 3)
         return 1;

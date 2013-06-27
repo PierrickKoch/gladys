@@ -35,12 +35,12 @@ typedef boost::graph_traits<graph_t>::vertex_descriptor vertex_t;
 typedef boost::graph_traits<graph_t>::edge_descriptor edge_t;
 typedef std::map<point_xy_t, vertex_t> vertex_map_t;
 
-std::string to_string( point_xy_t value ) {
+inline std::string to_string(const point_xy_t& value ) {
     return std::to_string(value[0]) + "," +
            std::to_string(value[1]);
 }
 
-std::string to_string( point_xyz_t value ) {
+inline std::string to_string(const point_xyz_t& value ) {
     return std::to_string(value[0]) + "," +
            std::to_string(value[1]) + "," +
            std::to_string(value[2]);
@@ -55,10 +55,10 @@ class nav_graph {
     vertex_map_t vertices;
 public:
     nav_graph() {}
-    nav_graph(const std::string filepath) {
+    nav_graph(const std::string& filepath) {
         load(filepath);
     }
-    int load(const std::string filepath);
+    int load(const std::string& filepath);
 
     // vertices
     vertex_t get_vertex(const double& x, const double &y) {
@@ -92,7 +92,7 @@ public:
             boost::make_label_writer(vert_label.data()) );
     }
 
-    int save(const std::string filepath) {
+    int save(const std::string& filepath) {
         return map.save(filepath);
     }
 };

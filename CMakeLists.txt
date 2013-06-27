@@ -13,7 +13,7 @@ include_directories(include)
 include_directories( ${Boost_INCLUDE_DIR} )
 include_directories( ${GDAL_INCLUDE_DIR} )
 
-add_executable( test_gladys src/nav_graph.cpp )
+add_executable( test_gladys src/gladys.cpp src/nav_graph.cpp )
 
 target_link_libraries( test_gladys ${Boost_LIBRARIES} )
 target_link_libraries( test_gladys ${GDAL_LIBRARIES} )
