@@ -190,11 +190,11 @@ public:
         utm_zone = spatial_reference.GetUTMZone( &_north );
         utm_north = (_north != 0);
 
-        double _t[6] = {0.0, 1.0, 0.0, 0.0, 0.0, 1.0};
-        if( dataset->GetGeoTransform( _t ) != CE_None )
-            std::cerr<<"[warn] no GeoTransform"<<std::endl;
-        else
-            set_transform(_t[0], _t[3], _t[1], _t[5]); // transform.fill(_t);
+        // GetGeoTransform returns CE_Failure if the transform is not found
+        // as well as when it's the default {0.0, 1.0, 0.0, 0.0, 0.0, 1.0}
+        // and write {0.0, 1.0, 0.0, 0.0, 0.0, 1.0} in transform anyway
+        // so error handling here is kind of useless...
+        dataset->GetGeoTransform( transform.data() );
 
         GDALRasterBand *band;
         for (int band_id = 0; band_id < bands.size(); band_id++) {
