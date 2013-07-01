@@ -35,21 +35,27 @@ void gladys::clear_old_state() {
 
 /* motion */
 
-points_t gladys::accessibility(const points_t& start, const motion_constraints_t& constraints) {
+points_t gladys::accessibility(const points_t& start,
+    const motion_constraints_t& constraints)
+{
     points_t points;
     return points;
 }
 
 /* simulation */
 
-points_probs_t gladys::simulation(const points_t& start, const motion_constraints_t& constraints, behaviour_t behaviour) {
+points_probs_t gladys::simulation(const points_t& start,
+    const motion_constraints_t& constraints, behaviour_t behaviour)
+{
     points_probs_t pbs;
     return pbs;
 }
 
 /* navigation */
 
-path_cost_util_t gladys::navigation(const points_t& start, const points_t& goal, int optimisation, const motion_constraints_t& constraints) {
+path_cost_util_t gladys::navigation(const points_t& start, const points_t& goal,
+    int optimisation, const motion_constraints_t& constraints)
+{
     path_cost_util_t pcu;
     return pcu;
 }
@@ -60,30 +66,29 @@ points_probs_t gladys::can_see(int sensor, const points_t& location) {
     points_probs_t pbs;
     return pbs;
 }
-points_t gladys::is_visible_from(int sensor, const points_t& visible, float qmin) {
+
+points_t gladys::is_visible_from(int sensor, const points_t& visible,
+    float qmin)
+{
     points_t points;
     return points;
 }
-bool gladys::test_visibility_link(int sensor, const points_t& location, const points_t& visible, float qmin) {
+
+bool gladys::test_visibility_link(int sensor, const points_t& location,
+    const points_t& visible, float qmin)
+{
     return true;
 }
 double gladys::look_at(int sensor, const points_t& observe) {
     return 1.0;
 }
 
-} // namespace gladys
+/* communication */
 
-
-// TODO Boost.Test <utf> Unit Test Framework - http://www.boost.org/libs/test
-
-int main(int argc, char * argv[])
+bool gladys::can_communicate(int sensor, const point_xyz_t& locA,
+    const point_xyz_t& locB)
 {
-    if (argc < 3)
-        return 1;
-
-    gladys::gladys obj(argv[1], argv[2]);
-
-    std::cout<<"gladys::gladys!"<<std::endl;
-
-    return EXIT_SUCCESS;
+    return true;
 }
+
+} // namespace gladys
