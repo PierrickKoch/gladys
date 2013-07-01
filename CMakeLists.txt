@@ -18,6 +18,11 @@ link_directories( ${Boost_LIBRARY_DIRS} )
 
 # Library and binary
 add_subdirectory(src)
+##
 
 # Testing
+include( CTest )
+enable_testing()
+
 add_subdirectory(test)
+##
