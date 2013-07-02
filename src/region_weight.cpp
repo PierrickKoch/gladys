@@ -19,6 +19,6 @@ int main(int argc, char * argv[])
         return EXIT_FAILURE;
     }
     gladys::nav_graph ng(argv[1], argv[2]);
-    ng.save(argv[2]);
+    ng.save(argv[3]);
     return EXIT_SUCCESS;
 }
