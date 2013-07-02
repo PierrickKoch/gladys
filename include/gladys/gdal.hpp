@@ -51,6 +51,22 @@ public:
         load(filepath);
     }
 
+    /** Copy meta-data from another instance
+     *
+     * @param copy another gdal instance
+     */
+    void copy_meta(const gdal& copy) {
+        utm_zone  = copy.utm_zone;
+        utm_north = copy.utm_north;
+        transform = copy.transform;
+        set_size(copy.bands.size(), copy.x_size, copy.y_size);
+    }
+
+    /** Copy meta-data from another instance, except the number of layers
+     *
+     * @param copy another gdal instance
+     * @param n_raster number of layers to set (number of rasters)
+     */
     void copy_meta(const gdal& copy, size_t n_raster) {
         utm_zone  = copy.utm_zone;
         utm_north = copy.utm_north;
@@ -61,7 +77,7 @@ public:
     /** Set Universal Transverse Mercator projection definition.
      *
      * @param zone UTM zone.
-     * @param north TRUE for northern hemisphere, or FALSE for southern hemisphere.
+     * @param north TRUE for northern hemisphere, or FALSE for southern.
      */
     void set_utm(int zone, bool north = true) {
         utm_zone = zone;
