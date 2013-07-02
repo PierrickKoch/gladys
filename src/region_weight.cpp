@@ -14,11 +14,11 @@
 
 int main(int argc, char * argv[])
 {
-    if (argc < 3) {
-        std::cerr<<"usage: region_weight region.tif weight.tif"<<std::endl;
+    if (argc < 4) {
+        std::cerr<<"usage: region_weight region.tif robot.json weight.tif"<<std::endl;
         return EXIT_FAILURE;
     }
-    gladys::nav_graph ng(argv[1]);//, "/tmp/TODO");
+    gladys::nav_graph ng(argv[1], argv[2]);
     ng.save(argv[2]);
     return EXIT_SUCCESS;
 }

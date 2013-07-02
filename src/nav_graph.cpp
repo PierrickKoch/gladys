@@ -17,8 +17,8 @@
 
 namespace gladys {
 
-int nav_graph::load(const std::string& filepath) {
-    map.load(filepath);
+int nav_graph::load(const std::string& f_region, const std::string& f_robot_model) {
+    map.load(f_region, f_robot_model);
 
     size_t px_x, px_y, size_x = map.get_x();
     vertex_t vert_w, vert_n, vert_e, vert_s;

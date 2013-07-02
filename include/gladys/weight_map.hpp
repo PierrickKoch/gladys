@@ -10,13 +10,10 @@
 #ifndef WEIGHT_MAP_HPP
 #define WEIGHT_MAP_HPP
 
-#include <array>
-#include <vector>
-#include <cassert>
-#include <boost/graph/adjacency_list.hpp>
-#include <boost/graph/graphviz.hpp>
+#include <string>
 
 #include "gladys/gdal.hpp"
+#include "gladys/robot_model.hpp"
 
 namespace gladys {
 
@@ -27,12 +24,23 @@ namespace gladys {
 class weight_map {
     gdal terrains; // probalistic models (multi-layers GeoTiff)
     gdal map; // weight map (after inflating robot size)
+    robot_model rmdl;
     /* Names of the visual terrain classes */
     enum {NO_3D_CLASS, FLAT, OBSTACLE, ROUGH, SLOPE, N_RASTER};
     enum {W_UNKNOWN=-2, W_OBSTACLE=-1};
 public:
-    int load(const std::string filepath) {
-        terrains.load(filepath);
+    /** load region and robot model
+     *
+     * @param f_region path to a region.tif file
+     * (multi-layers terrains classification probabilities, float32)
+     *
+     * @param f_robot_model TODO path to a robot model
+     * to generate the weight map (at least its size)
+     *
+     */
+    int load(const std::string& f_region, const std::string& f_robot_model) {
+        terrains.load(f_region);
+        rmdl.load(f_robot_model);
         assert(terrains.bands.size() == N_RASTER);
         map.copy_meta(terrains, 1);
 
@@ -43,6 +51,7 @@ public:
             map.bands[0][pos] = compute_weight(data);
         }
         // TODO inflate obstacle by robot size (get robot model)
+        std::cout<<"radius: "<<rmdl.get_radius()<<std::endl;
     }
 
     float compute_weight(const raster& data) {

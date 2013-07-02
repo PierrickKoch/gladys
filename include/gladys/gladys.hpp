@@ -54,7 +54,7 @@ public:
      *
      */
     gladys(const std::string& f_region, const std::string& f_robot_model) {
-        navigation_graph.load(f_region);
+        navigation_graph.load(f_region, f_robot_model);
     }
 
     /* state */

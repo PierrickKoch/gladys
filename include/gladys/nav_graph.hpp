@@ -55,10 +55,19 @@ class nav_graph {
     vertex_map_t vertices;
 public:
     nav_graph() {}
-    nav_graph(const std::string& filepath) {
-        load(filepath);
+    /** nav_graph constructor
+     *
+     * @param f_region path to a region.tif file
+     * (multi-layers terrains classification probabilities, float32)
+     *
+     * @param f_robot_model TODO path to a robot model
+     * to generate the weight map (at least its size)
+     *
+     */
+    nav_graph(const std::string& f_region, const std::string& f_robot_model) {
+        load(f_region, f_robot_model);
     }
-    int load(const std::string& filepath);
+    int load(const std::string& f_region, const std::string& f_robot_model);
 
     // vertices
     vertex_t get_vertex(const double& x, const double &y) {
