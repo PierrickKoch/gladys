@@ -92,7 +92,7 @@ public:
      * TIPS: use `neato -Tpng -Goverlap=false|display` to visualize
      *       or see in tools/dot_to_json.py
      */
-    void write_graphviz(std::ostream& out = std::cout) {
+    void write_graphviz(std::ostream& out = std::cout) const {
         std::vector<std::string> vert_label(vertices.size());
         for (auto& kv : vertices)
             vert_label[kv.second] = to_string(kv.first);
@@ -105,6 +105,13 @@ public:
         return map.save(filepath);
     }
 };
+
+inline std::ostream& operator<<(std::ostream& os,
+    const nav_graph& ng)
+{
+    ng.write_graphviz(os);
+    return os;
+}
 
 } // namespace gladys
 
