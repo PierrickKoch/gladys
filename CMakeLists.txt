@@ -6,11 +6,17 @@ set(PACKAGE_VERSION "0.1")
 # C++11 for GCC 4.6
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 
-find_package(GDAL)
-find_package(Boost COMPONENTS graph unit_test_framework REQUIRED)
+# Find GDAL ( export GDAL_ROOT=$prefix )
+find_package(GDAL REQUIRED)
+
+# Find Boost ( export BOOST_ROOT=$prefix )
+set(BOOST_MIN_VERSION "1.47.0") # for Boost.Geometry
+find_package(Boost ${BOOST_MIN_VERSION} COMPONENTS graph unit_test_framework REQUIRED)
 
 include_directories(include)
 include_directories( ${GDAL_INCLUDE_DIR} )
+include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
+link_directories(${Boost_LIBRARY_DIRS})
 
 # Library and binary
 add_subdirectory(src)
