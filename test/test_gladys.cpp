@@ -70,6 +70,11 @@ BOOST_AUTO_TEST_CASE( test_raster_to_graph )
     BOOST_CHECK_EQUAL( oss_graphviz.str().size() , 2066 );
     ng.save(weight_path);
 
+    point_xy_t p1 = {1, 1};
+    point_xy_t p2 = {2, 2};
+    path_t path = ng.astar_search(p1, p2);
+    BOOST_TEST_MESSAGE( "test:" + to_string(path) );
+
     gladys obj(region_path, robotm_path);
 }
 

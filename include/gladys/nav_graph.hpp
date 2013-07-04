@@ -10,6 +10,7 @@
 #ifndef NAV_GRAPH_HPP
 #define NAV_GRAPH_HPP
 
+#include <cmath>
 #include <array>
 #include <vector>
 #include <string>
@@ -36,10 +37,14 @@ typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS,
 typedef graph_t::vertex_descriptor vertex_t;
 typedef graph_t::edge_descriptor edge_t;
 typedef std::map<point_xy_t, vertex_t> vertex_map_t;
+typedef std::list<vertex_t> path_t;
 
 inline std::string to_string(const point_xy_t& value ) {
     return std::to_string(value[0]) + "," +
            std::to_string(value[1]);
+}
+inline std::ostream& operator<<(std::ostream& os, const point_xy_t& value) {
+    return os<<to_string(value);
 }
 
 inline std::string to_string(const point_xyz_t& value ) {
@@ -47,12 +52,69 @@ inline std::string to_string(const point_xyz_t& value ) {
            std::to_string(value[1]) + "," +
            std::to_string(value[2]);
 }
+inline std::ostream& operator<<(std::ostream& os, const point_xyz_t& value) {
+    return os<<to_string(value);
+}
 
+inline std::string to_string(const path_t& value ) {
+    std::string arrow = "", buff = "";
+    for (auto& elt : value) {
+        buff += arrow + std::to_string(elt);
+        arrow = " -> ";
+    }
+    return buff;
+}
+inline std::ostream& operator<<(std::ostream& os, const path_t& value) {
+    return os<<to_string(value);
+}
+
+
+/** Euclidian distance (squared)
+ * usefull to compare a set of points (faster)
+ */
 inline double distance_sq(const point_xy_t& pA, const point_xy_t& pB) {
     double x = pA[0] - pB[0];
     double y = pA[1] - pB[1];
     return x*x + y*y;
 }
+/** Euclidian distance */
+inline double distance(const point_xy_t& pA, const point_xy_t& pB) {
+    return std::sqrt(distance_sq(pA, pB));
+}
+
+struct found_goal {}; // exception for termination
+
+// visitor that terminates when we find the goal
+class astar_goal_visitor : public boost::default_astar_visitor {
+    vertex_t goal;
+public:
+    astar_goal_visitor(vertex_t goal) : goal(goal) {}
+
+    /** examine_vertex is invoked when a vertex is popped from the queue
+     * (i.e., it has the lowest cost on the OPEN list).
+     */
+    void examine_vertex(vertex_t u, const graph_t& g) {
+        if (u == goal)
+            throw found_goal();
+    }
+};
+
+/**
+* Navigation heuristics functions for graph visitor algorithms
+*/
+class nav_heuristic : public boost::astar_heuristic<graph_t, double> {
+    graph_t g;
+    vertex_t goal;
+public:
+    nav_heuristic(const graph_t& _g, const vertex_t& _goal)
+        : g(_g), goal(_goal) {}
+
+    double operator()(const vertex_t& u) {
+        const boost::property_map<graph_t, boost::vertex_name_t>::type& vp_map
+            = boost::get(boost::vertex_name, g);
+        return distance(vp_map[u], vp_map[goal]);
+    }
+};
 
 /*
  * nav_graph
@@ -104,20 +166,44 @@ public:
         for (auto& kv : vertices) {
             tmp = distance_sq(p, kv.first);
             if (tmp < closest_d) {
-                closest_v   = kv.second;
+                closest_v = kv.second;
                 closest_d = tmp;
             }
         }
         return closest_v;
     }
 
-    void bfs(const point_xy_t& p) {
-        boost::bfs_visitor<boost::null_visitor> vis; // TODO visitor get path
-        boost::breadth_first_search(g, get_closest_vertex(p), boost::visitor(vis));
-        // return TODO path from visitor
+    path_t astar_search(const point_xy_t& start, const point_xy_t& goal) {
+        vertex_t goal_v = get_closest_vertex(goal);
+        astar_goal_visitor vis(goal_v);
+        path_t shortest_path;
+        nav_heuristic heuristic(g, goal_v);
+        std::vector<vertex_t> predecessors(num_vertices(g));
+        //std::vector<double> distances(num_vertices(g));
+        //std::vector<double> ranks    (num_vertices(g));
+        //std::vector<boost::default_color_type> colors;
+        //std::vector<float> weights;
+        try {
+            boost::astar_search(
+                g, get_closest_vertex(start), heuristic,
+                boost::predecessor_map(predecessors.data()).
+                    //distance_map(distances.data()).
+                    //weight_map(weights.data()).
+                    //rank_map(ranks.data()).
+                    //color_map(colors.data()).
+                    visitor(vis)
+            );
+        } catch (found_goal) {
+            for(vertex_t v = goal_v;; v = predecessors[v]) {
+                shortest_path.push_front(v);
+                if (predecessors[v] == v)
+                    break;
+            }
+        }
+        return shortest_path;
     }
 
-    bool is_obstacle(float weight) {
+    bool is_obstacle(float weight) const {
         return weight < 0;
     }
 
@@ -142,9 +228,7 @@ public:
     }
 };
 
-inline std::ostream& operator<<(std::ostream& os,
-    const nav_graph& ng)
-{
+inline std::ostream& operator<<(std::ostream& os, const nav_graph& ng) {
     ng.write_graphviz(os);
     return os;
 }
