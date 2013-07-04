@@ -58,7 +58,7 @@ BOOST_AUTO_TEST_CASE( test_raster_to_graph )
     std::string weight_path = "/tmp/test_gladys_raster_to_graph_nav.tif";
     std::string robotm_path = "/tmp/robot.json";
     std::ofstream of(robotm_path);
-    of<<"{\"robot\":{\"radius\":1.0}}";
+    of<<"{\"robot\":{\"radius\":1.0,\"velocity\":1.0}}";
     of.close();
     gdal tmp;
     tmp.set_size(5, 4, 4);

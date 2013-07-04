@@ -29,14 +29,25 @@ public:
      */
     void load(const std::string& filepath) {
         read_json(filepath, pt);
+        // throw an exception if a key is not found
+        pt.get<double>("robot.radius");
+        pt.get<double>("robot.velocity");
     }
 
     double get_radius() {
-        return pt.get("robot.radius", 0.0);
+        return pt.get<double>("robot.radius");
     }
 
     void set_radius(double radius) {
         pt.put("robot.radius", radius);
+    }
+
+    double get_velocity() {
+        return pt.get<double>("robot.velocity");
+    }
+
+    void set_velocity(double velocity) {
+        pt.put("robot.velocity", velocity);
     }
 
     void save(const std::string& filepath) {
