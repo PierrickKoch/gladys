@@ -30,11 +30,12 @@ public:
     void load(const std::string& filepath) {
         read_json(filepath, pt);
         // throw an exception if a key is not found
-        pt.get<double>("robot.radius");
-        pt.get<double>("robot.velocity");
+        if (pt.get<double>("robot.radius") <= 0 or
+            pt.get<double>("robot.velocity") <= 0)
+            throw std::runtime_error("[robot_model] radius and velocity must be positive");
     }
 
-    double get_radius() {
+    double get_radius() const {
         return pt.get<double>("robot.radius");
     }
 
@@ -42,7 +43,7 @@ public:
         pt.put("robot.radius", radius);
     }
 
-    double get_velocity() {
+    double get_velocity() const {
         return pt.get<double>("robot.velocity");
     }
 
@@ -50,7 +51,7 @@ public:
         pt.put("robot.velocity", velocity);
     }
 
-    void save(const std::string& filepath) {
+    void save(const std::string& filepath) const {
         write_json(filepath, pt);
     }
 };
