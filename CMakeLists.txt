@@ -14,9 +14,13 @@ set(BOOST_MIN_VERSION "1.47.0") # for Boost.Geometry
 find_package(Boost ${BOOST_MIN_VERSION} COMPONENTS graph unit_test_framework REQUIRED)
 
 include_directories(include)
-include_directories( ${GDAL_INCLUDE_DIR} )
+include_directories(${GDAL_INCLUDE_DIR})
 include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 link_directories(${Boost_LIBRARY_DIRS})
+
+# Load the 'install_pkg_config_file' macro
+set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMakeModules")
+include(InstallPkgConfigFile)
 
 # Library and binary
 add_subdirectory(src)
@@ -24,6 +28,10 @@ add_subdirectory(src)
 
 # Testing
 include( CTest )
-
 add_subdirectory(test)
+##
+
+# Install headers
+file(GLOB gladys_HDRS "include/gladys/*.hpp")
+install(FILES ${gladys_HDRS} DESTINATION include/gladys)
 ##
