@@ -57,18 +57,21 @@ BOOST_AUTO_TEST_CASE( test_raster_to_graph )
     std::string region_path = "/tmp/test_gladys_raster_to_graph.tif";
     std::string weight_path = "/tmp/test_gladys_raster_to_graph_nav.tif";
     std::string robotm_path = "/tmp/robot.json";
+    std::string graphv_path = "/tmp/test_gladys_raster_to_graph_nav.dot";
     std::ofstream of(robotm_path);
     of<<"{\"robot\":{\"radius\":1.0,\"velocity\":1.0}}";
     of.close();
     gdal tmp;
-    tmp.set_size(5, 4, 4);
+    tmp.set_size(weight_map::N_RASTER, 9, 9);
+    tmp.bands[weight_map::OBSTACLE][4+4*9] = 0.5;
     tmp.save(region_path);
     nav_graph ng(region_path, robotm_path);
     std::ostringstream oss_graphviz;
     ng.write_graphviz(oss_graphviz);
-    BOOST_TEST_MESSAGE( "oss_graphviz.size() = " << oss_graphviz.str().size() );
-    BOOST_CHECK_EQUAL( oss_graphviz.str().size() , 2146 );
+    ng.write_graphviz(graphv_path);
     ng.save(weight_path);
+    BOOST_TEST_MESSAGE( "oss_graphviz.size() = " << oss_graphviz.str().size() );
+    BOOST_CHECK_EQUAL( oss_graphviz.str().size() , 9817 );
 
     point_xy_t p1 = {1, 1};
     point_xy_t p2 = {2, 2};

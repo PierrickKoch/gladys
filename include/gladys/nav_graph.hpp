@@ -15,6 +15,7 @@
 #include <deque>
 #include <vector>
 #include <string>
+#include <fstream> // output file stream
 
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/breadth_first_search.hpp>
@@ -204,10 +205,6 @@ public:
         return shortest_path;
     }
 
-    bool is_obstacle(float weight) const {
-        return weight < 0;
-    }
-
     /** Write graphviz .dot file
      *
      * @param out output stream to write .dot data
@@ -222,6 +219,11 @@ public:
         // TODO write edge weight as well
         boost::write_graphviz( out, g,
             boost::make_label_writer(vert_label.data()) );
+    }
+    void write_graphviz(const std::string& filepath) const {
+        std::ofstream of( filepath );
+        write_graphviz( of );
+        of.close();
     }
 
     int save(const std::string& filepath) {

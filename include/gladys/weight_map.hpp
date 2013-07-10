@@ -25,10 +25,11 @@ class weight_map {
     gdal terrains; // probalistic models (multi-layers GeoTiff)
     gdal map; // weight map (after inflating robot size)
     robot_model rmdl;
+    enum {W_FLAG_OBSTACLE=-3, W_UNKNOWN=-2, W_OBSTACLE=-1};
+public:
     /* Names of the visual terrain classes */
     enum {NO_3D_CLASS, FLAT, OBSTACLE, ROUGH, SLOPE, N_RASTER};
-    enum {W_UNKNOWN=-2, W_OBSTACLE=-1};
-public:
+
     /** load region and robot model
      *
      * @param f_region path to a region.tif file
@@ -46,13 +47,39 @@ public:
         raster& weights = map.bands[0];
 
         raster data( terrains.bands.size() );
-        for (size_t pos = 0; pos < terrains.get_x() * terrains.get_y(); pos++) {
+        for (size_t pos = 0; pos < map.get_x() * map.get_y(); pos++) {
             for (size_t band_id = 0; band_id < data.size(); band_id++)
                 data[band_id] = terrains.bands[band_id][pos];
             weights[pos] = compute_weight(data);
         }
-        // TODO inflate obstacle by robot size (get robot model)
-        std::cout<<"radius: "<<rmdl.get_radius()<<std::endl;
+        // TODO inflate obstacle by rmdl.get_radius()
+        for (size_t px_x = 1; px_x < map.get_x() - 1; px_x++)
+        for (size_t px_y = 1; px_y < map.get_y() - 1; px_y++) {
+            if ( is_obstacle(weights[px_x + px_y * map.get_x()]) ) {
+                flag_as_obstacle(weights[px_x     + (px_y - 1) * map.get_x()]);
+                flag_as_obstacle(weights[px_x     + (px_y + 1) * map.get_x()]);
+                flag_as_obstacle(weights[px_x - 1 + (px_y    ) * map.get_x()]);
+                flag_as_obstacle(weights[px_x - 1 + (px_y - 1) * map.get_x()]);
+                flag_as_obstacle(weights[px_x - 1 + (px_y + 1) * map.get_x()]);
+                flag_as_obstacle(weights[px_x + 1 + (px_y    ) * map.get_x()]);
+                flag_as_obstacle(weights[px_x + 1 + (px_y - 1) * map.get_x()]);
+                flag_as_obstacle(weights[px_x + 1 + (px_y + 1) * map.get_x()]);
+            }
+        }
+        for (auto& weight : weights)
+            if (is_flaged_obstacle(weight))
+                weight = W_OBSTACLE;
+        // TODO reduce scale to rmdl.get_radius()
+    }
+    void flag_as_obstacle(float& weight) {
+        if (!is_obstacle(weight))
+            weight = W_FLAG_OBSTACLE;
+    }
+    bool is_flaged_obstacle(float weight) const {
+        return weight == W_FLAG_OBSTACLE;
+    }
+    bool is_obstacle(float weight) const {
+        return weight == W_OBSTACLE;
     }
 
     float compute_weight(const raster& data) {

@@ -9,7 +9,6 @@
  */
 #include <ostream> // standard C error stream
 #include <cstdlib> // exit status
-#include <fstream> // output file stream
 
 #include "gladys/nav_graph.hpp"
 
@@ -20,8 +19,6 @@ int main(int argc, char * argv[])
         return EXIT_FAILURE;
     }
     gladys::nav_graph ng(argv[1], argv[2]);
-    std::ofstream of(argv[3]);
-    ng.write_graphviz( of );
-    of.close();
+    ng.write_graphviz( argv[3] );
     return EXIT_SUCCESS;
 }

@@ -33,7 +33,7 @@ int nav_graph::load(const std::string& f_region, const std::string& f_robot_mode
 
         weight = weight_map[px_x + px_y * size_x];
 
-        if (is_obstacle(weight))
+        if (map.is_obstacle(weight))
             continue; // do not create edge if obstacle
 
         vert_w = get_vertex(scale_x * (px_x - 0.5), scale_y * (px_y      ));
