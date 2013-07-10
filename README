@@ -30,4 +30,18 @@ Links
 * http://gdal.org
 * http://boost.org/libs/graph
 * http://www.openrobots.org/wiki
+* http://trac.laas.fr/git/gladys
+
+
+HOWTO
+-----
+
+.. code::
+
+    git clone http://trac.laas.fr/git/gladys && cd gladys
+    mkdir build && cd build
+    cmake -DCMAKE_INSTALL_PREFIX=$HOME/devel ..
+    make -j8 && make test && make install
+    # for verbose test:
+    ./test/test_gladys --log_level=test_suite
 
