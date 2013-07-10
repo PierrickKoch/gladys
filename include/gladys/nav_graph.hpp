@@ -12,6 +12,7 @@
 
 #include <cmath>
 #include <array>
+#include <deque>
 #include <vector>
 #include <string>
 
@@ -37,20 +38,20 @@ typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS,
 typedef graph_t::vertex_descriptor vertex_t;
 typedef graph_t::edge_descriptor edge_t;
 typedef std::map<point_xy_t, vertex_t> vertex_map_t;
-typedef std::list<vertex_t> path_t;
+typedef std::deque<point_xy_t> path_t;
 
 inline std::string to_string(const point_xy_t& value ) {
-    return std::to_string(value[0]) + "," +
-           std::to_string(value[1]);
+    return "[" + std::to_string(value[0]) + "," +
+                 std::to_string(value[1]) + "]";
 }
 inline std::ostream& operator<<(std::ostream& os, const point_xy_t& value) {
     return os<<to_string(value);
 }
 
 inline std::string to_string(const point_xyz_t& value ) {
-    return std::to_string(value[0]) + "," +
-           std::to_string(value[1]) + "," +
-           std::to_string(value[2]);
+    return "[" + std::to_string(value[0]) + "," +
+                 std::to_string(value[1]) + "," +
+                 std::to_string(value[2]) + "]";
 }
 inline std::ostream& operator<<(std::ostream& os, const point_xyz_t& value) {
     return os<<to_string(value);
@@ -59,7 +60,7 @@ inline std::ostream& operator<<(std::ostream& os, const point_xyz_t& value) {
 inline std::string to_string(const path_t& value ) {
     std::string arrow = "", buff = "";
     for (auto& elt : value) {
-        buff += arrow + std::to_string(elt);
+        buff += arrow + to_string(elt);
         arrow = " -> ";
     }
     return buff;
@@ -110,9 +111,8 @@ public:
         : g(_g), goal(_goal) {}
 
     double operator()(const vertex_t& u) {
-        const boost::property_map<graph_t, boost::vertex_name_t>::type& vp_map
-            = boost::get(boost::vertex_name, g);
-        return distance(vp_map[u], vp_map[goal]);
+        const auto& vertex_point_map = boost::get(boost::vertex_name, g);
+        return distance(vertex_point_map[u], vertex_point_map[goal]);
     }
 };
 
@@ -194,8 +194,9 @@ public:
                     visitor(vis)
             );
         } catch (found_goal) {
+            const auto& vertex_point_map = boost::get(boost::vertex_name, g);
             for(vertex_t v = goal_v;; v = predecessors[v]) {
-                shortest_path.push_front(v);
+                shortest_path.push_front(vertex_point_map[v]);
                 if (predecessors[v] == v)
                     break;
             }

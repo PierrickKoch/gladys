@@ -49,7 +49,7 @@ BOOST_AUTO_TEST_CASE( test_write_graphviz )
     std::ostringstream oss_graphviz;
     obj.write_graphviz(oss_graphviz);
     BOOST_TEST_MESSAGE( "oss_graphviz.size() = " << oss_graphviz.str().size() );
-    BOOST_CHECK_EQUAL( oss_graphviz.str().size() , 102 );
+    BOOST_CHECK_EQUAL( oss_graphviz.str().size() , 108 );
 }
 
 BOOST_AUTO_TEST_CASE( test_raster_to_graph )
@@ -67,13 +67,16 @@ BOOST_AUTO_TEST_CASE( test_raster_to_graph )
     std::ostringstream oss_graphviz;
     ng.write_graphviz(oss_graphviz);
     BOOST_TEST_MESSAGE( "oss_graphviz.size() = " << oss_graphviz.str().size() );
-    BOOST_CHECK_EQUAL( oss_graphviz.str().size() , 2066 );
+    BOOST_CHECK_EQUAL( oss_graphviz.str().size() , 2146 );
     ng.save(weight_path);
 
     point_xy_t p1 = {1, 1};
     point_xy_t p2 = {2, 2};
     path_t path = ng.astar_search(p1, p2);
-    BOOST_TEST_MESSAGE( "test:" + to_string(path) );
+    // g++ >= 4.7 or clang >= 3.1 : support initializer_list
+    // TODO BOOST_CHECK_EQUAL( path , {{0.5, 1.0}, {1.0, 1.5}, {1.5, 2.0}} );
+    BOOST_CHECK_EQUAL( path.size() , 3 );
+    BOOST_TEST_MESSAGE( "path: " + to_string(path) );
 
     gladys obj(region_path, robotm_path);
 }

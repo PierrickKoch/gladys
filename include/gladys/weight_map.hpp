@@ -43,12 +43,13 @@ public:
         rmdl.load(f_robot_model);
         assert(terrains.bands.size() == N_RASTER);
         map.copy_meta(terrains, 1);
+        raster& weights = map.bands[0];
 
         raster data( terrains.bands.size() );
         for (size_t pos = 0; pos < terrains.get_x() * terrains.get_y(); pos++) {
             for (size_t band_id = 0; band_id < data.size(); band_id++)
                 data[band_id] = terrains.bands[band_id][pos];
-            map.bands[0][pos] = compute_weight(data);
+            weights[pos] = compute_weight(data);
         }
         // TODO inflate obstacle by robot size (get robot model)
         std::cout<<"radius: "<<rmdl.get_radius()<<std::endl;
