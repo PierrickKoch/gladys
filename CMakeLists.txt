@@ -18,6 +18,9 @@ include_directories(${GDAL_INCLUDE_DIR})
 include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 link_directories(${Boost_LIBRARY_DIRS})
 
+# Filesystem Hierarchy Standard
+include(GNUInstallDirs)
+
 # Load the 'install_pkg_config_file' macro
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMakeModules")
 include(InstallPkgConfigFile)
@@ -33,5 +36,5 @@ add_subdirectory(test)
 
 # Install headers
 file(GLOB gladys_HDRS "include/gladys/*.hpp")
-install(FILES ${gladys_HDRS} DESTINATION include/gladys)
+install(FILES ${gladys_HDRS} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/gladys)
 ##
