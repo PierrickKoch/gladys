@@ -17,9 +17,7 @@
 
 namespace gladys {
 
-int nav_graph::load(const std::string& f_region, const std::string& f_robot_model) {
-    map.load(f_region, f_robot_model);
-
+void nav_graph::_load() {
     size_t px_x, px_y, size_x = map.get_x();
     vertex_t vert_w, vert_n, vert_e, vert_s;
     double scale_x = map.get_scale_x(), scale_y = map.get_scale_y();
@@ -51,7 +49,6 @@ int nav_graph::load(const std::string& f_region, const std::string& f_robot_mode
         boost::add_edge(vert_n, vert_s, scale_y + weight, g); // length = scale_y
         boost::add_edge(vert_w, vert_e, scale_x + weight, g); // length = scale_x
     }
-    return EXIT_SUCCESS;
 }
 
 } // namespace gladys

@@ -39,9 +39,12 @@ public:
      * to generate the weight map (at least its size)
      *
      */
-    int load(const std::string& f_region, const std::string& f_robot_model) {
+    void load(const std::string& f_region, const std::string& f_robot_model) {
         terrains.load(f_region);
         rmdl.load(f_robot_model);
+        _load();
+    }
+    void _load() {
         assert(terrains.bands.size() == N_RASTER);
         map.copy_meta(terrains, 1);
         raster& weights = map.bands[0];
@@ -52,24 +55,34 @@ public:
                 data[band_id] = terrains.bands[band_id][pos];
             weights[pos] = compute_weight(data);
         }
-        // TODO inflate obstacle by rmdl.get_radius()
+
+        // inflate obstacle by robot radius relative to map scale {x,y}
+
+        // averaged up raduis {x,y}
+        size_t rx = std::floor( map.get_scale_x() * rmdl.get_radius() );
+        size_t ry = std::floor( map.get_scale_y() * rmdl.get_radius() );
+
         for (size_t px_x = 1; px_x < map.get_x() - 1; px_x++)
         for (size_t px_y = 1; px_y < map.get_y() - 1; px_y++) {
             if ( is_obstacle(weights[px_x + px_y * map.get_x()]) ) {
-                flag_as_obstacle(weights[px_x     + (px_y - 1) * map.get_x()]);
-                flag_as_obstacle(weights[px_x     + (px_y + 1) * map.get_x()]);
-                flag_as_obstacle(weights[px_x - 1 + (px_y    ) * map.get_x()]);
-                flag_as_obstacle(weights[px_x - 1 + (px_y - 1) * map.get_x()]);
-                flag_as_obstacle(weights[px_x - 1 + (px_y + 1) * map.get_x()]);
-                flag_as_obstacle(weights[px_x + 1 + (px_y    ) * map.get_x()]);
-                flag_as_obstacle(weights[px_x + 1 + (px_y - 1) * map.get_x()]);
-                flag_as_obstacle(weights[px_x + 1 + (px_y + 1) * map.get_x()]);
+                for (size_t irx = 0; irx <= rx; irx++)
+                for (size_t iry = 0; iry <= ry; iry++) {
+                    flag_as_obstacle(weights[px_x       + (px_y - iry) * map.get_x()]);
+                    flag_as_obstacle(weights[px_x       + (px_y + iry) * map.get_x()]);
+                    flag_as_obstacle(weights[px_x - irx + (px_y      ) * map.get_x()]);
+                    flag_as_obstacle(weights[px_x - irx + (px_y - iry) * map.get_x()]);
+                    flag_as_obstacle(weights[px_x - irx + (px_y + iry) * map.get_x()]);
+                    flag_as_obstacle(weights[px_x + irx + (px_y      ) * map.get_x()]);
+                    flag_as_obstacle(weights[px_x + irx + (px_y - iry) * map.get_x()]);
+                    flag_as_obstacle(weights[px_x + irx + (px_y + iry) * map.get_x()]);
+                }
             }
         }
         for (auto& weight : weights)
             if (is_flaged_obstacle(weight))
                 weight = W_OBSTACLE;
-        // TODO reduce scale to rmdl.get_radius()
+
+        // TODO reduce scale to rmdl.get_radius() boost/gil/extension/numeric/resample.hpp
     }
     void flag_as_obstacle(float& weight) {
         if (!is_obstacle(weight))

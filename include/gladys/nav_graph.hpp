@@ -138,7 +138,11 @@ public:
     nav_graph(const std::string& f_region, const std::string& f_robot_model) {
         load(f_region, f_robot_model);
     }
-    int load(const std::string& f_region, const std::string& f_robot_model);
+    void load(const std::string& f_region, const std::string& f_robot_model) {
+        map.load(f_region, f_robot_model);
+        _load();
+    }
+    void _load();
 
     // vertices
     vertex_t get_vertex(const double& x, const double &y) {
