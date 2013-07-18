@@ -184,18 +184,17 @@ public:
         path_t shortest_path;
         nav_heuristic heuristic(g, goal_v);
         std::vector<vertex_t> predecessors(num_vertices(g));
-        //std::vector<double> distances(num_vertices(g));
-        //std::vector<double> ranks    (num_vertices(g));
-        //std::vector<boost::default_color_type> colors;
-        //std::vector<float> weights;
+        std::vector<double> distances(boost::num_vertices(g));
+        std::vector<double> ranks(boost::num_vertices(g), -1.0);
+        std::vector<boost::default_color_type> colors(boost::num_vertices(g));
         try {
             boost::astar_search(
                 g, get_closest_vertex(start), heuristic,
                 boost::predecessor_map(predecessors.data()).
-                    //distance_map(distances.data()).
-                    //weight_map(weights.data()).
-                    //rank_map(ranks.data()).
-                    //color_map(colors.data()).
+                    distance_map(distances.data()).
+                    weight_map(boost::get(boost::edge_weight, g)).
+                    rank_map(ranks.data()).
+                    color_map(colors.data()).
                     visitor(vis)
             );
         } catch (found_goal) {

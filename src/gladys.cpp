@@ -58,6 +58,7 @@ path_cost_util_t gladys::navigation(const points_t& start, const points_t& goal,
 {
     path_cost_util_t pcu;
     // NOTE: pass by a "virtual node" as a starting point in the OPEN list (see: color map)
+    pcu.path = navigation_graph.astar_search(start[0], goal[0]);
     return pcu;
 }
 

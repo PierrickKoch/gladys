@@ -36,7 +36,11 @@ typedef struct {
 typedef std::pair<points_t, float> points_prob_t;
 typedef std::vector<points_prob_t> points_probs_t;
 typedef struct {} behaviour_t;
-typedef struct {} path_cost_util_t;
+typedef struct {
+    path_t path;
+    double cost; // TMP
+    double utility; // TMP
+} path_cost_util_t;
 
 /*
  * gladys
