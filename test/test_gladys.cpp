@@ -87,7 +87,12 @@ BOOST_AUTO_TEST_CASE( test_raster_to_graph )
     robot_cfg<<"{\"robot\":{\"radius\":2.0,\"velocity\":1.0}}";
     robot_cfg.close();
     gladys obj(region_path, robotm_path);
-    //obj.navigation({{1,1}}, {{9,9}}, 0, {});
+    points_t start = {p1};
+    points_t goal  = {p2};
+    motion_constraints_t c;
+    path_cost_util_t pcu = obj.navigation(start, goal, 0, c);
+    BOOST_TEST_MESSAGE( "path: " + to_string(pcu.path) );
+    BOOST_CHECK_EQUAL( path.size() , pcu.path.size() );
 }
 
 
