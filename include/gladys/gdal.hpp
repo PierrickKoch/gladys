@@ -118,27 +118,27 @@ public:
             band.resize( size );
     }
 
-    size_t get_x() {
+    size_t get_x() const {
         return x_size;
     }
 
-    size_t get_y() {
+    size_t get_y() const {
         return y_size;
     }
 
-    double get_scale_x() {
+    double get_scale_x() const {
         return transform[1]; // pixel width
     }
 
-    double get_scale_y() {
+    double get_scale_y() const {
         return transform[5]; // pixel height
     }
 
-    double get_utm_pose_x() {
+    double get_utm_pose_x() const {
         return transform[0]; // upper left pixel position x
     }
 
-    double get_utm_pose_y() {
+    double get_utm_pose_y() const {
         return transform[3]; // upper left pixel position y
     }
 
@@ -226,6 +226,25 @@ public:
         return EXIT_SUCCESS;
     }
 };
+
+// helpers
+
+inline bool operator==( const gdal& lhs, const gdal& rhs ) {
+    return (lhs.get_x() == rhs.get_x()
+        and lhs.get_y() == rhs.get_y()
+        and lhs.get_scale_x() == rhs.get_scale_x()
+        and lhs.get_scale_y() == rhs.get_scale_y()
+        and lhs.get_utm_pose_x() == rhs.get_utm_pose_x()
+        and lhs.get_utm_pose_y() == rhs.get_utm_pose_y()
+        and lhs.bands == rhs.bands );
+}
+inline std::string to_string(const gdal& value) {
+    return "GDAL[" + std::to_string(value.get_x()) + "," +
+                     std::to_string(value.get_y()) + "]";
+}
+inline std::ostream& operator<<(std::ostream& os, const gdal& value) {
+    return os<<to_string(value);
+}
 
 } // namespace gladys
 
