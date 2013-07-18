@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 #include <array>
+#include <iostream>         // cout,cerr,endl
 #include <stdexcept>        // for runtime_error
 #include <gdal_priv.h>      // for GDALDataset
 #include <ogr_spatialref.h> // for OGRSpatialReference
