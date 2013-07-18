@@ -23,9 +23,6 @@
 #include <boost/graph/astar_search.hpp>
 #include <boost/graph/graphviz.hpp>
 
-#include <boost/geometry/geometries/point_xy.hpp>
-/* Boost.Geometry (since libboost1.47, Ubuntu 12.04 = libboost1.46) */
-
 #include "gladys/weight_map.hpp"
 
 namespace gladys {

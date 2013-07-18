@@ -10,7 +10,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 find_package(GDAL REQUIRED)
 
 # Find Boost ( export BOOST_ROOT=$prefix )
-set(BOOST_MIN_VERSION "1.47.0") # for Boost.Geometry
+set(BOOST_MIN_VERSION "1.46.0") # 1.47 for Boost.Geometry (Ubuntu > 12.04)
 find_package(Boost ${BOOST_MIN_VERSION} COMPONENTS graph unit_test_framework REQUIRED)
 
 include_directories(include)
