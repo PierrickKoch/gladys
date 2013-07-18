@@ -76,8 +76,15 @@ inline double distance_sq(const point_xy_t& pA, const point_xy_t& pB) {
     double y = pA[1] - pB[1];
     return x*x + y*y;
 }
+inline double distance_sq(const point_xyz_t& pA, const point_xyz_t& pB) {
+    double x = pA[0] - pB[0];
+    double y = pA[1] - pB[1];
+    double z = pA[2] - pB[2];
+    return x*x + y*y + z*z;
+}
 /** Euclidian distance */
-inline double distance(const point_xy_t& pA, const point_xy_t& pB) {
+template <class Point>
+inline double distance(const Point& pA, const Point& pB) {
     return std::sqrt(distance_sq(pA, pB));
 }
 

@@ -18,7 +18,7 @@
 namespace gladys {
 
 void nav_graph::_load() {
-    size_t px_x, px_y, size_x = map.get_x();
+    size_t px_x, px_y, width = map.get_width();
     vertex_t vert_w, vert_n, vert_e, vert_s;
     double scale_x = map.get_scale_x(), scale_y = map.get_scale_y();
     float weight;
@@ -26,10 +26,10 @@ void nav_graph::_load() {
     // most of the time this is equal to str(2)/2
     float hypotenuse = 0.5 * std::sqrt( scale_x*scale_x + scale_y*scale_y );
 
-    for (px_x = 0; px_x < map.get_x(); px_x++)
-    for (px_y = 0; px_y < map.get_y(); px_y++) {
+    for (px_x = 0; px_x < map.get_width(); px_x++)
+    for (px_y = 0; px_y < map.get_height(); px_y++) {
 
-        weight = weight_map[px_x + px_y * size_x];
+        weight = weight_map[px_x + px_y * width];
 
         if (map.is_obstacle(weight))
             continue; // do not create edge if obstacle

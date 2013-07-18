@@ -50,7 +50,7 @@ public:
         raster& weights = map.bands[0];
 
         raster data( terrains.bands.size() );
-        for (size_t pos = 0; pos < map.get_x() * map.get_y(); pos++) {
+        for (size_t pos = 0; pos < map.get_width() * map.get_height(); pos++) {
             for (size_t band_id = 0; band_id < data.size(); band_id++)
                 data[band_id] = terrains.bands[band_id][pos];
             weights[pos] = compute_weight(data);
@@ -62,19 +62,19 @@ public:
         size_t rx = std::floor( map.get_scale_x() * rmdl.get_radius() );
         size_t ry = std::floor( map.get_scale_y() * rmdl.get_radius() );
 
-        for (size_t px_x = 1; px_x < map.get_x() - 1; px_x++)
-        for (size_t px_y = 1; px_y < map.get_y() - 1; px_y++) {
-            if ( is_obstacle(weights[px_x + px_y * map.get_x()]) ) {
+        for (size_t px_x = 1; px_x < map.get_width() - 1; px_x++)
+        for (size_t px_y = 1; px_y < map.get_height() - 1; px_y++) {
+            if ( is_obstacle(weights[px_x + px_y * map.get_width()]) ) {
                 for (size_t irx = 0; irx <= rx; irx++)
                 for (size_t iry = 0; iry <= ry; iry++) {
-                    flag_as_obstacle(weights[px_x       + (px_y - iry) * map.get_x()]);
-                    flag_as_obstacle(weights[px_x       + (px_y + iry) * map.get_x()]);
-                    flag_as_obstacle(weights[px_x - irx + (px_y      ) * map.get_x()]);
-                    flag_as_obstacle(weights[px_x - irx + (px_y - iry) * map.get_x()]);
-                    flag_as_obstacle(weights[px_x - irx + (px_y + iry) * map.get_x()]);
-                    flag_as_obstacle(weights[px_x + irx + (px_y      ) * map.get_x()]);
-                    flag_as_obstacle(weights[px_x + irx + (px_y - iry) * map.get_x()]);
-                    flag_as_obstacle(weights[px_x + irx + (px_y + iry) * map.get_x()]);
+                    flag_as_obstacle(weights[px_x       + (px_y - iry) * map.get_width()]);
+                    flag_as_obstacle(weights[px_x       + (px_y + iry) * map.get_width()]);
+                    flag_as_obstacle(weights[px_x - irx + (px_y      ) * map.get_width()]);
+                    flag_as_obstacle(weights[px_x - irx + (px_y - iry) * map.get_width()]);
+                    flag_as_obstacle(weights[px_x - irx + (px_y + iry) * map.get_width()]);
+                    flag_as_obstacle(weights[px_x + irx + (px_y      ) * map.get_width()]);
+                    flag_as_obstacle(weights[px_x + irx + (px_y - iry) * map.get_width()]);
+                    flag_as_obstacle(weights[px_x + irx + (px_y + iry) * map.get_width()]);
                 }
             }
         }
@@ -106,12 +106,12 @@ public:
         return map.bands[0];
     }
 
-    size_t get_x() {
-        return map.get_x();
+    size_t get_width() {
+        return map.get_width();
     }
 
-    size_t get_y() {
-        return map.get_y();
+    size_t get_height() {
+        return map.get_height();
     }
 
     double get_scale_x() {
