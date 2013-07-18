@@ -30,13 +30,7 @@ BOOST_AUTO_TEST_CASE( test_gdal )
     // load the file we just saved
     gdal gdal_from_file(path);
 
-    BOOST_CHECK_EQUAL( gdal_from_file.get_x(),          gdal_to_file.get_x() );
-    BOOST_CHECK_EQUAL( gdal_from_file.get_y(),          gdal_to_file.get_y() );
-    BOOST_CHECK_EQUAL( gdal_from_file.get_scale_x(),    gdal_to_file.get_scale_x() );
-    BOOST_CHECK_EQUAL( gdal_from_file.get_scale_y(),    gdal_to_file.get_scale_y() );
-    BOOST_CHECK_EQUAL( gdal_from_file.get_utm_pose_x(), gdal_to_file.get_utm_pose_x() );
-    BOOST_CHECK_EQUAL( gdal_from_file.get_utm_pose_y(), gdal_to_file.get_utm_pose_y() );
-    BOOST_CHECK_EQUAL( gdal_from_file.bands.size(),     gdal_to_file.bands.size() );
+    BOOST_CHECK_EQUAL( gdal_from_file, gdal_to_file );
     BOOST_TEST_MESSAGE( "GDAL OK" );
 }
 
