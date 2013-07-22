@@ -10,116 +10,19 @@
 #ifndef NAV_GRAPH_HPP
 #define NAV_GRAPH_HPP
 
-#include <cmath>
-#include <array>
-#include <deque>
 #include <vector>
 #include <string>
 #include <fstream> // output file stream
 
 #include <boost/graph/adjacency_list.hpp>
-#include <boost/graph/breadth_first_search.hpp>
-#include <boost/graph/depth_first_search.hpp>
 #include <boost/graph/astar_search.hpp>
 #include <boost/graph/graphviz.hpp>
 
+#include "gladys/point.hpp"
+#include "gladys/graph_astar.hpp"
 #include "gladys/weight_map.hpp"
 
 namespace gladys {
-
-typedef std::array<double, 2> point_xy_t;  // XY
-typedef std::array<double, 3> point_xyz_t; // XYZ
-// graph
-typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS,
-    boost::property<boost::vertex_name_t, point_xy_t>,
-    boost::property<boost::edge_weight_t, float> > graph_t;
-typedef graph_t::vertex_descriptor vertex_t;
-typedef graph_t::edge_descriptor edge_t;
-typedef std::map<point_xy_t, vertex_t> vertex_map_t;
-typedef std::deque<point_xy_t> path_t;
-
-inline std::string to_string(const point_xy_t& value ) {
-    return "[" + std::to_string(value[0]) + "," +
-                 std::to_string(value[1]) + "]";
-}
-inline std::ostream& operator<<(std::ostream& os, const point_xy_t& value) {
-    return os<<to_string(value);
-}
-
-inline std::string to_string(const point_xyz_t& value ) {
-    return "[" + std::to_string(value[0]) + "," +
-                 std::to_string(value[1]) + "," +
-                 std::to_string(value[2]) + "]";
-}
-inline std::ostream& operator<<(std::ostream& os, const point_xyz_t& value) {
-    return os<<to_string(value);
-}
-
-inline std::string to_string(const path_t& value ) {
-    std::string arrow = "", buff = "";
-    for (auto& elt : value) {
-        buff += arrow + to_string(elt);
-        arrow = " -> ";
-    }
-    return buff;
-}
-inline std::ostream& operator<<(std::ostream& os, const path_t& value) {
-    return os<<to_string(value);
-}
-
-
-/** Euclidian distance (squared)
- * usefull to compare a set of points (faster)
- */
-inline double distance_sq(const point_xy_t& pA, const point_xy_t& pB) {
-    double x = pA[0] - pB[0];
-    double y = pA[1] - pB[1];
-    return x*x + y*y;
-}
-inline double distance_sq(const point_xyz_t& pA, const point_xyz_t& pB) {
-    double x = pA[0] - pB[0];
-    double y = pA[1] - pB[1];
-    double z = pA[2] - pB[2];
-    return x*x + y*y + z*z;
-}
-/** Euclidian distance */
-template <class Point>
-inline double distance(const Point& pA, const Point& pB) {
-    return std::sqrt(distance_sq(pA, pB));
-}
-
-struct found_goal {}; // exception for termination
-
-// visitor that terminates when we find the goal
-class astar_goal_visitor : public boost::default_astar_visitor {
-    vertex_t goal;
-public:
-    astar_goal_visitor(vertex_t goal) : goal(goal) {}
-
-    /** examine_vertex is invoked when a vertex is popped from the queue
-     * (i.e., it has the lowest cost on the OPEN list).
-     */
-    void examine_vertex(vertex_t u, const graph_t& g) {
-        if (u == goal)
-            throw found_goal();
-    }
-};
-
-/**
-* Navigation heuristics functions for graph visitor algorithms
-*/
-class nav_heuristic : public boost::astar_heuristic<graph_t, double> {
-    graph_t g;
-    vertex_t goal;
-public:
-    nav_heuristic(const graph_t& _g, const vertex_t& _goal)
-        : g(_g), goal(_goal) {}
-
-    double operator()(const vertex_t& u) {
-        const auto& vertex_point_map = boost::get(boost::vertex_name, g);
-        return distance(vertex_point_map[u], vertex_point_map[goal]);
-    }
-};
 
 /*
  * nav_graph
@@ -182,35 +85,8 @@ public:
         return closest_v;
     }
 
-    path_t astar_search(const point_xy_t& start, const point_xy_t& goal) {
-        vertex_t goal_v = get_closest_vertex(goal);
-        astar_goal_visitor vis(goal_v);
-        path_t shortest_path;
-        nav_heuristic heuristic(g, goal_v);
-        std::vector<vertex_t> predecessors(num_vertices(g));
-        std::vector<double> distances(boost::num_vertices(g));
-        std::vector<double> ranks(boost::num_vertices(g), -1.0);
-        std::vector<boost::default_color_type> colors(boost::num_vertices(g));
-        try {
-            boost::astar_search(
-                g, get_closest_vertex(start), heuristic,
-                boost::predecessor_map(predecessors.data()).
-                    distance_map(distances.data()).
-                    weight_map(boost::get(boost::edge_weight, g)).
-                    rank_map(ranks.data()).
-                    color_map(colors.data()).
-                    visitor(vis)
-            );
-        } catch (found_goal) {
-            const auto& vertex_point_map = boost::get(boost::vertex_name, g);
-            for(vertex_t v = goal_v;; v = predecessors[v]) {
-                shortest_path.push_front(vertex_point_map[v]);
-                if (predecessors[v] == v)
-                    break;
-            }
-        }
-        return shortest_path;
-    }
+    path_t astar_search(const point_xy_t& start, const point_xy_t& goal);
+    path_cost_util_t astar_search(const points_t& start, const points_t& goal);
 
     /** Write graphviz .dot file
      *

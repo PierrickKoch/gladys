@@ -57,11 +57,17 @@ public:
         return weight == W_OBSTACLE;
     }
 
+    /** compute a mix of ponderated classes
+     *
+     * w/ threshold on obstacle
+     * @returns weight in [1.0, 2.0]
+     *
+     */
     float compute_weight(const raster& data) {
         if (data[OBSTACLE] > 0.4) // TODO tune this threshold
             return W_OBSTACLE;
         else // compute a mix of ponderated classes TODO
-            return (data[FLAT] * 0.1 + data[ROUGH] * 0.3 + data[SLOPE] * 0.6 );
+            return 1 + (data[FLAT] * 0.1 + data[ROUGH] * 0.3 + data[SLOPE] * 0.6 );
     }
 
     raster get_map() {

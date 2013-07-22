@@ -25,8 +25,6 @@ typedef struct {
     // TODO "utilities" summarize past state? (see spec...)
 } state_t;
 
-typedef std::vector<point_xy_t> points_t;
-
 typedef struct {
     double time;
     double energy;
@@ -36,11 +34,6 @@ typedef struct {
 typedef std::pair<points_t, float> points_prob_t;
 typedef std::vector<points_prob_t> points_probs_t;
 typedef struct {} behaviour_t;
-typedef struct {
-    path_t path;
-    double cost; // TMP
-    double utility; // TMP
-} path_cost_util_t;
 
 /*
  * gladys
