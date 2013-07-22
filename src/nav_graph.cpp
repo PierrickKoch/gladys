@@ -96,6 +96,7 @@ path_cost_util_t nav_graph::astar_search(const points_t& start, const points_t& 
     std::vector<double> ranks(boost::num_vertices(g), -1.0);
     std::vector<boost::default_color_type> colors(boost::num_vertices(g));
     try {
+        // NOTE: pass by a "virtual node" as a starting point in the OPEN list (see: color map)
         boost::astar_search(
             g, get_closest_vertex(start[0]), heuristic,
             boost::predecessor_map(predecessors.data()).

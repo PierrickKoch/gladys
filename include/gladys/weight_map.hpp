@@ -60,7 +60,7 @@ public:
     /** compute a mix of ponderated classes
      *
      * w/ threshold on obstacle
-     * @returns weight in [1.0, 2.0]
+     * @returns weight in [1.0, 2.0] or W_OBSTACLE if obstacle
      *
      */
     float compute_weight(const raster& data) {

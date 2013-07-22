@@ -56,7 +56,6 @@ points_probs_t gladys::simulation(const points_t& start,
 path_cost_util_t gladys::navigation(const points_t& start, const points_t& goal,
     int optimisation, const motion_constraints_t& constraints)
 {
-    // NOTE: pass by a "virtual node" as a starting point in the OPEN list (see: color map)
     return navigation_graph.astar_search(start, goal);
 }
 

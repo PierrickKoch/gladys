@@ -1,10 +1,10 @@
 /*
- * nav_graph.hpp
+ * graph_astar.hpp
  *
  * Graph Library for Autonomous and Dynamic Systems
  *
  * author:  Pierrick Koch <pierrick.koch@laas.fr>
- * created: 2013-06-12
+ * created: 2013-07-22
  * license: BSD
  */
 #ifndef GRAPH_ASTAR_HPP
