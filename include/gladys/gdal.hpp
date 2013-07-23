@@ -26,7 +26,6 @@ typedef std::vector<float> raster;
  * gdal : GDALDataset wraper
  */
 class gdal {
-    typedef std::vector<raster> rasters;
     std::array<double, 6> transform;
     size_t width;
     size_t height;
@@ -41,6 +40,7 @@ class gdal {
     }
 
 public:
+    typedef std::vector<raster> rasters;
     rasters bands;
 
     gdal() {
