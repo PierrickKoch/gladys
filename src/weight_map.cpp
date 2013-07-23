@@ -18,9 +18,10 @@ void weight_map::_load() {
     assert(terrains.bands.size() == N_RASTER);
     map.copy_meta(terrains, 1);
     raster& weights = map.bands[0];
+    size_t width = map.get_width();
 
     raster data( terrains.bands.size() );
-    for (size_t pos = 0; pos < map.get_width() * map.get_height(); pos++) {
+    for (size_t pos = 0; pos < width * map.get_height(); pos++) {
         for (size_t band_id = 0; band_id < data.size(); band_id++)
             data[band_id] = terrains.bands[band_id][pos];
         weights[pos] = compute_weight(data);
@@ -32,19 +33,19 @@ void weight_map::_load() {
     size_t rx = std::floor( map.get_scale_x() * rmdl.get_radius() );
     size_t ry = std::floor( map.get_scale_y() * rmdl.get_radius() );
 
-    for (size_t px_x = rx; px_x < map.get_width()  - rx; px_x++)
+    for (size_t px_x = rx; px_x < width  - rx; px_x++)
     for (size_t px_y = ry; px_y < map.get_height() - ry; px_y++) {
-        if ( is_obstacle(weights[px_x + px_y * map.get_width()]) ) {
+        if ( is_obstacle(weights[px_x + px_y * width]) ) {
             for (size_t irx = 1; irx <= rx; irx++)
             for (size_t iry = 1; iry <= ry; iry++) {
-                flag_as_obstacle(weights[px_x       + (px_y - iry) * map.get_width()]);
-                flag_as_obstacle(weights[px_x       + (px_y + iry) * map.get_width()]);
-                flag_as_obstacle(weights[px_x - irx + (px_y      ) * map.get_width()]);
-                flag_as_obstacle(weights[px_x - irx + (px_y - iry) * map.get_width()]);
-                flag_as_obstacle(weights[px_x - irx + (px_y + iry) * map.get_width()]);
-                flag_as_obstacle(weights[px_x + irx + (px_y      ) * map.get_width()]);
-                flag_as_obstacle(weights[px_x + irx + (px_y - iry) * map.get_width()]);
-                flag_as_obstacle(weights[px_x + irx + (px_y + iry) * map.get_width()]);
+                flag_as_obstacle(weights[px_x       + (px_y - iry) * width]);
+                flag_as_obstacle(weights[px_x       + (px_y + iry) * width]);
+                flag_as_obstacle(weights[px_x - irx + (px_y      ) * width]);
+                flag_as_obstacle(weights[px_x - irx + (px_y - iry) * width]);
+                flag_as_obstacle(weights[px_x - irx + (px_y + iry) * width]);
+                flag_as_obstacle(weights[px_x + irx + (px_y      ) * width]);
+                flag_as_obstacle(weights[px_x + irx + (px_y - iry) * width]);
+                flag_as_obstacle(weights[px_x + irx + (px_y + iry) * width]);
             }
         }
     }
