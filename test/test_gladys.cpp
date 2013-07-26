@@ -31,6 +31,8 @@ BOOST_AUTO_TEST_CASE( test_gdal )
     gdal gdal_from_file(path);
 
     BOOST_CHECK_EQUAL( gdal_from_file, gdal_to_file );
+    gdal_from_file.bands[0][0] += 2;
+    BOOST_CHECK( !(gdal_from_file == gdal_to_file) );
     BOOST_TEST_MESSAGE( "GDAL OK" );
 }
 
