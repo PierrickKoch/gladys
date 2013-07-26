@@ -20,12 +20,6 @@ import numpy
 import scipy.misc
 import colorsys
 
-def get_gdal_raster(filepath, band_id=1):
-    img = gdal.Open(filepath)
-    band = img.GetRasterBand(band_id)
-    return band.XSize, band.YSize, \
-        band.GetMinimum(), band.GetMaximum(), band.ReadAsArray()
-
 def float_to_rgb(hue):
     assert(0.0 <= hue <= 1.0)
     # from blue to red (instead of red to red)
@@ -35,14 +29,29 @@ def float_to_rgb(hue):
 def save_numpy(filepath, numpy_array):
     scipy.misc.imsave(filepath, numpy_array)
 
-def gdal_float_to_rgb(file_in, file_out, band_id):
-    width, height, mini, maxi, raster = get_gdal_raster(file_in, band_id)
-    diff = maxi - mini
+def gdal_float_to_rgb(file_in, file_out, band_id=1):
+    img = gdal.Open(file_in)
+    if band_id < 0:
+        for band_id in range(1, img.RasterCount + 1):
+            gdal_img_float_to_rgb(img, '%s.%i.png'%(file_out, band_id), band_id)
+    else:
+        gdal_img_float_to_rgb(img, file_out, band_id)
+
+def gdal_img_float_to_rgb(img, file_out, band_id):
+    band = img.GetRasterBand(band_id)
+    width = band.XSize
+    height = band.YSize
+    raster = band.ReadAsArray()
+    # in some case gdal returns None for min/max, so use numpy
+    mini = band.GetMinimum() or raster.min()
+    diff = band.GetMaximum() or raster.max() - mini
+    if diff == 0: return # div zero = NaN (useless band)
     raster_rgb = numpy.zeros((height, width, 3), 'uint8')
     print("float to rgb for each pixel (slow)...")
     for x in range(width):
         for y in range(height):
             hue = (raster[y][x] - mini) / diff
+            if hue > 1: hue = 1
             r,g,b = float_to_rgb(hue)
             raster_rgb[y][x][0] = r * 255
             raster_rgb[y][x][1] = g * 255
@@ -56,7 +65,7 @@ def main(argv=[]):
         return 1
     band = 1
     if len(argv) > 3:
-        band = argv[3]
+        band = int(argv[3])
     gdal_float_to_rgb(argv[1], argv[2], band)
     return 0
 
