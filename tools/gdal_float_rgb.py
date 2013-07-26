@@ -18,11 +18,13 @@ python setup.py install
 import gdal
 import numpy
 import scipy.misc
-import colorsys
+import colorsys # python/Lib
+import json # python/Lib
 
 def float_to_rgb(hue):
     assert(0.0 <= hue <= 1.0)
     # from blue to red (instead of red to red)
+    # aka from 240 to 0 instead of 0 to 360 degrees (HSV)
     hue = (1 - hue) / 1.5
     return colorsys.hsv_to_rgb(hue, 1, 1)
 
@@ -41,10 +43,12 @@ def gdal_img_float_to_rgb(img, file_out, band_id):
     band = img.GetRasterBand(band_id)
     width = band.XSize
     height = band.YSize
-    raster = band.ReadAsArray()
+    raster = band.ReadAsArray() # numpy.ndarray
     # in some case gdal returns None for min/max, so use numpy
     mini = band.GetMinimum() or raster.min()
-    diff = band.GetMaximum() or raster.max() - mini
+    maxi = band.GetMaximum() or raster.max()
+    print("min: %f max: %f file: %s" % (mini, maxi, file_out) )
+    diff = maxi - mini
     if diff == 0: return # div zero = NaN (useless band)
     raster_rgb = numpy.zeros((height, width, 3), 'uint8')
     print("float to rgb for each pixel (slow)...")
@@ -56,8 +60,10 @@ def gdal_img_float_to_rgb(img, file_out, band_id):
             raster_rgb[y][x][0] = r * 255
             raster_rgb[y][x][1] = g * 255
             raster_rgb[y][x][2] = b * 255
-    print("done!")
+    print("done! saving...")
     save_numpy(file_out, raster_rgb)
+    with open('%s.json'%file_out, 'w') as f:
+        json.dump({'min':mini,'max':maxi},f)
 
 def main(argv=[]):
     if len(argv) < 3:
