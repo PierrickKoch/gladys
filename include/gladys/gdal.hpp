@@ -66,6 +66,7 @@ public:
         utm_north = x.utm_north;
         transform = x.transform;
         bands = x.bands;
+        bands_name = x.bands_name;
     }
     gdal(const std::string& filepath) {
         _init();
@@ -80,10 +81,11 @@ public:
         utm_zone  = copy.utm_zone;
         utm_north = copy.utm_north;
         transform = copy.transform;
+        bands_name = copy.bands_name;
         set_size(copy.bands.size(), copy.width, copy.height);
     }
 
-    /** Copy meta-data from another instance, except the number of layers
+    /** Copy meta-data from another instance, except the number/name of layers
      *
      * @param copy another gdal instance
      * @param n_raster number of layers to set (number of rasters)
@@ -236,13 +238,14 @@ public:
         dataset->GetGeoTransform( transform.data() );
 
         GDALRasterBand *band;
+        const char *name;
         for (int band_id = 0; band_id < bands.size(); band_id++) {
             band = dataset->GetRasterBand(band_id+1);
             if ( band->GetRasterDataType() != GDT_Float32 )
                 std::cerr<<"[warn] only support Float32 bands"<<std::endl;
             band->RasterIO( GF_Read, 0, 0, width, height,
                 bands[band_id].data(), width, height, GDT_Float32, 0, 0 );
-            const char *name = band->GetMetadataItem("NAME");
+            name = band->GetMetadataItem("NAME");
             if (name != NULL)
                 bands_name[band_id] = name;
         }
@@ -262,6 +265,7 @@ inline bool operator==( const gdal& lhs, const gdal& rhs ) {
         and lhs.get_scale_y() == rhs.get_scale_y()
         and lhs.get_utm_pose_x() == rhs.get_utm_pose_x()
         and lhs.get_utm_pose_y() == rhs.get_utm_pose_y()
+        and lhs.bands_name == rhs.bands_name
         and lhs.bands == rhs.bands );
 }
 inline std::string to_string(const gdal& value) {
