@@ -13,14 +13,13 @@
 #include <string>
 #include <vector>
 #include <array>
+#include <sstream>
 #include <iostream>         // cout,cerr,endl
 #include <stdexcept>        // for runtime_error
 #include <gdal_priv.h>      // for GDALDataset
 #include <ogr_spatialref.h> // for OGRSpatialReference
 
 namespace gladys {
-
-typedef std::vector<float> raster;
 
 /*
  * gdal : GDALDataset wraper
@@ -40,8 +39,11 @@ class gdal {
     }
 
 public:
+    typedef std::vector<float>  raster;
     typedef std::vector<raster> rasters;
     rasters bands;
+    // metadata (bands name)
+    std::vector<std::string> bands_name;
 
     gdal() {
         _init();
@@ -132,6 +134,7 @@ public:
         width = x;
         height = y;
         bands.resize( n );
+        bands_name.resize( n );
         size_t size = x * y;
         for (auto& band: bands)
             band.resize( size );
@@ -195,6 +198,7 @@ public:
             band = dataset->GetRasterBand(band_id+1);
             band->RasterIO( GF_Write, 0, 0, width, height,
                 (void *) bands[band_id].data(), width, height, GDT_Float32, 0, 0 );
+            band->SetMetadataItem("NAME", bands_name[band_id].c_str());
         }
 
         // close properly the dataset
@@ -238,6 +242,9 @@ public:
                 std::cerr<<"[warn] only support Float32 bands"<<std::endl;
             band->RasterIO( GF_Read, 0, 0, width, height,
                 bands[band_id].data(), width, height, GDT_Float32, 0, 0 );
+            const char *name = band->GetMetadataItem("NAME");
+            if (name != NULL)
+                bands_name[band_id] = name;
         }
 
         // close properly the dataset

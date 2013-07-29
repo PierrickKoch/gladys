@@ -17,10 +17,10 @@ namespace gladys {
 void weight_map::_load() {
     assert(terrains.bands.size() == N_RASTER);
     map.copy_meta(terrains, 1);
-    raster& weights = map.bands[0];
+    gdal::raster& weights = map.bands[0];
     size_t width = map.get_width();
 
-    raster data( terrains.bands.size() );
+    gdal::raster data( terrains.bands.size() );
     for (size_t pos = 0; pos < width * map.get_height(); pos++) {
         for (size_t band_id = 0; band_id < data.size(); band_id++)
             data[band_id] = terrains.bands[band_id][pos];

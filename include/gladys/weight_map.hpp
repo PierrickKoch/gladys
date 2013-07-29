@@ -63,14 +63,14 @@ public:
      * @returns weight in [1.0, 2.0] or W_OBSTACLE if obstacle
      *
      */
-    float compute_weight(const raster& data) {
+    float compute_weight(const gdal::raster& data) {
         if (data[OBSTACLE] > 0.4) // TODO tune this threshold
             return W_OBSTACLE;
         else // compute a mix of ponderated classes TODO
             return 1 + (data[FLAT] * 0.1 + data[ROUGH] * 0.3 + data[SLOPE] * 0.6 );
     }
 
-    raster get_map() {
+    gdal::raster get_map() {
         return map.bands[0];
     }
 
