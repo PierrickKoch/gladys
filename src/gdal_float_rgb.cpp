@@ -202,7 +202,7 @@ void gdal_float_to_rgb(const std::string& file_in, const std::string& file_out, 
     gladys::gdal in(file_in);
     if (band_id < 0) {
         for (band_id = 0; band_id < in.bands.size(); band_id++) {
-            std::string filename = file_out + std::to_string(band_id) + ".png";
+            std::string filename = file_out + "." + in.bands_name[band_id] + ".png";
             gdal_img_float_to_rgb(in, filename, band_id);
         }
     } else {
