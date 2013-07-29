@@ -13,6 +13,9 @@ find_package(GDAL REQUIRED)
 set(BOOST_MIN_VERSION "1.46.0") # 1.47 for Boost.Geometry (Ubuntu > 12.04)
 find_package(Boost ${BOOST_MIN_VERSION} COMPONENTS graph unit_test_framework REQUIRED)
 
+# Find libpng (optional)
+find_package(PNG)
+
 include_directories(include)
 include_directories(${GDAL_INCLUDE_DIR})
 include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
