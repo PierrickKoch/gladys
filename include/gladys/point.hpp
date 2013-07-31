@@ -14,6 +14,7 @@
 #include <array>
 #include <vector>
 #include <ostream>
+#include <functional>
 
 namespace gladys {
 
@@ -21,6 +22,8 @@ typedef std::array<double, 2> point_xy_t;  // XY
 typedef std::array<double, 3> point_xyz_t; // XYZ
 typedef std::vector<point_xy_t> points_t; // list of points
 typedef std::deque<point_xy_t> path_t; // path = deque for push_front
+
+typedef std::function<void(const point_xy_t&, int)> display_hook_t;
 
 inline std::string to_string(const point_xy_t& value ) {
     return "[" + std::to_string(value[0]) + "," +

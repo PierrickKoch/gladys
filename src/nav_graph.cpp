@@ -55,6 +55,8 @@ void nav_graph::_load() {
 path_t nav_graph::astar_search(const point_xy_t& start, const point_xy_t& goal) {
     vertex_t goal_v = get_closest_vertex(goal);
     astar_goal_visitor vis(goal_v);
+    if (display_hook)
+        vis.set_callback(display_hook);
     path_t shortest_path;
     nav_goal_heuristic heuristic(g, goal_v);
     std::vector<vertex_t> predecessors(num_vertices(g));
@@ -88,6 +90,8 @@ path_cost_util_t nav_graph::astar_search(const points_t& start, const points_t& 
         goal_v.push_back( get_closest_vertex( p ) );
 
     astar_goals_visitor vis(goal_v);
+    if (display_hook)
+        vis.set_callback(display_hook);
 
     path_t shortest_path;
     nav_goals_heuristic heuristic(g, goal_v);

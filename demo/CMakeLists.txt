@@ -1,0 +1,8 @@
+if (QT4_INSTALLED)
+    #qt4_wrap_cpp(gladys_demo_MOC ../include/gladys/image_viewer.hpp)
+    #add_executable( gladys_demo gladys_demo.cpp ${gladys_demo_MOC} )
+    add_executable( gladys_demo gladys_demo.cpp )
+    target_link_libraries(gladys_demo ${QT_LIBRARIES})
+    target_link_libraries( gladys_demo gladys )
+    install(TARGETS gladys_demo DESTINATION ${CMAKE_INSTALL_BINDIR})
+endif(QT4_INSTALLED)

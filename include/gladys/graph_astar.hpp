@@ -15,6 +15,7 @@
 #include <deque>
 #include <vector>
 #include <algorithm>
+#include <functional>
 
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/astar_search.hpp>
@@ -45,9 +46,12 @@ struct found_goal {
 // visitor that terminates when we find the goal
 class astar_goal_visitor : public boost::default_astar_visitor {
     vertex_t goal;
+    display_hook_t callback;
 public:
     astar_goal_visitor(vertex_t _goal) : goal(_goal) {}
-
+    void set_callback(display_hook_t cb) {
+        callback = cb;
+    }
     /** examine_vertex is invoked when a vertex is popped from the queue
      * (i.e., it has the lowest cost on the OPEN list).
      */
@@ -55,13 +59,26 @@ public:
         // search if the current vertex is in the list of goal
         if (u == goal)
             throw found_goal(u);
+        if (callback) {
+            callback(boost::get(boost::vertex_name, g)[u], 2);
+        }
+    }
+    /** discover_vertex is invoked when a vertex is first discovered and is added to the OPEN list */
+    void discover_vertex(vertex_t u, const graph_t& g) {
+        if (callback) {
+            callback(boost::get(boost::vertex_name, g)[u], 1);
+        }
     }
 };
 
 class astar_goals_visitor : public boost::default_astar_visitor {
     vertices_t goals;
+    display_hook_t callback;
 public:
-    astar_goals_visitor(vertices_t _goals) : goals(_goals) {}
+    astar_goals_visitor(vertices_t _goals) : goals(_goals), callback(NULL) {}
+    void set_callback(display_hook_t cb) {
+        callback = cb;
+    }
 
     /** examine_vertex is invoked when a vertex is popped from the queue
      * (i.e., it has the lowest cost on the OPEN list).
@@ -71,6 +88,15 @@ public:
         for (auto& v : goals)
             if (u == v)
                 throw found_goal(u);
+        if (callback) {
+            callback(boost::get(boost::vertex_name, g)[u], 2);
+        }
+    }
+    /** discover_vertex is invoked when a vertex is first discovered and is added to the OPEN list */
+    void discover_vertex(vertex_t u, const graph_t& g) {
+        if (callback) {
+            callback(boost::get(boost::vertex_name, g)[u], 1);
+        }
     }
 };
 

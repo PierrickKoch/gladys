@@ -24,6 +24,13 @@ include_directories(${GDAL_INCLUDE_DIR})
 include_directories(${Boost_INCLUDE_DIRS})
 include_directories(${PYTHON_INCLUDE_DIRS})
 
+find_package(Qt) # Optional for GUI tools
+if (QT4_INSTALLED)
+    include(${QT_USE_FILE})
+    include_directories(${QT_INCLUDE_DIR})
+    link_directories(${QT_LIBRARY_DIR})
+endif(QT4_INSTALLED)
+
 # Filesystem Hierarchy Standard
 include(GNUInstallDirs)
 
@@ -33,6 +40,10 @@ include(InstallPkgConfigFile)
 
 # Library and binary
 add_subdirectory(src)
+##
+
+# Demo
+add_subdirectory(demo)
 ##
 
 # Testing

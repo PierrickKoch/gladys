@@ -101,6 +101,10 @@ public:
     void save(const std::string filepath) {
         map.save(filepath);
     }
+
+    const gdal& get_gdal_map() {
+        return map;
+    }
 };
 
 } // namespace gladys

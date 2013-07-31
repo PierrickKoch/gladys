@@ -31,6 +31,7 @@ class nav_graph {
     weight_map map;
     graph_t g;
     vertex_map_t vertices;
+    display_hook_t display_hook;
 public:
     nav_graph() {}
     /** nav_graph constructor
@@ -111,6 +112,13 @@ public:
 
     void save(const std::string& filepath) {
         map.save(filepath);
+    }
+
+    const gdal& get_map() {
+        return map.get_gdal_map();
+    }
+    void set_display_hook(display_hook_t dh) {
+        display_hook = dh;
     }
 };
 
