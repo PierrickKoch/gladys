@@ -170,7 +170,7 @@ public:
      *
      * @param filepath path to .tif file.
      */
-    int save(const std::string& filepath) const {
+    void save(const std::string& filepath) const {
         // get the GDAL GeoTIFF driver
         GDALDriver *driver = GetGDALDriverManager()->GetDriverByName("GTiff");
         if ( driver == NULL )
@@ -205,14 +205,13 @@ public:
 
         // close properly the dataset
         GDALClose( (GDALDatasetH) dataset );
-        return EXIT_SUCCESS;
     }
 
     /** Load a GeoTiff
      *
      * @param filepath path to .tif file.
      */
-    int load(const std::string& filepath) {
+    void load(const std::string& filepath) {
         // Open a raster file as a GDALDataset.
         GDALDataset *dataset = (GDALDataset *) GDALOpen( filepath.c_str(), GA_ReadOnly );
         if ( dataset == NULL )
@@ -252,7 +251,6 @@ public:
 
         // close properly the dataset
         GDALClose( (GDALDatasetH) dataset );
-        return EXIT_SUCCESS;
     }
 };
 

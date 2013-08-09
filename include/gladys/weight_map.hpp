@@ -98,8 +98,8 @@ public:
         return map.get_utm_pose_y();
     }
 
-    int save(const std::string filepath) {
-        return map.save(filepath);
+    void save(const std::string filepath) {
+        map.save(filepath);
     }
 };
 
