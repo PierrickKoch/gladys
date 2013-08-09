@@ -11,15 +11,18 @@ find_package(GDAL REQUIRED)
 
 # Find Boost ( export BOOST_ROOT=$prefix )
 set(BOOST_MIN_VERSION "1.46.0") # 1.47 for Boost.Geometry (Ubuntu > 12.04)
-find_package(Boost ${BOOST_MIN_VERSION} COMPONENTS graph unit_test_framework REQUIRED)
+find_package(Boost ${BOOST_MIN_VERSION} COMPONENTS graph unit_test_framework python REQUIRED)
 
 # Find libpng (optional)
 find_package(PNG)
 
+# Find Python
+find_package(PythonLibs REQUIRED)
+
 include_directories(include)
 include_directories(${GDAL_INCLUDE_DIR})
-include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
-link_directories(${Boost_LIBRARY_DIRS})
+include_directories(${Boost_INCLUDE_DIRS})
+include_directories(${PYTHON_INCLUDE_DIRS})
 
 # Filesystem Hierarchy Standard
 include(GNUInstallDirs)
