@@ -86,6 +86,9 @@ public:
         return closest_v;
     }
 
+    path_t astar_search_mono(const point_xy_t& start, const point_xy_t& goal) {
+        return astar_search(start, goal);
+    }
     path_t astar_search(const point_xy_t& start, const point_xy_t& goal);
     path_cost_util_t astar_search(const points_t& start, const points_t& goal);
 
