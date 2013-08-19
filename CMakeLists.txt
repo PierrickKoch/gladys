@@ -17,11 +17,12 @@ find_package(Boost ${BOOST_MIN_VERSION} COMPONENTS graph unit_test_framework pyt
 # Find libpng (optional)
 find_package(PNG)
 
-# Find Python
-find_package(PythonLibs REQUIRED)
+# Find Python (optional)
+find_package(PythonLibs)
+find_package(PythonInterp)
 
 include_directories(include)
-include_directories(${GDAL_INCLUDE_DIR})
+include_directories(${GDAL_INCLUDE_DIRS})
 include_directories(${Boost_INCLUDE_DIRS})
 include_directories(${PYTHON_INCLUDE_DIRS})
 
@@ -33,14 +34,16 @@ include(InstallPkgConfigFile)
 
 # Library and binary
 add_subdirectory(src)
-##
+
+# Python bindings
+if (PYTHONINTERP_FOUND AND PYTHONLIBS_FOUND)
+    add_subdirectory(python)
+endif(PYTHONINTERP_FOUND AND PYTHONLIBS_FOUND)
 
 # Testing
 include( CTest )
 add_subdirectory(test)
-##
 
 # Install headers
 file(GLOB gladys_HDRS "include/gladys/*.hpp")
 install(FILES ${gladys_HDRS} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/gladys)
-##
