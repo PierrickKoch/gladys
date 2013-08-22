@@ -27,6 +27,7 @@ void weight_map::_load() {
         weights[pos] = compute_weight(data);
     }
 
+#if 0
     // inflate obstacle by robot radius relative to map scale {x,y}
 
     // averaged up raduis {x,y}
@@ -49,11 +50,12 @@ void weight_map::_load() {
             }
         }
     }
+    // see http://www.ros.org/wiki/costmap_2d#Inflation
     for (auto& weight : weights)
-        if (is_flaged_obstacle(weight))
-            weight = W_OBSTACLE;
+        if (is_flag_obstacle(weight))
+            weight = 99;
+#endif
 
-    // TODO reduce scale to rmdl.get_radius() boost/gil/extension/numeric/resample.hpp
 }
 
 } // namespace gladys
