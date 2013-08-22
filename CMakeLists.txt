@@ -5,6 +5,7 @@ set(PACKAGE_VERSION "0.1")
 
 # C++11 for GCC 4.6
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMakeModules")
 
 # Find GDAL ( export GDAL_ROOT=$prefix )
 find_package(GDAL REQUIRED)
@@ -28,7 +29,6 @@ include_directories(${PYTHON_INCLUDE_DIRS})
 include(GNUInstallDirs)
 
 # Load the 'install_pkg_config_file' macro
-set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMakeModules")
 include(InstallPkgConfigFile)
 
 # Library and binary
