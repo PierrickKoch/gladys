@@ -50,8 +50,8 @@ void weight_map::_load() {
         }
     }
     for (auto& weight : weights)
-        if (is_flaged_obstacle(weight))
-            weight = W_OBSTACLE;
+        if (is_flag_obstacle(weight))
+            weight = 99;
 
     // TODO reduce scale to rmdl.get_radius() boost/gil/extension/numeric/resample.hpp
 }

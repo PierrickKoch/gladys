@@ -50,7 +50,7 @@ public:
         if (!is_obstacle(weight))
             weight = W_FLAG_OBSTACLE;
     }
-    bool is_flaged_obstacle(float weight) const {
+    bool is_flag_obstacle(float weight) const {
         return weight == W_FLAG_OBSTACLE;
     }
     bool is_obstacle(float weight) const {
