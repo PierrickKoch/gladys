@@ -41,6 +41,7 @@
 #include "gdal.h"
 
 # EDIT 2013-08-22 use `gdal-config --cflags` to get GDAL_INCLUDE_DIR
+message("Using custom FindGDAL CMakeModule")
 
 IF(UNIX)
     # Use gdal-config to obtain the library version (this should hopefully
