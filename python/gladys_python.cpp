@@ -7,11 +7,8 @@
  * created: 2013-08-09
  * license: BSD
  */
-#include <boost/python.hpp>
-#include <boost/python/stl_iterator.hpp>
-#include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 #include <string>
-#include <vector>
+#include <boost/python.hpp>
 
 #include "gladys/gdal.hpp"
 #include "gladys/nav_graph.hpp"
@@ -46,15 +43,7 @@ BOOST_PYTHON_MODULE(libgladys_python)
     bpy::class_<gladys::nav_graph>("nav_graph", bpy::init<std::string, std::string>())
         // nav_graph::save
         .def("save", &gladys::nav_graph::save)
+        // nav_graph::astar_search
         .def("search", &py_search)
         ;
 }
-
-/*
-import gladys
-f_robot  = '/home/pkoch/sandbox/gladys/tmp/robot.json'
-f_region = '/home/pkoch/sandbox/gladys/tmp/maze.region.200.tif'
-g = gladys.nav_graph(f_region, f_robot)
-g.save('test.tif')
-g.search((1.,2.),(3.,4.))
-*/
