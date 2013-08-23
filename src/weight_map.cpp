@@ -8,6 +8,8 @@
  * license: BSD
  */
 #include <cmath>
+#include <fstream>
+#include <stdexcept>        // for runtime_error
 
 #include "gladys/gdal.hpp"
 #include "gladys/weight_map.hpp"
@@ -49,11 +51,27 @@ void weight_map::_load() {
             }
         }
     }
+    // see http://www.ros.org/wiki/costmap_2d#Inflation
     for (auto& weight : weights)
         if (is_flag_obstacle(weight))
             weight = 99;
+}
 
-    // TODO reduce scale to rmdl.get_radius() boost/gil/extension/numeric/resample.hpp
+void weight_map::save_pgm(const std::string& filepath) {
+    const gdal::raster& weights = map.bands[0];
+    std::ofstream file(filepath);
+    if (!file.is_open())
+        throw std::runtime_error("[weight_map::save_pgm] could not open filepath");
+
+    file<<"P2\n"<<map.get_width()<<'\n'<<map.get_height()<<'\n'<<0xff<<'\n';
+    for (size_t px_x = 0; px_x < map.get_width(); px_x++) {
+        for (size_t px_y = 0; px_y < map.get_height(); px_y++) {
+            unsigned char cost = (unsigned char)weights[px_x + px_y * map.get_width()];
+            file<<cost<<' ';
+        }
+        file<<'\n';
+    }
+    file.close();
 }
 
 } // namespace gladys

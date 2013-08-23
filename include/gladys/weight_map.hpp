@@ -25,7 +25,7 @@ class weight_map {
     gdal terrains; // probalistic models (multi-layers GeoTiff)
     gdal map; // weight map (after inflating robot size)
     robot_model rmdl;
-    enum {W_FLAG_OBSTACLE=-3, W_UNKNOWN=-2, W_OBSTACLE=-1};
+    enum {W_FLAG_OBSTACLE=-2, W_UNKNOWN=-1, W_OBSTACLE=100};
 public:
     /* Names of the visual terrain classes */
     enum {NO_3D_CLASS, FLAT, OBSTACLE, ROUGH, SLOPE, N_RASTER};
@@ -54,20 +54,22 @@ public:
         return weight == W_FLAG_OBSTACLE;
     }
     bool is_obstacle(float weight) const {
-        return weight == W_OBSTACLE;
+        return weight == 100;
     }
 
     /** compute a mix of ponderated classes
      *
      * w/ threshold on obstacle
-     * @returns weight in [1.0, 2.0] or W_OBSTACLE if obstacle
+     * @returns weight in [0, 100] or -1 if unknown
      *
      */
     float compute_weight(const gdal::raster& data) {
+        if (data[NO_3D_CLASS] > 0.9)
+            return W_UNKNOWN; // UNKNOWN
         if (data[OBSTACLE] > 0.4) // TODO tune this threshold
-            return W_OBSTACLE;
+            return W_OBSTACLE; // OBSTACLE
         else // compute a mix of ponderated classes TODO
-            return 1 + (data[FLAT] * 0.1 + data[ROUGH] * 0.3 + data[SLOPE] * 0.6 );
+            return 1 + 98 * (data[FLAT] * 0.1 + data[ROUGH] * 0.3 + data[SLOPE] * 0.6 );
     }
 
     gdal::raster get_map() {
@@ -98,9 +100,11 @@ public:
         return map.get_utm_pose_y();
     }
 
-    void save(const std::string filepath) {
+    void save(const std::string& filepath) {
         map.save(filepath);
     }
+
+    void save_pgm(const std::string& filepath);
 };
 
 } // namespace gladys

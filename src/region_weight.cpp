@@ -20,5 +20,6 @@ int main(int argc, char * argv[])
     }
     gladys::nav_graph ng(argv[1], argv[2]);
     ng.save(argv[3]);
+    ng.save_pgm(std::string(argv[3])+".pgm");
     return EXIT_SUCCESS;
 }

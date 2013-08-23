@@ -112,6 +112,9 @@ public:
     void save(const std::string& filepath) {
         map.save(filepath);
     }
+    void save_pgm(const std::string& filepath) {
+        map.save_pgm(filepath);
+    }
 };
 
 inline std::ostream& operator<<(std::ostream& os, const nav_graph& ng) {
