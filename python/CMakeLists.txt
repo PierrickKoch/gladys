@@ -1,9 +1,10 @@
 set(PYTHON_SITE_PACKAGES "" CACHE PATH "Python site-packages")
 if (NOT PYTHON_SITE_PACKAGES)
-    execute_process(COMMAND "${PYTHON_EXECUTABLE}" -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())"
+    execute_process(COMMAND "${PYTHON_EXECUTABLE}" -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1,0,''))"
         OUTPUT_VARIABLE
         PYTHON_SITE_PACKAGES
         OUTPUT_STRIP_TRAILING_WHITESPACE)
+    set(PYTHON_SITE_PACKAGES ${CMAKE_INSTALL_PREFIX}/${PYTHON_SITE_PACKAGES})
 endif(NOT PYTHON_SITE_PACKAGES)
 
 add_library( gladys_python SHARED gladys_python.cpp )
