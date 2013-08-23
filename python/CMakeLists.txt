@@ -1,4 +1,4 @@
-option(PYTHON_SITE_PACKAGES "Python site-packages")
+set(PYTHON_SITE_PACKAGES "" CACHE PATH "Python site-packages")
 if (NOT PYTHON_SITE_PACKAGES)
     execute_process(COMMAND "${PYTHON_EXECUTABLE}" -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())"
         OUTPUT_VARIABLE
