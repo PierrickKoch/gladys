@@ -10,6 +10,7 @@
 #ifndef WEIGHT_MAP_HPP
 #define WEIGHT_MAP_HPP
 
+#include <cmath>    // for HUGE_VALF
 #include <string>
 
 #include "gladys/gdal.hpp"
@@ -25,7 +26,7 @@ class weight_map {
     gdal terrains; // probalistic models (multi-layers GeoTiff)
     gdal map; // weight map (after inflating robot size)
     robot_model rmdl;
-    enum {W_FLAG_OBSTACLE=-2, W_UNKNOWN=-1, W_OBSTACLE=100};
+    enum {W_FLAG_OBSTACLE=-2, W_UNKNOWN=-1};
 public:
     /* Names of the visual terrain classes */
     enum {NO_3D_CLASS, FLAT, OBSTACLE, ROUGH, SLOPE, N_RASTER};
@@ -54,7 +55,7 @@ public:
         return weight == W_FLAG_OBSTACLE;
     }
     bool is_obstacle(float weight) const {
-        return weight == W_OBSTACLE;
+        return weight == HUGE_VALF;
     }
 
     /** compute a mix of ponderated classes
@@ -67,8 +68,8 @@ public:
         if (data[NO_3D_CLASS] > 0.9)
             return W_UNKNOWN; // UNKNOWN
         if (data[OBSTACLE] > 0.4) // TODO tune this threshold
-            return W_OBSTACLE; // OBSTACLE
-        else // compute a mix of ponderated classes TODO
+            return HUGE_VALF; // OBSTACLE
+        else // compute a mix of ponderated classes TODO dynamicaly json conf
             return 1 + 98 * (data[FLAT] * 0.1 + data[ROUGH] * 0.3 + data[SLOPE] * 0.6 );
     }
 
