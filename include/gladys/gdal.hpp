@@ -166,6 +166,28 @@ public:
         return transform[3]; // upper left pixel position y
     }
 
+    /** Get a band ID by its name (metadata)
+     *
+     * @param name Name of the band ID to get.
+     * @throws std::out_of_range if name not found.
+     */
+    size_t get_band_id(const std::string& name) const {
+        for (size_t idx = 0; idx < bands_name.size(); idx++)
+            if (bands_name[idx] == name)
+                return idx;
+
+        throw std::out_of_range("[gdal] band name not found: " + name);
+    }
+
+    /** Get a band by its name (metadata)
+     *
+     * @param name Name of the band to get.
+     * @throws std::out_of_range if name not found.
+     */
+    raster& get_band(const std::string& name) {
+        return bands[ get_band_id(name) ];
+    }
+
     /** Save as GeoTiff
      *
      * @param filepath path to .tif file.
