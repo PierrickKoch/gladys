@@ -167,7 +167,10 @@ int save_img(const std::string& filename, const png_rows_t& img, size_t width, s
 }
 
 void gdal_img_float_to_rgb(const gladys::gdal& in, const std::string& file_out, int band_id) {
-    const auto& band = in.bands[band_id];
+    auto band = gladys::gdal::raster(in.bands[band_id]); // copy
+    for (float& px : band)
+        if (px == HUGE_VALF)
+            px = 200;
     size_t width  = in.get_width();
     size_t height = in.get_height();
     size_t px_x, px_y;
