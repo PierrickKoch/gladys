@@ -73,8 +73,14 @@ public:
             return 1 + 98 * (data[FLAT] * 0.1 + data[ROUGH] * 0.3 + data[SLOPE] * 0.6 );
     }
 
-    gdal::raster get_map() {
+    gdal::raster get_weight_band() {
         return map.bands[0];
+    }
+    gdal get_map() {
+        return map;
+    }
+    gdal get_region() {
+        return terrains;
     }
 
     size_t get_width() {

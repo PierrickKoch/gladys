@@ -23,7 +23,7 @@ void nav_graph::_load() {
     vertex_t vert_w, vert_n, vert_e, vert_s;
     double scale_x = map.get_scale_x(), scale_y = map.get_scale_y();
     float weight;
-    gdal::raster weight_map = map.get_map();
+    gdal::raster weight_map = map.get_weight_band();
     // most of the time this is equal to str(2)/2
     float hypotenuse = 0.5 * std::sqrt( scale_x*scale_x + scale_y*scale_y );
 
