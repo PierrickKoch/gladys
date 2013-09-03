@@ -64,6 +64,8 @@ BOOST_AUTO_TEST_CASE( test_raster_to_graph )
     gdal region;
     region.set_size(weight_map::N_RASTER, 9, 9);
     // add an obstacle at the center of the map
+    region.bands[weight_map::FLAT    ].assign(9*9, 1);
+    region.bands[weight_map::FLAT    ][4+4*9] = 0.5;
     region.bands[weight_map::OBSTACLE][4+4*9] = 0.5;
     region.save(region_path);
 
@@ -75,7 +77,7 @@ BOOST_AUTO_TEST_CASE( test_raster_to_graph )
     ng.save(weight_path);
 
     BOOST_TEST_MESSAGE( "oss_graphviz.size() = " << oss_graphviz.str().size() );
-    BOOST_CHECK_EQUAL( oss_graphviz.str().size() , 10735 );
+    BOOST_CHECK_EQUAL( oss_graphviz.str().size() , 10792 );
 
     point_xy_t p1 = {1, 1};
     point_xy_t p2 = {9, 9};

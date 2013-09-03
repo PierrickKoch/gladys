@@ -32,8 +32,8 @@ void nav_graph::_load() {
 
         weight = weight_map[px_x + px_y * width];
 
-        if (map.is_obstacle(weight))
-            continue; // do not create edge if obstacle
+        if (weight <= 1)
+            continue; // do not create edge if unknown
 
         vert_w = get_vertex(scale_x * (px_x - 0.5), scale_y * (px_y      ));
         vert_n = get_vertex(scale_x * (px_x      ), scale_y * (px_y - 0.5));
