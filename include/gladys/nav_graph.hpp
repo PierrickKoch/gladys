@@ -62,9 +62,17 @@ public:
         if (it != vertices.end())
             return it->second;
         // else create new vertex setting p as property
+        return new_vertex(p);
+    }
+
+    vertex_t new_vertex(const point_xy_t& p) {
         vertex_t v = boost::add_vertex(p, g);
         vertices[p] = v;
         return v;
+    }
+    vertex_t new_vertex(const double& x, const double &y) {
+        point_xy_t p = {x, y};
+        return new_vertex(p);
     }
 
     vertex_t get_closest_vertex(const point_xy_t& p) {

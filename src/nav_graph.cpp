@@ -27,18 +27,23 @@ void nav_graph::_load() {
     // most of the time this is equal to str(2)/2
     float hypotenuse = 0.5 * std::sqrt( scale_x*scale_x + scale_y*scale_y );
 
-    for (px_x = 0; px_x < map.get_width(); px_x++)
-    for (px_y = 0; px_y < map.get_height(); px_y++) {
+    for (px_x = 0; px_x < map.get_width(); px_x++) {
+        //vert_e = new_vertex(scale_x * (px_x - 0.5), 0); // optimize vert_w
+        for (px_y = 0; px_y < map.get_height(); px_y++) {
 
         weight = weight_map[px_x + px_y * width];
 
         if (weight <= 1)
             continue; // do not create edge if unknown
 
+        // previous east becomes west
+        //vert_w = vert_e; // optimize vert_w
         vert_w = get_vertex(scale_x * (px_x - 0.5), scale_y * (px_y      ));
+        // TODO optimize vert_n
         vert_n = get_vertex(scale_x * (px_x      ), scale_y * (px_y - 0.5));
-        vert_e = get_vertex(scale_x * (px_x + 0.5), scale_y * (px_y      ));
-        vert_s = get_vertex(scale_x * (px_x      ), scale_y * (px_y + 0.5));
+        // new vertex
+        vert_e = new_vertex(scale_x * (px_x + 0.5), scale_y * (px_y      ));
+        vert_s = new_vertex(scale_x * (px_x      ), scale_y * (px_y + 0.5));
 
         // create edges and set weight
         // length = .5 * math.sqrt( scale_x**2 + scale_y**2 )
@@ -49,6 +54,7 @@ void nav_graph::_load() {
         // also add straight connexions
         boost::add_edge(vert_n, vert_s, scale_y * weight, g); // length = scale_y
         boost::add_edge(vert_w, vert_e, scale_x * weight, g); // length = scale_x
+    }
     }
 }
 
