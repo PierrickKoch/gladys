@@ -12,6 +12,13 @@
 
 #include <string>
 
+#include <boost/version.hpp>
+// json_parser bug #6785 in boost 1.49
+// https://svn.boost.org/trac/boost/ticket/6785
+#if ((BOOST_VERSION % 100) == 1) && ((BOOST_VERSION / 100 % 1000) == 49)
+#error Boost 1.49 json_parser bug #6785
+#endif
+
 #include <boost/property_tree/json_parser.hpp>
 
 namespace gladys {
