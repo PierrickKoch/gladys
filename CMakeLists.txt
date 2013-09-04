@@ -24,7 +24,6 @@ find_package(PythonInterp)
 include_directories(include)
 include_directories(${GDAL_INCLUDE_DIRS})
 include_directories(${Boost_INCLUDE_DIRS})
-include_directories(${PYTHON_INCLUDE_DIRS})
 
 # Filesystem Hierarchy Standard
 include(GNUInstallDirs)
@@ -37,6 +36,7 @@ add_subdirectory(src)
 
 # Python bindings
 if (PYTHONINTERP_FOUND AND PYTHONLIBS_FOUND)
+    include_directories(${PYTHON_INCLUDE_DIRS})
     add_subdirectory(python)
 endif(PYTHONINTERP_FOUND AND PYTHONLIBS_FOUND)
 
