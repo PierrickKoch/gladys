@@ -78,8 +78,8 @@ public:
 * Navigation heuristics functions for graph visitor algorithms
 */
 class nav_goal_heuristic : public boost::astar_heuristic<graph_t, double> {
-    graph_t g;
-    vertex_t goal;
+    const graph_t& g;
+    const vertex_t& goal;
 public:
     nav_goal_heuristic(const graph_t& _g, const vertex_t& _goal)
         : g(_g), goal(_goal) {}
@@ -94,8 +94,8 @@ public:
 * Navigation heuristics functions for graph visitor algorithms
 */
 class nav_goals_heuristic : public boost::astar_heuristic<graph_t, double> {
-    graph_t g;
-    vertices_t goals;
+    const graph_t& g;
+    const vertices_t& goals;
 public:
     nav_goals_heuristic(const graph_t& _g, const vertices_t& _goals)
         : g(_g), goals(_goals) {}
