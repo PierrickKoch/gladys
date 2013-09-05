@@ -15,3 +15,4 @@ target_link_libraries( gladys_python ${GDAL_LIBRARIES} )
 
 install(TARGETS gladys_python DESTINATION ${PYTHON_SITE_PACKAGES})
 install(FILES   gladys.py     DESTINATION ${PYTHON_SITE_PACKAGES})
+install(PROGRAMS gladysplay   DESTINATION ${CMAKE_INSTALL_BINDIR})

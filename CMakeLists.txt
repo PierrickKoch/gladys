@@ -49,6 +49,8 @@ add_subdirectory(src)
 if (PYTHONINTERP_FOUND AND PYTHONLIBS_FOUND)
     include_directories(${PYTHON_INCLUDE_DIRS})
     add_subdirectory(python)
+else()
+    message("Hey! Install Python [if you wanna gladysplay]")
 endif(PYTHONINTERP_FOUND AND PYTHONLIBS_FOUND)
 
 # Testing

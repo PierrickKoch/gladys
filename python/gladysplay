@@ -50,11 +50,21 @@ class MainWindow(QtGui.QMainWindow):
         self.image_label = ImageLabel()
         self.setCentralWidget(self.image_label)
 
-        self.setWindowTitle("Gladys display")
+        self.setWindowTitle("Gladysplay")
         self.resize(200, 200)
 
         self.fregion = argv[1]
         self.frobot = argv[2]
+
+        print("===============================\n"
+              "  Welcome to Gladys display !\n"
+              "===============================\n\n"
+              "Actions\n"
+              "-------\n"
+              " - Click     = select start and end points\n"
+              " - Space     = start search path\n"
+              " - C         = clear start and end points\n"
+              " - Escape    = quit\n")
 
         # key bindings
         self._bindings = {}
@@ -62,7 +72,7 @@ class MainWindow(QtGui.QMainWindow):
         self.bind(QtCore.Qt.Key_Space,  self.start_search)
         self.bind(QtCore.Qt.Key_C,      self.clear_points)
 
-        print("Welcome to Gladys display. Loading graph...")
+        print("Loading graph...")
         # start to load the graph in 50ms
         QtCore.QTimer.singleShot(50, self.load_nav_graph)
 
