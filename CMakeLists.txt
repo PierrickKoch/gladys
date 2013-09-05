@@ -31,6 +31,17 @@ include(GNUInstallDirs)
 # Load the 'install_pkg_config_file' macro
 include(InstallPkgConfigFile)
 
+# RPath management http://www.cmake.org/Wiki/CMake_RPATH_handling
+set(CMAKE_SKIP_BUILD_RPATH  FALSE)
+set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE) 
+set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}")
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+list(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}" isSystemDir)
+if("${isSystemDir}" STREQUAL "-1")
+	set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}")
+endif("${isSystemDir}" STREQUAL "-1")
+
+
 # Library and binary
 add_subdirectory(src)
 
@@ -47,3 +58,9 @@ add_subdirectory(test)
 # Install headers
 file(GLOB gladys_HDRS "include/gladys/*.hpp")
 install(FILES ${gladys_HDRS} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/gladys)
+
+#########################################################################
+### Uninstall ###
+#########################################################################
+configure_file("${CMAKE_HOME_DIRECTORY}/CMakeModules/cmake_uninstall.cmake.in" "cmake_uninstall.cmake" IMMEDIATE @ONLY)
+add_custom_target(uninstall "${CMAKE_COMMAND}" -P "cmake_uninstall.cmake")
