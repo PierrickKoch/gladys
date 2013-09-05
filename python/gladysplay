@@ -140,9 +140,6 @@ class MainWindow(QtGui.QMainWindow):
         self.start = self.end = None
         print("clear start and end")
 
-    def close(self):
-        QtGui.QMainWindow.close(self)
-
     # PySide.QtGui.QWidget.keyPressEvent(event)
     def keyPressEvent(self, event):
         if event.key() in self._bindings:

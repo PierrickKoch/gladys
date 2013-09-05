@@ -15,6 +15,14 @@
 
 namespace bpy = boost::python;
 
+template<class T>
+bpy::list std_vector_to_py_list(const std::vector<T>& v) {
+    bpy::list retval;
+    for (const auto& elt : v)
+        retval.append(elt);
+    return retval;
+}
+
 static bpy::list py_search(gladys::nav_graph& self, bpy::tuple start, bpy::tuple goal) {
     // optionally check that start and goal have the required
     // size of 2 using bpy::len()
@@ -26,32 +34,19 @@ static bpy::list py_search(gladys::nav_graph& self, bpy::tuple start, bpy::tuple
 
     // converts the returned value into a list of 2-tuples
     bpy::list retval;
-    for (auto &i : cxx_retval) retval.append(bpy::make_tuple(i[0], i[1]));
+    for (auto &i : cxx_retval)
+        retval.append(bpy::make_tuple(i[0], i[1]));
     return retval;
 }
 
 static bpy::list py_get_band(gladys::gdal& self, const std::string& name) {
-    auto& band = self.get_band(name);
-    bpy::list retval;
-    for (auto& i : band) retval.append(i);
-    return retval;
+    return std_vector_to_py_list(self.get_band(name));
 }
 
-static bpy::list py_get_bands(gladys::gdal& self) {
-    bpy::list retval;
-    for (auto& band : self.bands) {
-        bpy::list lband;
-        for (auto& pxf : band)
-            lband.append(pxf);
-        retval.append(lband);
-    }
-    return retval;
-}
-
-static bpy::list py_get_bands_name(gladys::gdal& self) {
-    bpy::list retval;
-    for (auto& name: self.bands_name)
-        retval.append(name);
+static bpy::dict py_get_bands(gladys::gdal& self) {
+    bpy::dict retval;
+    for (size_t idx = 0; idx < self.bands.size(); idx++)
+        retval[ self.bands_name[idx] ] = std_vector_to_py_list( self.bands[idx] );
     return retval;
 }
 
@@ -73,8 +68,6 @@ BOOST_PYTHON_MODULE(libgladys_python)
         .def("get_band", &py_get_band)
         // gdal::bands
         .def("get_bands", &py_get_bands)
-        // gdal::bands_name
-        .def("get_bands_name", &py_get_bands_name)
         ;
     // nav_graph
     bpy::class_<gladys::nav_graph>("nav_graph", bpy::init<std::string, std::string>())
