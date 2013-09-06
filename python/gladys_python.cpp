@@ -50,6 +50,18 @@ static bpy::dict py_get_bands(gladys::gdal& self) {
     return retval;
 }
 
+static gladys::weight_map py_nav_graph_get_map(gladys::nav_graph& self) {
+    return self.get_map(); // cannot use reference with boost::python
+}
+
+static gladys::gdal py_weight_map_get_map(gladys::weight_map& self) {
+    return self.get_map(); // cannot use reference with boost::python
+}
+
+static gladys::gdal py_weight_map_get_region(gladys::weight_map& self) {
+    return self.get_region(); // cannot use reference with boost::python
+}
+
 // Python requires an exported function called init<module-name> in every
 // extension module. This is where we build the module contents.
 BOOST_PYTHON_MODULE(libgladys_python)
@@ -71,14 +83,14 @@ BOOST_PYTHON_MODULE(libgladys_python)
         ;
     // nav_graph
     bpy::class_<gladys::nav_graph>("nav_graph", bpy::init<std::string, std::string>())
-        .def("get_map", &gladys::nav_graph::get_map)
+        .def("get_map", &py_nav_graph_get_map)
         .def("save", &gladys::nav_graph::save)
         // nav_graph::astar_search
         .def("search", &py_search)
         ;
     // weight_map
     bpy::class_<gladys::weight_map>("weight_map", bpy::init<>())
-        .def("get_map", &gladys::weight_map::get_map)
-        .def("get_region", &gladys::weight_map::get_region)
+        .def("get_map", &py_weight_map_get_map)
+        .def("get_region", &py_weight_map_get_region)
         ;
 }
