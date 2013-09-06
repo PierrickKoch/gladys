@@ -73,37 +73,37 @@ public:
             return 1 + 98 * (data[FLAT] * 0.1 + data[ROUGH] * 0.3 + data[SLOPE] * 0.6 );
     }
 
-    gdal::raster get_weight_band() {
+    gdal::raster get_weight_band() const {
         return map.bands[0];
     }
-    gdal get_map() {
+    gdal get_map() const {
         return map;
     }
-    gdal get_region() {
+    gdal get_region() const {
         return terrains;
     }
 
-    size_t get_width() {
+    size_t get_width() const {
         return map.get_width();
     }
 
-    size_t get_height() {
+    size_t get_height() const {
         return map.get_height();
     }
 
-    double get_scale_x() {
+    double get_scale_x() const {
         return map.get_scale_x();
     }
 
-    double get_scale_y() {
+    double get_scale_y() const {
         return map.get_scale_y();
     }
 
-    double get_utm_pose_x() {
+    double get_utm_pose_x() const {
         return map.get_utm_pose_x();
     }
 
-    double get_utm_pose_y() {
+    double get_utm_pose_y() const {
         return map.get_utm_pose_y();
     }
 
