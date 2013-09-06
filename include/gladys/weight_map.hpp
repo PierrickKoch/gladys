@@ -26,9 +26,9 @@ class weight_map {
     gdal terrains; // probalistic models (multi-layers GeoTiff)
     gdal map; // weight map (after inflating robot size)
     robot_model rmdl;
-    enum {W_FLAG_OBSTACLE=-2, W_UNKNOWN=-1};
 public:
     /* Names of the visual terrain classes */
+    enum {W_FLAG_OBSTACLE=-2, W_UNKNOWN=-1};
     enum {NO_3D_CLASS, FLAT, OBSTACLE, ROUGH, SLOPE, N_RASTER};
 
     /** load region and robot model
