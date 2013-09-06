@@ -73,22 +73,13 @@ public:
             return 1 + 98 * (data[FLAT] * 0.1 + data[ROUGH] * 0.3 + data[SLOPE] * 0.6 );
     }
 
-    gdal::raster get_weight_band() const {
+    const gdal::raster& get_weight_band() const {
         return map.bands[0];
     }
-    const gdal::raster& get_weight_band_pt() const {
-        return map.bands[0];
-    }
-    gdal get_map() const {
+    const gdal& get_map() const {
         return map;
     }
-    const gdal& get_map_pt() const {
-        return map;
-    }
-    gdal get_region() const {
-        return terrains;
-    }
-    const gdal& get_region_pt() const {
+    const gdal& get_region() const {
         return terrains;
     }
 

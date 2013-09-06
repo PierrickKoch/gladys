@@ -121,7 +121,7 @@ public:
     void save(const std::string& filepath) {
         map.save(filepath);
     }
-    const weight_map get_map() const {
+    const weight_map& get_map() const {
         return map;
     }
 
