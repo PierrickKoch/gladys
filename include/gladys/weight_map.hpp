@@ -76,11 +76,20 @@ public:
     gdal::raster get_weight_band() const {
         return map.bands[0];
     }
+    const gdal::raster* get_weight_band_pt() const {
+        return &map.bands[0];
+    }
     gdal get_map() const {
         return map;
     }
+    const gdal* get_map_pt() const {
+        return &map;
+    }
     gdal get_region() const {
         return terrains;
+    }
+    const gdal* get_region_pt() const {
+        return &terrains;
     }
 
     size_t get_width() const {
