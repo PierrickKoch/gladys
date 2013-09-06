@@ -13,6 +13,7 @@
 #include <cmath>
 #include <array>
 #include <vector>
+#include <deque>
 #include <ostream>
 
 namespace gladys {

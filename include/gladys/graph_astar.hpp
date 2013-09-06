@@ -12,7 +12,6 @@
 
 #include <cmath>
 #include <array>
-#include <deque>
 #include <vector>
 #include <algorithm>
 
