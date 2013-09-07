@@ -124,8 +124,8 @@ public:
         return map;
     }
 
-   const weight_map* get_map_pt() const {
-        return &map;
+   const weight_map& get_map_pt() const {
+        return map;
    }
 };
 
