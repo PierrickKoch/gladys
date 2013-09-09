@@ -21,10 +21,17 @@
 #include "gladys/point.hpp"
 
 namespace gladys {
+
+struct vertex { 
+	point_xy_t pt;
+};
+
+struct edge {
+	float weight;
+};
 // graph
-typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS,
-    boost::property<boost::vertex_name_t, point_xy_t>,
-    boost::property<boost::edge_weight_t, float> > graph_t;
+typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS, 
+							  vertex, edge > graph_t;
 typedef graph_t::vertex_descriptor vertex_t;
 typedef graph_t::edge_descriptor edge_t;
 typedef std::vector<vertex_t> vertices_t;
@@ -84,8 +91,7 @@ public:
         : g(_g), goal(_goal) {}
 
     double operator()(const vertex_t& u) {
-        const auto& vertex_point_map = boost::get(boost::vertex_name, g);
-        return distance(vertex_point_map[u], vertex_point_map[goal]);
+        return distance(g[u].pt, g[goal].pt);
     }
 };
 
@@ -101,12 +107,11 @@ public:
 
     double operator()(const vertex_t& u) {
         // get closest distance to one of the goals
-        const auto& vertex_point_map = boost::get(boost::vertex_name, g);
         auto first = goals.begin();
-        double tmp, smallest = distance_sq(vertex_point_map[u], vertex_point_map[*first]);
+        double tmp, smallest = distance_sq(g[u].pt, g[*first].pt);
         ++first;
         for (; first != goals.end(); ++first) {
-            tmp = distance_sq(vertex_point_map[u], vertex_point_map[*first]);
+            tmp = distance_sq(g[u].pt, g[*first].pt);
             if (tmp < smallest) {
                 smallest = tmp;
             }
