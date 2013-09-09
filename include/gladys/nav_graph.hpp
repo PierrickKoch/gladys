@@ -66,7 +66,8 @@ public:
     }
 
     vertex_t new_vertex(const point_xy_t& p) {
-        vertex_t v = boost::add_vertex(p, g);
+        vertex_t v = boost::add_vertex(g);
+		g[v].pt = p;
         vertices[p] = v;
         return v;
     }

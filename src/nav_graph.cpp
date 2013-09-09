@@ -47,13 +47,17 @@ void nav_graph::_load() {
 
         // create edges and set weight
         // length = .5 * math.sqrt( scale_x**2 + scale_y**2 )
-        boost::add_edge(vert_w, vert_n, hypotenuse * weight, g);
-        boost::add_edge(vert_n, vert_e, hypotenuse * weight, g);
-        boost::add_edge(vert_e, vert_s, hypotenuse * weight, g);
-        boost::add_edge(vert_s, vert_w, hypotenuse * weight, g);
+        edge e;
+        e.weight = hypotenuse * weight;
+        boost::add_edge(vert_w, vert_n, e , g);
+        boost::add_edge(vert_n, vert_e, e, g);
+        boost::add_edge(vert_e, vert_s, e, g);
+        boost::add_edge(vert_s, vert_w, e, g);
         // also add straight connexions
-        boost::add_edge(vert_n, vert_s, scale_y * weight, g); // length = scale_y
-        boost::add_edge(vert_w, vert_e, scale_x * weight, g); // length = scale_x
+        e.weight = scale_y * weight;
+        boost::add_edge(vert_n, vert_s, e, g); // length = scale_y
+        e.weight = scale_x * weight;
+        boost::add_edge(vert_w, vert_e, e, g); // length = scale_x
     }
     }
 }
@@ -72,15 +76,14 @@ path_t nav_graph::astar_search(const point_xy_t& start, const point_xy_t& goal) 
             g, get_closest_vertex(start), heuristic,
             boost::predecessor_map(predecessors.data()).
                 distance_map(distances.data()).
-                weight_map(boost::get(boost::edge_weight, g)).
+                weight_map(boost::get(&edge::weight, g)).
                 rank_map(ranks.data()).
                 color_map(colors.data()).
                 visitor(vis)
         );
     } catch (found_goal) {
-        const auto& vertex_point_map = boost::get(boost::vertex_name, g);
         for(vertex_t v = goal_v;; v = predecessors[v]) {
-            shortest_path.push_front(vertex_point_map[v]);
+            shortest_path.push_front(g[v].pt);
             if (predecessors[v] == v)
                 break;
         }
@@ -107,15 +110,14 @@ path_cost_util_t nav_graph::astar_search(const points_t& start, const points_t& 
             g, get_closest_vertex(start[0]), heuristic,
             boost::predecessor_map(predecessors.data()).
                 distance_map(distances.data()).
-                weight_map(boost::get(boost::edge_weight, g)).
+                weight_map(boost::get(&edge::weight, g)).
                 rank_map(ranks.data()).
                 color_map(colors.data()).
                 visitor(vis)
         );
     } catch (found_goal& e) {
-        const auto& vertex_point_map = boost::get(boost::vertex_name, g);
         for(vertex_t v = e.g;; v = predecessors[v]) {
-            shortest_path.push_front(vertex_point_map[v]);
+            shortest_path.push_front(g[v].pt);
             if (predecessors[v] == v)
                 break;
         }
