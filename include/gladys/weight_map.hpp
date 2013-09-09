@@ -76,6 +76,24 @@ public:
     const gdal::raster& get_weight_band() const {
         return map.bands[0];
     }
+
+    /** handy method to display the weight-map
+     */
+    std::vector<unsigned char> get_weight_band_uchar() const {
+        const auto& weight = map.bands[0];
+        std::vector<unsigned char> retval(weight.size());
+        for (size_t idx = 0; idx < weight.size(); idx++) {
+            const auto& val = weight[idx];
+            if (val < 0)
+                retval[idx] = 0;
+            else if (val == HUGE_VALF)
+                retval[idx] = 255;
+            else
+                retval[idx] = std::floor(val * 2.54);
+        }
+        return retval;
+    }
+
     const gdal& get_map() const {
         return map;
     }

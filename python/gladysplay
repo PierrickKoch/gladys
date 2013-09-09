@@ -64,6 +64,7 @@ class MainWindow(QtGui.QMainWindow):
               " - Click     = select start and end points\n"
               " - Space     = start search path\n"
               " - C         = clear start and end points\n"
+              " - N         = switch {region,weight} view\n"
               " - Escape    = quit\n")
 
         # key bindings
@@ -71,7 +72,9 @@ class MainWindow(QtGui.QMainWindow):
         self.bind(QtCore.Qt.Key_Escape, self.close)
         self.bind(QtCore.Qt.Key_Space,  self.start_search)
         self.bind(QtCore.Qt.Key_C,      self.clear_points)
+        self.bind(QtCore.Qt.Key_N,      self.switch_raster)
 
+        self._raster = ""
         print("Loading graph...")
         # start to load the graph in 50ms
         QtCore.QTimer.singleShot(50, self.load_nav_graph)
@@ -100,11 +103,26 @@ class MainWindow(QtGui.QMainWindow):
         print("Display the FLAT layer of the region map (%.3fs)" \
             % (time.time() - t_start) )
 
+    def show_weight(self):
+        t_start = time.time()
+        re = self.ng.get_map()
+        band = re.get_weight_band_uchar()
+        self.show_f2rgb(re.get_width(), re.get_height(), band)
+        print("Display the weight map (%.3fs)" % (time.time() - t_start) )
+
+    def switch_raster(self):
+        if self._raster == "region":
+            self.show_weight()
+            self._raster = "weight"
+        else:
+            self.show_region()
+            self._raster = "region"
+
     def load_nav_graph(self):
         t_start = time.time()
         self.ng = gladys.nav_graph(self.fregion, self.frobot)
         print("Graph loaded (%.3fs)" % (time.time() - t_start) )
-        self.show_region()
+        self.switch_raster()
 
     def update_image(self, width, height, imageARGB32):
         image = QtGui.QImage(imageARGB32, width, height, QtGui.QImage.Format_ARGB32)

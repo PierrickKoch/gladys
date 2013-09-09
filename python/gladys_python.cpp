@@ -61,6 +61,9 @@ static gladys::gdal py_weight_map_get_map(gladys::weight_map& self) {
 static gladys::gdal py_weight_map_get_region(gladys::weight_map& self) {
     return self.get_region(); // cannot use reference with boost::python
 }
+static bpy::list py_weight_map_get_weight_band_uchar(gladys::weight_map& self) {
+    return std_vector_to_py_list( self.get_weight_band_uchar() );
+}
 
 // Python requires an exported function called init<module-name> in every
 // extension module. This is where we build the module contents.
@@ -90,7 +93,16 @@ BOOST_PYTHON_MODULE(libgladys_python)
         ;
     // weight_map
     bpy::class_<gladys::weight_map>("weight_map", bpy::init<>())
+        .def("save", &gladys::weight_map::save)
+        .def("load", &gladys::weight_map::load)
+        .def("get_width", &gladys::weight_map::get_width)
+        .def("get_height", &gladys::weight_map::get_height)
+        .def("get_scale_x", &gladys::weight_map::get_scale_x)
+        .def("get_scale_y", &gladys::weight_map::get_scale_y)
+        .def("get_utm_pose_x", &gladys::weight_map::get_utm_pose_x)
+        .def("get_utm_pose_y", &gladys::weight_map::get_utm_pose_y)
         .def("get_map", &py_weight_map_get_map)
         .def("get_region", &py_weight_map_get_region)
+        .def("get_weight_band_uchar", &py_weight_map_get_weight_band_uchar)
         ;
 }
