@@ -24,17 +24,20 @@ void nav_graph::_load() {
     double scale_x = map.get_scale_x(), scale_y = map.get_scale_y();
     float weight;
     gdal::raster weight_map = map.get_weight_band();
-    // most of the time this is equal to str(2)/2
+    // most of the time this is equal to sqrt(2)/2
     float hypotenuse = 0.5 * std::sqrt( scale_x*scale_x + scale_y*scale_y );
 
-    for (px_x = 0; px_x < map.get_width(); px_x++) {
-        //vert_e = new_vertex(scale_x * (px_x - 0.5), 0); // optimize vert_w
-        for (px_y = 0; px_y < map.get_height(); px_y++) {
-
+    for (px_x = 0; px_x < map.get_width(); px_x++)
+    for (px_y = 0; px_y < map.get_height(); px_y++) {
+        // weight is a float in ]1.0, 100.0]
+        // or > if obstacle (+inf)
+        // or < if unknown
         weight = weight_map[px_x + px_y * width];
 
+        // if unknown, then weight is max (100)
+        // in order to allow exploration plan in unknown areas.
         if (weight <= 1)
-            continue; // do not create edge if unknown
+            weight = 100.0;
 
         vert_w = get_vertex_or_create(scale_x * (px_x - 0.5), scale_y * (px_y      ));
         vert_n = get_vertex_or_create(scale_x * (px_x      ), scale_y * (px_y - 0.5));
@@ -55,7 +58,6 @@ void nav_graph::_load() {
         boost::add_edge(vert_n, vert_s, e, g); // length = scale_y
         e.weight = scale_x * weight;
         boost::add_edge(vert_w, vert_e, e, g); // length = scale_x
-    }
     }
 }
 
