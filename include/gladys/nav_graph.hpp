@@ -124,6 +124,10 @@ public:
     const weight_map& get_map() const {
         return map;
     }
+
+   const graph_t& get_graph() const {
+       return g;
+   }
 };
 
 inline std::ostream& operator<<(std::ostream& os, const nav_graph& ng) {
