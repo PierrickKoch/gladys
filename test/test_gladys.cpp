@@ -39,9 +39,9 @@ BOOST_AUTO_TEST_CASE( test_gdal )
 BOOST_AUTO_TEST_CASE( test_write_graphviz )
 {
     nav_graph obj;
-    obj.get_vertex(1,2);
-    obj.get_vertex(2,1);
-    obj.get_vertex(3,2);
+    obj.new_vertex(1,2);
+    obj.new_vertex(2,1);
+    obj.new_vertex(3,2);
     std::ostringstream oss_graphviz;
     obj.write_graphviz(oss_graphviz);
     BOOST_TEST_MESSAGE( "oss_graphviz.size() = " << oss_graphviz.str().size() );

@@ -36,11 +36,8 @@ void nav_graph::_load() {
         if (weight <= 1)
             continue; // do not create edge if unknown
 
-        // previous east becomes west
-        //vert_w = vert_e; // optimize vert_w
-        vert_w = get_vertex(scale_x * (px_x - 0.5), scale_y * (px_y      ));
-        // TODO optimize vert_n
-        vert_n = get_vertex(scale_x * (px_x      ), scale_y * (px_y - 0.5));
+        vert_w = get_vertex_or_create(scale_x * (px_x - 0.5), scale_y * (px_y      ));
+        vert_n = get_vertex_or_create(scale_x * (px_x      ), scale_y * (px_y - 0.5));
         // new vertex
         vert_e = new_vertex(scale_x * (px_x + 0.5), scale_y * (px_y      ));
         vert_s = new_vertex(scale_x * (px_x      ), scale_y * (px_y + 0.5));

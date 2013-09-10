@@ -31,6 +31,19 @@ class nav_graph {
     weight_map map;
     graph_t g;
     vertex_map_t vertices;
+
+    vertex_t get_vertex_or_create(const double& x, const double &y) {
+        point_xy_t p = {x, y};
+        return get_vertex_or_create(p);
+    }
+    vertex_t get_vertex_or_create(const point_xy_t& p) {
+        vertex_map_t::iterator it = vertices.find(p);
+        if (it != vertices.end())
+            return it->second;
+        // else create new vertex setting p as property
+        return new_vertex(p);
+    }
+
 public:
     nav_graph() {}
     /** nav_graph constructor
@@ -52,19 +65,6 @@ public:
     void _load();
 
     // vertices
-    vertex_t get_vertex(const double& x, const double &y) {
-        point_xy_t p = {x, y};
-        return get_vertex(p);
-    }
-
-    vertex_t get_vertex(const point_xy_t& p) {
-        vertex_map_t::iterator it = vertices.find(p);
-        if (it != vertices.end())
-            return it->second;
-        // else create new vertex setting p as property
-        return new_vertex(p);
-    }
-
     vertex_t new_vertex(const point_xy_t& p) {
         vertex_t v = boost::add_vertex(g);
 		g[v].pt = p;
