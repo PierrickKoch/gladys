@@ -15,6 +15,7 @@
 #include <array>
 #include <sstream>
 #include <iostream>         // cout,cerr,endl
+#include <algorithm>        // for minmax
 #include <stdexcept>        // for runtime_error
 #include <gdal_priv.h>      // for GDALDataset
 #include <ogr_spatialref.h> // for OGRSpatialReference
@@ -294,6 +295,31 @@ inline std::string to_string(const gdal& value) {
 }
 inline std::ostream& operator<<(std::ostream& os, const gdal& value) {
     return os<<to_string(value);
+}
+
+/** handy method to display a raster
+ *
+ * @param v vector of float
+ * @returns vector of unisgned char
+ *
+ * distribute as:
+ *   min(v) -> 0
+ *   max(v) -> 255
+ */
+inline std::vector<unsigned char> vfloat2vuchar(const std::vector<float>& v) {
+    auto minmax = std::minmax_element(v.begin(), v.end());
+    float min = *minmax.first;
+    float max = *minmax.second;
+    float diff = max - min;
+    std::vector<unsigned char> retval(v.size());
+    if (diff == 0) // max == min (useless band)
+        return retval;
+    float coef = 255.0 / diff;
+    for (size_t idx = 0; idx < v.size(); idx++) {
+        const auto& val = v[idx];
+        retval[idx] = std::floor( coef * (val - min) );
+    }
+    return retval;
 }
 
 } // namespace gladys
