@@ -9,6 +9,7 @@
  */
 #include <string>
 #include <cmath>
+#include <ctime>
 
 #include <boost/graph/graph_traits.hpp>
 #include <boost/graph/adjacency_list.hpp>
@@ -26,6 +27,9 @@ void nav_graph::_load() {
     gdal::raster weight_map = map.get_weight_band();
     // most of the time this is equal to sqrt(2)/2
     float hypotenuse = 0.5 * std::sqrt( scale_x*scale_x + scale_y*scale_y );
+
+    // XXX wrong, it must come from the under layer
+    time_t t = std::time(0);
 
     for (px_x = 0; px_x < map.get_width(); px_x++)
     for (px_y = 0; px_y < map.get_height(); px_y++) {
@@ -48,6 +52,7 @@ void nav_graph::_load() {
         // create edges and set weight
         // length = .5 * math.sqrt( scale_x**2 + scale_y**2 )
         edge e;
+        e.t = t;
         e.weight = hypotenuse * weight;
         boost::add_edge(vert_w, vert_n, e , g);
         boost::add_edge(vert_n, vert_e, e, g);

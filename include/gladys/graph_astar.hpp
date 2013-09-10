@@ -23,15 +23,16 @@
 namespace gladys {
 
 struct vertex { 
-	point_xy_t pt;
+    point_xy_t pt;
 };
 
 struct edge {
-	float weight;
+    float weight;
+    time_t t; /**< when the weight has been modified */
 };
 // graph
 typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS, 
-							  vertex, edge > graph_t;
+                              vertex, edge > graph_t;
 typedef graph_t::vertex_descriptor vertex_t;
 typedef graph_t::edge_descriptor edge_t;
 typedef std::vector<vertex_t> vertices_t;
