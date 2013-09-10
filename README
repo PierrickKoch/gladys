@@ -45,3 +45,16 @@ HOWTO
     # for verbose test:
     ./test/test_gladys --log_level=test_suite
 
+CONTRIBUTE
+----------
+
+Code is available on GitHub at https://github.com/pierriko/gladys
+
+Feel free to fork, pull request or submit issues to improve the project!
+
+* https://github.com/pierriko/gladys/fork
+* https://github.com/pierriko/gladys/issues
+* https://github.com/pierriko/gladys/pulls
+* https://help.github.com/articles/fork-a-repo
+* https://help.github.com/articles/using-pull-requests
+
