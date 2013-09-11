@@ -1,3 +1,8 @@
-add_executable( test_gladys test_gladys.cpp )
-target_link_libraries( test_gladys gladys )
-add_test( gladys test_gladys )
+macro(add_gladys_test name)
+    add_executable(${name} ${name}.cpp)
+    target_link_libraries(${name} gladys)
+    add_test(${name} ${name})
+endmacro()
+
+add_gladys_test(test_gladys)
+add_gladys_test(test_dstar)
