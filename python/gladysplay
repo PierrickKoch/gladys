@@ -30,7 +30,7 @@ class ImageLabel(QtGui.QLabel):
     def paintEvent(self, event):
         QtGui.QLabel.paintEvent(self, event)
         painter = QtGui.QPainter(self)
-        painter.setPen(QtGui.QPen(QtCore.Qt.black, 5))
+        painter.setPen(QtGui.QPen(QtCore.Qt.black, 2))
         painter.drawPoints(self.path)
 
 def get_bgra32(b=0,g=0,r=0,a=0):
