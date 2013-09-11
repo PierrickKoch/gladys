@@ -1,10 +1,10 @@
 /*
- * test_gladys.cpp
+ * test_dstar.cpp
  *
  * Test the Graph Library for Autonomous and Dynamic Systems
  *
- * author:  Pierrick Koch <pierrick.koch@laas.fr>
- * created: 2013-07-01
+ * author:  Arnaud Degroote <arnaud.degroote@laas.fr>
+ * created: 2013-09-10
  * license: BSD
  */
 #define BOOST_TEST_MODULE const_string test
