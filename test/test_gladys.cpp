@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE( test_write_graphviz )
     std::ostringstream oss_graphviz;
     obj.write_graphviz(oss_graphviz);
     BOOST_TEST_MESSAGE( "oss_graphviz.size() = " << oss_graphviz.str().size() );
-    BOOST_CHECK_EQUAL( oss_graphviz.str().size() , 108 );
+    BOOST_CHECK_EQUAL( oss_graphviz.str().size() , 69 );
 }
 
 BOOST_AUTO_TEST_CASE( test_raster_to_graph )
@@ -77,7 +77,7 @@ BOOST_AUTO_TEST_CASE( test_raster_to_graph )
     ng.save(weight_path);
 
     BOOST_TEST_MESSAGE( "oss_graphviz.size() = " << oss_graphviz.str().size() );
-    BOOST_CHECK_EQUAL( oss_graphviz.str().size() , 10792 );
+    BOOST_CHECK_EQUAL( oss_graphviz.str().size() , 8812 );
 
     point_xy_t p1 = {1, 1};
     point_xy_t p2 = {9, 9};

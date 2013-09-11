@@ -15,6 +15,7 @@
 #include <vector>
 #include <deque>
 #include <ostream>
+#include <sstream>
 
 namespace gladys {
 
@@ -23,35 +24,43 @@ typedef std::array<double, 3> point_xyz_t; // XYZ
 typedef std::vector<point_xy_t> points_t; // list of points
 typedef std::deque<point_xy_t> path_t; // path = deque for push_front
 
-inline std::string to_string(const point_xy_t& value ) {
-    return "[" + std::to_string(value[0]) + "," +
-                 std::to_string(value[1]) + "]";
-}
-inline std::ostream& operator<<(std::ostream& os, const point_xy_t& value) {
-    return os<<to_string(value);
-}
-
-inline std::string to_string(const point_xyz_t& value ) {
-    return "[" + std::to_string(value[0]) + "," +
-                 std::to_string(value[1]) + "," +
-                 std::to_string(value[2]) + "]";
-}
-inline std::ostream& operator<<(std::ostream& os, const point_xyz_t& value) {
-    return os<<to_string(value);
+template <typename T>
+std::string to_string(const T& t)
+{
+    std::ostringstream oss;
+    oss << t;
+    return oss.str();
 }
 
-inline std::string to_string(const path_t& value ) {
-    std::string arrow = "", buff = "";
-    for (auto& elt : value) {
-        buff += arrow + to_string(elt);
-        arrow = " -> ";
+template<typename Container>
+inline std::ostream& stream_it(std::ostream& os, Container& c)
+{
+    bool first = true;
+    os << "[";
+    for (auto& v : c) {
+        if (first)
+            first = false;
+        else
+            os << ", ";
+        os << v;
     }
-    return buff;
-}
-inline std::ostream& operator<<(std::ostream& os, const path_t& value) {
-    return os<<to_string(value);
+    return os << "]";
 }
 
+template <typename T>
+inline std::ostream& operator<<(std::ostream& os, const std::vector<T>& v) {
+    return stream_it(os, v);
+}
+
+template <typename T>
+inline std::ostream& operator<<(std::ostream& os, const std::deque<T>& v) {
+    return stream_it(os, v);
+}
+
+template <typename T, size_t N>
+inline std::ostream& operator<<(std::ostream& os, const std::array<T, N>& v) {
+    return stream_it(os, v);
+}
 
 /** Euclidian distance (squared)
  * usefull to compare a set of points (faster)

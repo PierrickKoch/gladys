@@ -289,12 +289,8 @@ inline bool operator==( const gdal& lhs, const gdal& rhs ) {
         and lhs.bands_name == rhs.bands_name
         and lhs.bands == rhs.bands );
 }
-inline std::string to_string(const gdal& value) {
-    return "GDAL[" + std::to_string(value.get_width()) + "," +
-                     std::to_string(value.get_height()) + "]";
-}
 inline std::ostream& operator<<(std::ostream& os, const gdal& value) {
-    return os<<to_string(value);
+    return os<<"GDAL["<<value.get_width()<<","<<value.get_height()<<"]";
 }
 
 /** handy method to display a raster
