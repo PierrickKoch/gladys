@@ -22,6 +22,29 @@ namespace gladys {
     class no_path {};
 
     class dstar_search {
+        /*
+         * This is a fairly trivial implementation of dstar lite as described
+         * in 'Fast replanning for navigation in unknown terrain' page 5 (fig
+         * 5).
+         *
+         * The only non-trivial point is the use of boost::bimap to implement
+         * the priority_queue, as one need to:
+         *   - fastly get the smallest key
+         *   - fastly find and erase an element by its vertex identifier.
+         * In particular, use of std::priority_queue does not match the second
+         * prerequisite.
+         *
+         * As possible, I keep the same variable name than the one used in the
+         * algorithm description.
+         *
+         * Note that currently, the considered graph is not oriented, so
+         * succ(v) == prev(v)
+         *
+         * TODO: allow to pass an user-defined heuristic. h is for moment the
+         * euclidean distance between two vertices.
+         * XXX: the replan part is not well tested, as the API does not allow
+         * to upgrade a graph.
+         */
         private:
 
             typedef std::pair<float, float> key_t;
@@ -54,11 +77,6 @@ namespace gladys {
             
             void print_pq() const;
 
-
-            struct graph_writer { 
-                void operator() (std::ostream& os) const;
-            };
-
         public:
             dstar_search(const graph_t& g, const vertex_t& start, const vertex_t& goal);
 
@@ -67,7 +85,6 @@ namespace gladys {
             path_t get_path() const;
 
             void replan(const vertex_t& now);
-
     };
 
 
