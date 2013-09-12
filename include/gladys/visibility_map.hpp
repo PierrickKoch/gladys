@@ -21,8 +21,7 @@ namespace gladys {
  * from digital terrain map (in multi-layers GeoTiff)
  */
 class visibility_map {
-    gdal dtm; // probalistic models (multi-layers GeoTiff)
-    gdal::raster visibility;
+    gdal dtm; // digital terrain map (multi-layers GeoTiff)
     robot_model rmdl;
 public:
     /** load region and robot model
@@ -37,13 +36,12 @@ public:
     void load(const std::string& f_dtm, const std::string& f_robot_model) {
         dtm.load(f_dtm);
         rmdl.load(f_robot_model);
-        visibility = dtm.get_band("Z_MEAN");
         _load();
     }
     void _load();
 
-    const gdal::raster& get_visibility() const {
-        return visibility;
+    const gdal::raster& get_visibility() {
+        return dtm.get_band("Z_MAX");
     }
 
     const gdal& get_dtm() const {

@@ -14,6 +14,10 @@
 namespace gladys {
 
 void visibility_map::_load() {
+    size_t width  = dtm.get_width();
+    size_t height = dtm.get_height();
+    // gdal::raster aka. vector<float>
+    const auto& heightmap = dtm.get_band("Z_MAX");
     // TODO
 }
 
