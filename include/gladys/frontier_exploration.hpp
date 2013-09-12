@@ -13,6 +13,7 @@
 #define FRONTIER_EXPLORATION_HPP
 
 #include <vector>
+#include <ostream>
 
 #include "gladys/point.hpp"
 #include "gladys/weight_map.hpp"
@@ -23,33 +24,60 @@ namespace gladys {
 
 /*{{{ frontier class
  ****************************************************************************/
+typedef struct {
+    /* the frontier attributes */
+    // NB: the attributes of a frontier are dependent from others' attributes…
+    double size;                // nbr of frontier points
+    double ratio ;              // importance of the frontier among others 
+                                // ( max = 1  ; "value < 0" <=> unknown)
+    //double distance;            // some distance between XX and the frontier
+    //unsigned int proximity ;    // some distance between XX and the frontier
+    //TODO : bool indicating the validity of the attributes ?
+} fAttributes_t ;
+
 class Frontier {
 
-protected :
+    friend class fExploration ;     // ease access to attributes
+
+private :
     /* list of the frontier points */
     points_t points ;
 
     /* the frontier attributes */
-    double size;                // nbr of frontier points
-    double distance;            // some distance between XX and the frontier
-    //TODO add other meaningful attributes
+    // NB: the attributes of a frontier are dependent from others' attributes…
+    fAttributes_t attributes ;
 
 public :
     /* constructors */
     Frontier();
     Frontier(const points_t &_points);
 
-    /* computing functions */
-    void compute_attributes();
-
     /* setters */
-    void add_point( const point_xy_t _points);
+    // WARNING : do NOT maintain the attributes validity !
+    /** add_point
+     *
+     * Add a new point to the frontier.
+     * WARNING : do NOT maintain the attributes validity !
+     *
+     * @param _point : the new point
+     *
+     */
+    void add_point( const point_xy_t _point);
 
     /* getters */
     const points_t& get_points() const ;
-    //TODO get attributes ?
+    const fAttributes_t& get_attributes() const ;
 
+    /* operators */
+    // comparison operators use the size attribute
+    bool operator> (const Frontier& f) const ;
+    bool operator< (const Frontier& f) const ;
+
+    friend bool greater_than( const Frontier &f1, const Frontier &f2) ; // required pattern for std::sort
+
+    friend std::ostream& operator<< (std::ostream &out, const Frontier& Frontier);
 };//}}}
+
 
 /*{{{ fExploration class
  ****************************************************************************/
@@ -79,15 +107,18 @@ private :
      * @throws : throw an exception if the seed is not valid.
      *
      */
-    void compute_frontiers_WFD(const point_xy_t seed);
+    void compute_frontiers_WFD( const point_xy_t seed );
     
     /** compute_attributes
      *
      * Compute the frontier attributes for each elements in the frontiers list
      * fList.
      *
+     * @param seed : the seed for the wavefront detection (usually it is the
+     * robot position) ; Note that the seed must be in the "known" area.
+     *
      */
-    void compute_attributes();
+    void compute_attributes( const point_xy_t seed );
 
     /** isFrontier
      *
@@ -157,6 +188,7 @@ public:
     /** compute_frontiers
      *
      * Compute the frontiers with the given algorithm and parameters.
+     * Sort the frontiers list by the size of the frontiers (descending order).
      *
      * @param seed : the seed for the wavefront detection (usually it is the
      * robot position) ; Note that the seed must be in the "known" area.
@@ -170,7 +202,6 @@ public:
     void compute_frontiers(const point_xy_t seed, const algo_t algo = WFD);
 
     //void save_frontiers(const std::string& filepath) ;
-    void save_frontiers() ;
 
     /* getters */
     const weight_map& get_map() const ;

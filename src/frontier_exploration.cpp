@@ -31,15 +31,15 @@ namespace gladys {
  ****************************************************************************/
 
     /* constructors */
-    Frontier::Frontier() {}
+    Frontier::Frontier() {//{{{
+        attributes.size     =  0 ; // empty
+        attributes.ratio    = -1 ; // unknown
+    
+    }//}}}
 
-    Frontier::Frontier(const points_t &_points) : points(_points) {}
-
-    /* computing functions */
-    void Frontier::compute_attributes() {//{{{
-        //TODO
-        size = points.size();
-        distance = 1.0;
+    Frontier::Frontier(const points_t &_points) : points(_points) {//{{{
+        attributes.size     = points.size() ;
+        attributes.ratio    = -1 ; // unknown
     }//}}}
 
     /* setters */
@@ -50,6 +50,26 @@ namespace gladys {
     /* getters */
     const points_t& Frontier::get_points() const {//{{{
         return points ;
+    }//}}}
+    const fAttributes_t& Frontier::get_attributes() const {//{{{
+        return attributes ;
+    }//}}}
+
+    /* operators */
+    bool Frontier::operator< (const Frontier& f) const {//{{{
+        return ( attributes.size < f.attributes.size );
+    }//}}}
+    bool Frontier::operator> (const Frontier& f) const {//{{{
+        return ( attributes.size > f.attributes.size );
+    }//}}}
+
+    bool greater_than( const Frontier &f1, const Frontier &f2) {//{{{
+        return ( f1.attributes.size > f2.attributes.size );
+    }//}}}
+
+    std::ostream& operator<< (std::ostream &out, const Frontier& f) {//{{{
+        out << "{ #" << f.attributes.size << " : " << f.points << " }";
+        return out;
     }//}}}
 
 //}}}
@@ -74,18 +94,15 @@ namespace gladys {
         // Get the raster band
         const gdal::raster& data = map.get_weight_band() ;
 
-        //bool areThereFrontiers = false ;
-        //for (auto& p : data )
-            //if (p < 0) { // unknown area
-                //areThereFrontiers = true ;
-                //break;
-            //}
-        //if ( areThereFrontiers )
-            //std::cout << "There are indeed unknown areas" << std::endl ;
-        //else {
-            //std::cout << "There are NO unknown area" << std::endl ;
-            //exit;
-        //}
+        // Check if there are frontiers indeed
+        bool areThereFrontiers = false ;
+        for (auto& p : data )
+            if (p < 0) { // unknown area
+                areThereFrontiers = true ;
+                break;
+            }
+        if ( ! areThereFrontiers )
+            throw  std::runtime_error("[WFD] No unknown area : no need for exploration.");
 
         // check conditions on seed :
         // (NB: seed uses double values)
@@ -331,20 +348,29 @@ namespace gladys {
         }
 
         // compute the frontiers attributes
-        compute_attributes();
+        compute_attributes( seed );
+
+        // sort the frontiers by size (descending order)
+        std::sort( fList.begin(), fList.end(), greater_than ); // descending order
 
     }//}}}
 
-    void fExploration::compute_attributes() {//{{{
+    void fExploration::compute_attributes( const point_xy_t seed ) {//{{{
+        // local variables
+        size_t total_fPoints = 0 ;
+
         // loop over the frontiers list
-        for (auto f : fList)
-            f.compute_attributes();
+        for ( auto& f : fList ) {
+            f.attributes.size = f.points.size() ;
+            total_fPoints += f.attributes.size ;
+        }
+
+        for ( auto& f : fList )
+            f.attributes.ratio = (double) f.attributes.size / (double) total_fPoints ;
     }//}}}
 
     //void fExploration::save_frontiers( const std::string& filepath ) {
-    void fExploration::save_frontiers() {
-        std::cout << " Oh yeah !!" << std::endl ;
-    }
+    //}
 
     /* getters */
     const weight_map& fExploration::get_map() const {//{{{
