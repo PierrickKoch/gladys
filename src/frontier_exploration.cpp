@@ -48,7 +48,7 @@ namespace gladys {
     }//}}}
 
     /* getters */
-    const points_t& Frontier::get_points() {//{{{
+    const points_t& Frontier::get_points() const {//{{{
         return points ;
     }//}}}
 

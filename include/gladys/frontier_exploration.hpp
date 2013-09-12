@@ -46,7 +46,7 @@ public :
     void add_point( const point_xy_t _points);
 
     /* getters */
-    const points_t& get_points();
+    const points_t& get_points() const ;
     //TODO get attributes ?
 
 };//}}}
@@ -110,16 +110,6 @@ private :
     bool hasOpenSpaceNeighbour( const point_xy_t p,
                                 size_t height, size_t width,
                                 const gdal::raster& data ) ;
-
-    /** isOpenSpace
-     *
-     * Tell if the given point is in the OpenSpace
-     *
-     * @param p : the point which is tested.
-     *
-     */
-    bool isOpenSpace( const point_xy_t p,
-                      const gdal::raster& data ) ;
 
     /** findNeighbours()
      *
