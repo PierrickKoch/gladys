@@ -22,15 +22,22 @@ class ImageLabel(QtGui.QLabel):
         self.path = QtGui.QPolygonF()
     def set_image(self, image):
         self.setPixmap(QtGui.QPixmap.fromImage(image))
-    def paint_all_path(self, path):
+    def paint_path(self, path):
         self.path = QtGui.QPolygonF()
         for x, y in path:
             self.path.append(QtCore.QPointF(x, y))
         self.repaint()
+    def paint_all_path(self, path):
+        self.path = QtGui.QPolygonF()
+        for f in path:
+            for x, y in f:
+                self.path.append(QtCore.QPointF(x, y))
+        self.repaint()
     def paintEvent(self, event):
         QtGui.QLabel.paintEvent(self, event)
         painter = QtGui.QPainter(self)
-        painter.setPen(QtGui.QPen(QtCore.Qt.black, 2))
+        #painter.setPen(QtGui.QPen(QtCore.Qt.black, 2))
+        painter.setPen(QtGui.QPen(QtCore.Qt.yellow, 2))
         painter.drawPoints(self.path)
 
 def get_bgra32(b=0,g=0,r=0,a=0):
@@ -208,8 +215,7 @@ class MainWindow(QtGui.QMainWindow):
         # hidden -> display
             self.toggleF = True
             self.show_region()
-            for f in self.fL:
-                self.image_label.paint_path(f)
+            self.image_label.paint_all_path(self.fL)
 
     def bind(self, key, func):
         self._bindings[key] = func
