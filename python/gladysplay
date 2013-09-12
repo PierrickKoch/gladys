@@ -22,7 +22,7 @@ class ImageLabel(QtGui.QLabel):
         self.path = QtGui.QPolygonF()
     def set_image(self, image):
         self.setPixmap(QtGui.QPixmap.fromImage(image))
-    def paint_path(self, path):
+    def paint_all_path(self, path):
         self.path = QtGui.QPolygonF()
         for x, y in path:
             self.path.append(QtCore.QPointF(x, y))
@@ -45,6 +45,9 @@ class MainWindow(QtGui.QMainWindow):
     def __init__(self, argv):
         super(MainWindow, self).__init__()
         self.ng = self.start = self.end = None
+        # frontier exploration
+        self.fX = self.fL = None
+        self.toggleF = False        # Don't display by default
 
         # image viewer
         self.image_label = ImageLabel()
@@ -65,6 +68,8 @@ class MainWindow(QtGui.QMainWindow):
               " - Space     = start search path\n"
               " - C         = clear start and end points\n"
               " - N         = switch {region,weight} view\n"
+              " - F         = compute frontiers for exploration\n"
+              " - H         = toggle frontiers display\n"
               " - Escape    = quit\n")
 
         # key bindings
@@ -73,6 +78,8 @@ class MainWindow(QtGui.QMainWindow):
         self.bind(QtCore.Qt.Key_Space,  self.start_search)
         self.bind(QtCore.Qt.Key_C,      self.clear_points)
         self.bind(QtCore.Qt.Key_N,      self.switch_raster)
+        self.bind(QtCore.Qt.Key_F,      self.start_frontiers_computation)
+        self.bind(QtCore.Qt.Key_H,      self.toggle_frontiers)
 
         self._raster = ""
         self._images = {}
@@ -81,6 +88,9 @@ class MainWindow(QtGui.QMainWindow):
         print("Loading graph...")
         # start to load the graph in 50ms
         QtCore.QTimer.singleShot(50, self.load_nav_graph)
+        print("Loading frontier module...")
+        # start to load the module in 50ms
+        QtCore.QTimer.singleShot(50, self.load_frontiers)
 
     def float2rgb(self, width, height, fdata):
         buff = []
@@ -150,6 +160,14 @@ class MainWindow(QtGui.QMainWindow):
         print("Graph loaded (%.3fs)" % (time.time() - t_start) )
         self.switch_raster()
 
+    def load_frontiers(self):
+        t_start = time.time()
+        self.fX = gladys.fExploration(self.fregion, self.frobot)
+        #TODO Do not duplicate the weight_map ! (re-use self.ng)
+        print("Frontier_Exploration loaded (%.3fs)" % (time.time() - t_start) )
+        self.switch_raster()
+
+
     def update_path(self, path):
         self.image_label.paint_path(path)
 
@@ -166,6 +184,33 @@ class MainWindow(QtGui.QMainWindow):
         self.update_path(pp)
         self.start = self.end = None
 
+    def compute_frontiers(self):
+        if not self.fX:
+            print("[error] not ready to compute frontiers: no frontier module :-( ")
+            return
+
+        print("Computing frontiers for exploration from the seed %s" % str(self.start) )
+        t_start = time.time()
+        self.fL = self.fX.compute_frontiers(self.start) # use the default algorithm
+        print("Got %i frontiers (%.3fs)" % ( len(self.fL), \
+            (time.time() - t_start) ) )
+        # Display
+        self.toggleF = False # to force toggle behaviour into display mode
+        self.toggle_frontiers()
+        self.start = self.end = None
+
+    def toggle_frontiers(self):
+        if self.toggleF:
+        # already display -> hide
+            self.toggleF = False
+            self.show_region()
+        else:
+        # hidden -> display
+            self.toggleF = True
+            self.show_region()
+            for f in self.fL:
+                self.image_label.paint_path(f)
+
     def bind(self, key, func):
         self._bindings[key] = func
 
@@ -175,6 +220,13 @@ class MainWindow(QtGui.QMainWindow):
             QtCore.QTimer.singleShot(50, self.search)
         else:
             print("select start and end points")
+
+    def start_frontiers_computation(self):
+        if self.start :
+            # start search in 50ms
+            QtCore.QTimer.singleShot(50, self.compute_frontiers)
+        else:
+            print("Please select start point")
 
     def clear_points(self):
         self.start = self.end = None
