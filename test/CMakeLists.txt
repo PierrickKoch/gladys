@@ -6,3 +6,4 @@ endmacro()
 
 add_gladys_test(test_gladys)
 add_gladys_test(test_dstar)
+add_gladys_test(test_frontier)
