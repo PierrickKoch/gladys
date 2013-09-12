@@ -36,7 +36,7 @@ class ImageLabel(QtGui.QLabel):
         self.path = QtGui.QPolygonF()
     def set_image(self, image):
         self.setPixmap(QtGui.QPixmap.fromImage(image))
-    def paint_path(self, path):
+    def paint_all_path(self, path):
         self.path = QtGui.QPolygonF()
         for x, y in path:
             self.path.append(QtCore.QPointF(x, y))
