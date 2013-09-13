@@ -28,6 +28,7 @@ namespace gladys {
  */
 class robot_model {
     boost::property_tree::ptree pt;
+
 public:
     /** load robot model
      *
@@ -37,9 +38,43 @@ public:
     void load(const std::string& filepath) {
         read_json(filepath, pt);
         // throw an exception if a key is not found
-        if (pt.get<double>("robot.radius") <= 0 or
-            pt.get<double>("robot.velocity") <= 0)
-            throw std::runtime_error("[robot_model] radius and velocity must be positive");
+        if (pt.get<double>("robot.eyez")     <= 0 or
+            pt.get<double>("robot.mass")     <= 0 or
+            pt.get<double>("robot.radius")   <= 0 or
+            pt.get<double>("robot.velocity") <= 0 )
+            throw std::runtime_error("[robot_model] eyez, mass, radius and velocity must be positive");
+    }
+
+    /* TODO get a dymanic map for weight function
+
+       string("REGION_MAP_BAND_OR_CLASS_NAME") -> float(ponderation)
+
+       string("OBSTACCLE")  -> float(+infinite)
+       string("FLAT")       -> float(0.0)
+       string("ROUGH")      -> float(0.5)
+       string("SLOPE")      -> float(0.6)
+       ...
+     */
+
+    /** get the Z position of the eye sensor
+     * (relative to the ground level, aka. sensor's height)
+     *
+     * used to build the visibility map
+     */
+    double get_eyez() const {
+        return pt.get<double>("robot.eyez");
+    }
+
+    void set_eyez(double eyez) {
+        pt.put("robot.eyez", eyez);
+    }
+
+    double get_mass() const {
+        return pt.get<double>("robot.mass");
+    }
+
+    void set_mass(double mass) {
+        pt.put("robot.mass", mass);
     }
 
     double get_radius() const {
