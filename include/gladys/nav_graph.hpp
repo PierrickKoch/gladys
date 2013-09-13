@@ -10,13 +10,8 @@
 #ifndef NAV_GRAPH_HPP
 #define NAV_GRAPH_HPP
 
-#include <vector>
 #include <string>
 #include <fstream> // output file stream
-
-#include <boost/graph/adjacency_list.hpp>
-#include <boost/graph/astar_search.hpp>
-#include <boost/graph/graphviz.hpp>
 
 #include "gladys/point.hpp"
 #include "gladys/graph_astar.hpp"
@@ -104,19 +99,8 @@ public:
      * TIPS: use `neato -Tpng -Goverlap=false|display` to visualize
      *       or see in tools/dot_to_json.py
      */
-    void write_graphviz(std::ostream& out = std::cout) const {
-        std::vector<std::string> vert_label(vertices.size());
-        for (auto& kv : vertices)
-            vert_label[kv.second] = to_string(kv.first);
-        // TODO write edge weight as well
-        boost::write_graphviz( out, g,
-            boost::make_label_writer(vert_label.data()) );
-    }
-    void write_graphviz(const std::string& filepath) const {
-        std::ofstream of( filepath );
-        write_graphviz( of );
-        of.close();
-    }
+    void write_graphviz(std::ostream& out = std::cout) const;
+    void write_graphviz(const std::string& filepath) const;
 
     void save(const std::string& filepath) {
         map.save(filepath);

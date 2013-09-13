@@ -11,10 +11,8 @@
 #include <cmath>
 #include <ctime>
 
-#include <boost/graph/graph_traits.hpp>
-#include <boost/graph/adjacency_list.hpp>
+#include <boost/graph/graphviz.hpp>
 
-#include "gladys/graph_astar.hpp"
 #include "gladys/nav_graph.hpp"
 
 namespace gladys {
@@ -129,6 +127,23 @@ path_cost_util_t nav_graph::astar_search(const points_t& start, const points_t& 
     path_cost_util_t res;
     res.path = shortest_path;
     return res;
+}
+
+void 
+nav_graph::write_graphviz(std::ostream& out) const {
+    std::vector<std::string> vert_label(vertices.size());
+    for (auto& kv : vertices)
+        vert_label[kv.second] = to_string(kv.first);
+    // TODO write edge weight as well
+    boost::write_graphviz( out, g,
+        boost::make_label_writer(vert_label.data()) );
+}
+
+void 
+nav_graph::write_graphviz(const std::string& filepath) const {
+    std::ofstream of( filepath );
+    write_graphviz( of );
+    of.close();
 }
 
 } // namespace gladys
