@@ -310,11 +310,11 @@ inline std::vector<unsigned char> vfloat2vuchar(const std::vector<float>& v) {
     std::vector<unsigned char> retval(v.size());
     if (diff == 0) // max == min (useless band)
         return retval;
+
     float coef = 255.0 / diff;
-    for (size_t idx = 0; idx < v.size(); idx++) {
-        const auto& val = v[idx];
-        retval[idx] = std::floor( coef * (val - min) );
-    }
+    for (size_t idx = 0; idx < v.size(); idx++)
+        retval[idx] = std::floor( coef * (v[idx] - min) );
+
     return retval;
 }
 
