@@ -1,23 +1,29 @@
 #!/bin/sh
 
+__NEW_VER=0.1.5
+
 __PKGNAME=gladys
 __IS_WIP_=wip/
 __RPKROOT=$HOME/robotpkg
+
 # need to run inside the project folder
-# after updating the PACKAGE_VERSION in CMakeLists.txt
-# and commiting it
+# with the previous PACKAGE_VERSION in CMakeLists.txt
 
 # do not edit following (supposed to be smart)
 
 __VERSION=$(grep "PACKAGE_VERSION" CMakeLists.txt | cut -d\" -f2)
-__DIRNAME=$__PKGNAME-$__VERSION
+__DIRNAME=$__PKGNAME-$__NEW_VER
 __ARCHIVE=$__DIRNAME.tar.gz
 
 __SHORTLG=$(mktemp)
-echo "New in v$__VERSION:" > $__SHORTLG
-git shortlog v0.1.3..HEAD >> $__SHORTLG
-git tag v$__VERSION -F $__SHORTLG
-git archive --format=tar --prefix=$__DIRNAME/ v$__VERSION | gzip > $__RPKROOT/distfiles/$__ARCHIVE
+echo "Changes since v$__VERSION:" > $__SHORTLG
+echo "" >> $__SHORTLG
+git shortlog v$__VERSION..HEAD >> $__SHORTLG
+
+git commit . -m"Bump to v$__NEW_VER"
+git tag v$__NEW_VER -F $__SHORTLG
+
+git archive --format=tar --prefix=$__DIRNAME/ v$__NEW_VER | gzip > $__RPKROOT/distfiles/$__ARCHIVE
 cd $__RPKROOT/$__IS_WIP_$__PKGNAME
 
 vi Makefile # edit new version TODO use `sed`
@@ -33,3 +39,5 @@ scp $__RPKROOT/distfiles/$__ARCHIVE anna.laas.fr:/usr/local/openrobots/distfiles
 git commit . -m"[$__IS_WIP_$__PKGNAME] Update to $__DIRNAME"
 # add changelog TODO `git commit --amend`
 # use git log --oneline v0.1.2..v0.1.3
+
+rm $__SHORTLG
