@@ -45,11 +45,11 @@ public:
             throw std::runtime_error("[robot_model] eyez, mass, radius and velocity must be positive");
     }
 
-    /* TODO get a dymanic map for weight function
+    /* TODO get a **dymanic** map for weight function
 
        string("REGION_MAP_BAND_OR_CLASS_NAME") -> float(ponderation)
 
-       string("OBSTACCLE")  -> float(+infinite)
+       string("OBSTACLE")   -> float(+infinite)
        string("FLAT")       -> float(0.0)
        string("ROUGH")      -> float(0.5)
        string("SLOPE")      -> float(0.6)
@@ -60,6 +60,9 @@ public:
      * (relative to the ground level, aka. sensor's height)
      *
      * used to build the visibility map
+     * this is acceptable for this version,
+     * but we later need to have a more precise sensor model
+     * (orientation and field of view)
      */
     double get_eyez() const {
         return pt.get<double>("robot.eyez");
