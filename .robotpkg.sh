@@ -20,13 +20,15 @@ echo "Changes since v$__VERSION:" > $__SHORTLG
 echo "" >> $__SHORTLG
 git shortlog v$__VERSION..HEAD >> $__SHORTLG
 
+vi CMakeLists.txt # edit new version TODO use `sed` s/$__VERSION/$__NEW_VER/g
+
 git commit . -m"Bump to v$__NEW_VER"
 git tag v$__NEW_VER -F $__SHORTLG
 
 git archive --format=tar --prefix=$__DIRNAME/ v$__NEW_VER | gzip > $__RPKROOT/distfiles/$__ARCHIVE
 cd $__RPKROOT/$__IS_WIP_$__PKGNAME
 
-vi Makefile # edit new version TODO use `sed`
+vi Makefile # edit new version TODO use `sed` VERSION=$__NEW_VER
 
 make distinfo
 make clean
@@ -37,7 +39,5 @@ make print-PLIST
 test `diff -u0 PLIST PLIST.guess | wc -l` -gt 5 && mv PLIST.guess PLIST
 scp $__RPKROOT/distfiles/$__ARCHIVE anna.laas.fr:/usr/local/openrobots/distfiles/$__PKGNAME/
 git commit . -m"[$__IS_WIP_$__PKGNAME] Update to $__DIRNAME"
-# add changelog TODO `git commit --amend`
-# use git log --oneline v0.1.2..v0.1.3
 
 rm $__SHORTLG
