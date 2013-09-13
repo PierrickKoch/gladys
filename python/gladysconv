@@ -15,9 +15,6 @@ except ImportError:
     print("[error] install gladys [and setup PYTHONPATH]")
     import sys; sys.exit(1)
 
-def get_bgra32(b=0,g=0,r=0,a=0):
-    return struct.pack('4B', int(b*255), int(g*255), int(r*255), int(a*255))
-
 def float_to_rgb(hue):
     assert(0.0 <= hue <= 1.0)
     # from blue to red (instead of red to red)
@@ -25,16 +22,12 @@ def float_to_rgb(hue):
     hue = (1 - hue) / 1.5
     return colorsys.hsv_to_rgb(hue, 1, 1)
 
-def float_to_bgra32(hue):
-    r, g, b = float_to_rgb(hue)
-    return get_bgra32(b,g,r,1)
+def uint_to_rgb(hue):
+    r, g, b = float_to_rgb(hue / 255.0)
+    return int(r*255), int(g*255), int(b*255)
 
-def i8u2rgb(width, height, data8u):
-    """ Convert a grayscale image to RGB """
-    buff = b''.join([float_to_bgra32(hue / 255.0) for hue in data8u])
-    image = QtGui.QImage(buff, width, height, QtGui.QImage.Format_ARGB32)
-    # image needs to be copied since it does not seems to hold the buffer
-    return image.copy()
+GRAY_COLORTABLE = [QtGui.QColor(i, i, i).rgb()          for i in range(256)]
+HSVH_COLORTABLE = [QtGui.QColor(*uint_to_rgb(i)).rgb()  for i in range(256)]
 
 def main(argv=[]):
     if len(argv) < 3:
@@ -46,8 +39,16 @@ def main(argv=[]):
     width   = geotiff.get_width()
     height  = geotiff.get_height()
 
-    for name, band in bands.items():
-        image = i8u2rgb(width, height, band)
+    for name, image8u in bands.items():
+        # Convert from list(uint8_t) to bytes() [TODO find memoryview in bpy]
+        buff = struct.pack('%iB'%len(image8u), *image8u)
+        assert(len(buff) == width * height)
+        # QImage does not holds the buffer, it is valid only in this scope (!)
+        image = QtGui.QImage(buff, width, height, width, QtGui.QImage.Format_Indexed8)
+        # Set image lookup table (LUT) / PySide.QtGui.QImage.setColorTable()
+        # http://qt-project.org/doc/qt-5.1/qtgui/qimage.html#setColorTable
+        image.setColorTable(HSVH_COLORTABLE)
+        # If needed to draw on the QImage, first .convertToFormat(Format_ARGB32)
         image.save("%s.%s.png" % (argv[2], name) )
 
     return 0
