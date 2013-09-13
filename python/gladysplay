@@ -43,9 +43,15 @@ class ImageLabel(QtGui.QLabel):
 def get_bgra32(b=0,g=0,r=0,a=0):
     return struct.pack('4B', int(b*255), int(g*255), int(r*255), int(a*255))
 
-def float_to_bgra32(hue):
+def float_to_rgb(hue):
+    assert(0.0 <= hue <= 1.0)
+    # from blue to red (instead of red to red)
+    # aka from 240 to 0 instead of 0 to 360 degrees (HSV)
     hue = (1 - hue) / 1.5
-    r,g,b = colorsys.hsv_to_rgb(hue, 1, 1)
+    return colorsys.hsv_to_rgb(hue, 1, 1)
+
+def float_to_bgra32(hue):
+    r, g, b = float_to_rgb(hue)
     return get_bgra32(b,g,r,1)
 
 class MainWindow(QtGui.QMainWindow):
@@ -99,21 +105,10 @@ class MainWindow(QtGui.QMainWindow):
         # start to load the module in 50ms
         QtCore.QTimer.singleShot(50, self.load_frontiers)
 
-    def float2rgb(self, width, height, fdata):
-        buff = []
-        fmin = min(fdata)
-        diff = max(fdata) - fmin
-        print("Display Float to RGB. min: %f, diff: %f" % (fmin, diff))
-
-        if not diff: # useless
-            print("[warning] max == min (monochrome) : useless")
-            return
-
-        for fpx in fdata:
-            hue = (fpx - fmin) / diff
-            buff.append(float_to_bgra32(hue))
-
-        image = QtGui.QImage(b''.join(buff), width, height, QtGui.QImage.Format_ARGB32)
+    def i8u2rgb(self, width, height, data8u):
+        """ Convert a grayscale image to RGB """
+        buff = b''.join([float_to_bgra32(hue / 255.0) for hue in data8u])
+        image = QtGui.QImage(buff, width, height, QtGui.QImage.Format_ARGB32)
         # image needs to be copied since it does not seems to hold the buffer
         return image.copy()
 
@@ -121,7 +116,7 @@ class MainWindow(QtGui.QMainWindow):
         if not self._region:
             t_start = time.time()
             self._region_map = self._weight.get_region()
-            self._region = self._region_map.get_bands()
+            self._region = self._region_map.get_bands_as_uchar()
             print("Got the region bands (%.3fs)" \
                 % (time.time() - t_start) )
         names = self._region.keys()
@@ -135,7 +130,7 @@ class MainWindow(QtGui.QMainWindow):
                 return -1
         t_start = time.time()
         if self._raster not in self._images:
-            self._images[self._raster] = self.float2rgb(
+            self._images[self._raster] = self.i8u2rgb(
                     self._region_map.get_width(),
                     self._region_map.get_height(),
                     self._region[self._raster] )
@@ -151,7 +146,7 @@ class MainWindow(QtGui.QMainWindow):
         if 'weight' not in self._images:
             self._weight = self.ng.get_map()
             band = self._weight.get_weight_band_uchar()
-            self._images['weight'] = self.float2rgb(self._weight.get_width(),
+            self._images['weight'] = self.i8u2rgb(self._weight.get_width(),
                 self._weight.get_height(), band)
         self.image_label.set_image( self._images['weight'] )
         print("Display the weight map (%.3fs)" % (time.time() - t_start) )

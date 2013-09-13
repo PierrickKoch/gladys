@@ -68,10 +68,22 @@ static bpy::list py_get_band(gladys::gdal& self, const std::string& name) {
     return std_vector_to_py_list(self.get_band(name));
 }
 
+static bpy::list py_get_band_as_uchar(gladys::gdal& self, const std::string& name) {
+    return std_vector_to_py_list(gladys::vfloat2vuchar(self.get_band(name)));
+}
+
 static bpy::dict py_get_bands(gladys::gdal& self) {
     bpy::dict retval;
     for (size_t idx = 0; idx < self.bands.size(); idx++)
         retval[ self.bands_name[idx] ] = std_vector_to_py_list( self.bands[idx] );
+    return retval;
+}
+
+static bpy::dict py_get_bands_as_uchar(gladys::gdal& self) {
+    bpy::dict retval;
+    for (size_t idx = 0; idx < self.bands.size(); idx++)
+        retval[ self.bands_name[idx] ] = std_vector_to_py_list(
+            gladys::vfloat2vuchar( self.bands[idx] ) );
     return retval;
 }
 
@@ -106,8 +118,12 @@ BOOST_PYTHON_MODULE(libgladys_python)
         .def("get_utm_pose_y", &gladys::gdal::get_utm_pose_y)
         // gdal::get_band
         .def("get_band", &py_get_band)
+        // gdal::get_band distributed and converted from float to uchar [0-255]
+        .def("get_band_as_uchar", &py_get_band_as_uchar)
         // gdal::bands
         .def("get_bands", &py_get_bands)
+        // gdal::get_bands distributed and converted from float to uchar [0-255]
+        .def("get_bands_as_uchar", &py_get_bands_as_uchar)
         ;
     // nav_graph
     bpy::class_<gladys::nav_graph>("nav_graph", bpy::init<std::string, std::string>())
