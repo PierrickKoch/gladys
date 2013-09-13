@@ -13,7 +13,10 @@ __VERSION=$(grep "PACKAGE_VERSION" CMakeLists.txt | cut -d\" -f2)
 __DIRNAME=$__PKGNAME-$__VERSION
 __ARCHIVE=$__DIRNAME.tar.gz
 
-git tag v$__VERSION
+__SHORTLG=$(mktemp)
+echo "New in v$__VERSION:" > $__SHORTLG
+git shortlog v0.1.3..HEAD >> $__SHORTLG
+git tag v$__VERSION -F $__SHORTLG
 git archive --format=tar --prefix=$__DIRNAME/ v$__VERSION | gzip > $__RPKROOT/distfiles/$__ARCHIVE
 cd $__RPKROOT/$__IS_WIP_$__PKGNAME
 
