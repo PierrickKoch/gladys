@@ -1,0 +1,58 @@
+#!/usr/bin/env python
+
+import struct
+import colorsys
+
+try:
+    from PySide import QtCore, QtGui
+except ImportError:
+    print("[error] sudo apt-get install python-pyside")
+    import sys; sys.exit(1)
+
+try:
+    import gladys
+except ImportError:
+    print("[error] install gladys [and setup PYTHONPATH]")
+    import sys; sys.exit(1)
+
+def get_bgra32(b=0,g=0,r=0,a=0):
+    return struct.pack('4B', int(b*255), int(g*255), int(r*255), int(a*255))
+
+def float_to_rgb(hue):
+    assert(0.0 <= hue <= 1.0)
+    # from blue to red (instead of red to red)
+    # aka from 240 to 0 instead of 0 to 360 degrees (HSV)
+    hue = (1 - hue) / 1.5
+    return colorsys.hsv_to_rgb(hue, 1, 1)
+
+def float_to_bgra32(hue):
+    r, g, b = float_to_rgb(hue)
+    return get_bgra32(b,g,r,1)
+
+def i8u2rgb(width, height, data8u):
+    """ Convert a grayscale image to RGB """
+    buff = b''.join([float_to_bgra32(hue / 255.0) for hue in data8u])
+    image = QtGui.QImage(buff, width, height, QtGui.QImage.Format_ARGB32)
+    # image needs to be copied since it does not seems to hold the buffer
+    return image.copy()
+
+def main(argv=[]):
+    if len(argv) < 3:
+        print("usage: %s geo.tif patern"%argv[0])
+        return 1
+
+    geotiff = gladys.gdal(argv[1])
+    bands   = geotiff.get_bands_as_uchar()
+    width   = geotiff.get_width()
+    height  = geotiff.get_height()
+
+    for name, band in bands.items():
+        image = i8u2rgb(width, height, band)
+        image.save("%s.%s.png" % (argv[2], name) )
+
+    return 0
+
+if __name__ == '__main__':
+    import sys
+    sys.exit( main(sys.argv) )
+
