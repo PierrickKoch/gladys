@@ -11,7 +11,6 @@
 #define GRAPH_ASTAR_HPP
 
 #include <cmath>
-#include <array>
 #include <vector>
 #include <algorithm>
 
