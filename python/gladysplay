@@ -16,6 +16,20 @@ except ImportError:
     print("[error] install gladys [and setup PYTHONPATH]")
     import sys; sys.exit(1)
 
+def float_to_rgb(hue):
+    assert(0.0 <= hue <= 1.0)
+    # from blue to red (instead of red to red)
+    # aka from 240 to 0 instead of 0 to 360 degrees (HSV)
+    hue = (1 - hue) / 1.5
+    return colorsys.hsv_to_rgb(hue, 1, 1)
+
+def uint_to_rgb(hue):
+    r, g, b = float_to_rgb(hue / 255.0)
+    return int(r*255), int(g*255), int(b*255)
+
+GRAY_COLORTABLE = [QtGui.QColor(i, i, i).rgb()          for i in range(256)]
+HSVH_COLORTABLE = [QtGui.QColor(*uint_to_rgb(i)).rgb()  for i in range(256)]
+
 class ImageLabel(QtGui.QLabel):
     def __init__(self):
         QtGui.QLabel.__init__(self)
@@ -32,20 +46,6 @@ class ImageLabel(QtGui.QLabel):
         painter = QtGui.QPainter(self)
         painter.setPen(QtGui.QPen(QtCore.Qt.black, 2))
         painter.drawPoints(self.path)
-
-def get_bgra32(b=0,g=0,r=0,a=0):
-    return struct.pack('4B', int(b*255), int(g*255), int(r*255), int(a*255))
-
-def float_to_rgb(hue):
-    assert(0.0 <= hue <= 1.0)
-    # from blue to red (instead of red to red)
-    # aka from 240 to 0 instead of 0 to 360 degrees (HSV)
-    hue = (1 - hue) / 1.5
-    return colorsys.hsv_to_rgb(hue, 1, 1)
-
-def float_to_bgra32(hue):
-    r, g, b = float_to_rgb(hue)
-    return get_bgra32(b,g,r,1)
 
 class MainWindow(QtGui.QMainWindow):
     def __init__(self, argv):
@@ -88,11 +88,17 @@ class MainWindow(QtGui.QMainWindow):
         # start to load the graph in 50ms
         QtCore.QTimer.singleShot(50, self.load_nav_graph)
 
-    def i8u2rgb(self, width, height, data8u):
+    def i8u2rgb(self, width, height, image8u):
         """ Convert a grayscale image to RGB """
-        buff = b''.join([float_to_bgra32(hue / 255.0) for hue in data8u])
-        image = QtGui.QImage(buff, width, height, QtGui.QImage.Format_ARGB32)
-        # image needs to be copied since it does not seems to hold the buffer
+        # Convert from list(uint8_t) to bytes() [TODO find memoryview in bpy]
+        buff = struct.pack('%iB'%len(image8u), *image8u)
+        assert(len(buff) == width * height)
+        # QImage does not holds the buffer, it is valid only in this scope (!)
+        image = QtGui.QImage(buff, width, height, width, QtGui.QImage.Format_Indexed8)
+        # Set image lookup table (LUT) / PySide.QtGui.QImage.setColorTable()
+        # http://qt-project.org/doc/qt-5.1/qtgui/qimage.html#setColorTable
+        image.setColorTable(HSVH_COLORTABLE)
+        # Return a copy (buffer copied, so no need to hold it ourself)
         return image.copy()
 
     def show_region(self):
