@@ -11,16 +11,16 @@ __RPKROOT=$HOME/robotpkg
 
 # do not edit following (supposed to be smart)
 
-__VERSION=$(grep "PACKAGE_VERSION" CMakeLists.txt | cut -d\" -f2)
+__OLD_VER=$(grep "PACKAGE_VERSION" CMakeLists.txt | cut -d\" -f2)
 __DIRNAME=$__PKGNAME-$__NEW_VER
 __ARCHIVE=$__DIRNAME.tar.gz
 
 __SHORTLG=$(mktemp)
-echo "Changes since v$__VERSION:" > $__SHORTLG
+echo "Changes since v$__OLD_VER:" > $__SHORTLG
 echo "" >> $__SHORTLG
-git shortlog v$__VERSION..HEAD >> $__SHORTLG
+git shortlog v$__OLD_VER..HEAD >> $__SHORTLG
 
-vi CMakeLists.txt # edit new version TODO use `sed` s/$__VERSION/$__NEW_VER/g
+vi CMakeLists.txt # edit new version TODO use `sed` s/$__OLD_VER/$__NEW_VER/g
 
 git commit . -m"Bump to v$__NEW_VER"
 git tag v$__NEW_VER -F $__SHORTLG
