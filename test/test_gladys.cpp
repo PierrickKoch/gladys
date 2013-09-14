@@ -90,7 +90,12 @@ BOOST_AUTO_TEST_CASE( test_raster_to_graph )
     robot_cfg.open(robotm_path);
     robot_cfg<<"{\"robot\":{\"eyez\":1.0,\"mass\":1.0,\"radius\":2.0,\"velocity\":1.0}}";
     robot_cfg.close();
-    gladys obj(region_path, robotm_path);
+    std::string dtm_path = "/tmp/test_gladys_dtm.tif";
+    gdal dtm;
+    dtm.set_size(2, 9, 9);
+    dtm.bands_name = {"Z_MIN", "Z_MAX"};
+    dtm.save(dtm_path);
+    gladys obj(region_path, dtm_path, robotm_path);
     points_t start = {p1};
     points_t goal  = {p2};
     motion_constraints_t c;

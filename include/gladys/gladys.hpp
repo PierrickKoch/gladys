@@ -14,6 +14,7 @@
 #include <string>
 
 #include "gladys/nav_graph.hpp"
+#include "gladys/visibility_map.hpp"
 
 namespace gladys {
 
@@ -40,18 +41,24 @@ typedef struct {} behaviour_t;
  */
 class gladys {
     nav_graph navigation_graph;
+    visibility_map visibility;
 public:
     /** gladys constructor
      *
      * @param f_region path to a region.tif file
      * (multi-layers terrains classification probabilities, float32)
      *
+     * @param f_dtm path to a dtm.tif file
+     * (multi-layers terrains elevation model, float32)
+     *
      * @param f_robot_model TODO path to a robot model
      * to generate the weight map (at least its size)
      *
      */
-    gladys(const std::string& f_region, const std::string& f_robot_model) {
+    gladys(const std::string& f_region, const std::string& f_dtm,
+            const std::string& f_robot_model) {
         navigation_graph.load(f_region, f_robot_model);
+        visibility.load(f_dtm, f_robot_model);
     }
 
     /* state */
