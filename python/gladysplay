@@ -81,6 +81,7 @@ class MainWindow(QtGui.QMainWindow):
               " - Space     = start search path\n"
               " - C         = clear start and end points\n"
               " - N         = switch {region,weight} view\n"
+              " - L         = switch {gray,hsvh} LUT\n"
               " - F         = compute frontiers for exploration\n"
               " - H         = toggle frontiers display\n"
               " - Escape    = quit\n")
@@ -91,6 +92,7 @@ class MainWindow(QtGui.QMainWindow):
         self.bind(QtCore.Qt.Key_Space,  self.start_search)
         self.bind(QtCore.Qt.Key_C,      self.clear_points)
         self.bind(QtCore.Qt.Key_N,      self.switch_raster)
+        self.bind(QtCore.Qt.Key_L,      self.switch_lut)
         self.bind(QtCore.Qt.Key_F,      self.start_frontiers_computation)
         self.bind(QtCore.Qt.Key_H,      self.toggle_frontiers)
 
@@ -98,6 +100,10 @@ class MainWindow(QtGui.QMainWindow):
         self._images = {}
         self._region = None
         self._weight = None
+        self._lut    = {
+                'HSVH': HSVH_COLORTABLE,
+                'GRAY': GRAY_COLORTABLE,
+            }
         print("Loading graph...")
         # start to load the graph in 50ms
         QtCore.QTimer.singleShot(50, self.load_nav_graph)
@@ -136,6 +142,7 @@ class MainWindow(QtGui.QMainWindow):
                 return -1
         t_start = time.time()
         if self._raster not in self._images:
+            self._images[self._raster+".lut"] = "HSVH"
             self._images[self._raster] = self.i8u2rgb(
                     self._region_map.get_width(),
                     self._region_map.get_height(),
@@ -149,18 +156,31 @@ class MainWindow(QtGui.QMainWindow):
 
     def show_weight(self):
         t_start = time.time()
+        self._raster = "weight"
         if 'weight' not in self._images:
-            self._weight = self.ng.get_map()
+            self._weight = self.ng.get_map() # saving weight-map to get region
             band = self._weight.get_weight_band_uchar()
-            self._images['weight'] = self.i8u2rgb(self._weight.get_width(),
+            self._images[self._raster] = self.i8u2rgb(self._weight.get_width(),
                 self._weight.get_height(), band)
-        self.image_label.set_image( self._images['weight'] )
+            self._images[self._raster+".lut"] = "HSVH"
+        self.image_label.set_image( self._images[self._raster] )
         print("Display the weight map (%.3fs)" % (time.time() - t_start) )
 
     def switch_raster(self):
         if not self._weight or self.show_region() == -1:
             self.show_weight()
-            self._raster = ""
+
+    def switch_lut(self):
+        lname = self._images[self._raster+".lut"]
+        names = self._lut.keys()
+        index = names.index(lname)
+        index = 0 if index == len(names) - 1 else index + 1
+        lname = names[index]
+        print("Switching LUT %s for %s" % (lname, self._raster) )
+
+        self._images[self._raster].setColorTable(self._lut[lname])
+        self.image_label.set_image( self._images[self._raster] )
+        self._images[self._raster+".lut"] = lname
 
     def load_nav_graph(self):
         t_start = time.time()
