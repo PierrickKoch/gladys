@@ -70,9 +70,8 @@ public:
         return p[0] + p[1] * width;
     }
 
-
     /* getters */
-    const gdal::raster& get_visibility() {
+    const gdal::raster& get_heightmap() {
         return dtm.get_band("Z_MAX");
     }
 

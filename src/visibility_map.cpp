@@ -18,7 +18,7 @@ void visibility_map::_load() {//{{{
     width  = dtm.get_width();
     height = dtm.get_height();
     // gdal::raster aka. vector<float>
-    const auto& heightmap = dtm.get_band("Z_MAX");
+    const auto& heightmap = get_heightmap();
     // TODO
 }//}}}
 
@@ -27,6 +27,8 @@ bool visibility_map::is_visible( const point_xy_t& s, const point_xy_t& t) {//{{
 
     /* init */
     bool visible = true ;
+    // gdal::raster aka. vector<float>
+    const auto& heightmap = get_heightmap();
 
     point_xyzt_t _s = rmdl.get_sensor_pos() ; // relative sensor position
     point_xy_t ns ;   // sensor position
@@ -52,8 +54,8 @@ bool visibility_map::is_visible( const point_xy_t& s, const point_xy_t& t) {//{{
     // where x = distance to the sensor (projection)
     // and y = height of the point
     double zs, zt, d0, a, d, z;
-    zs = _s[2] + get_visibility()[ idx(s) ] ;   // height of the sensor
-    zt = get_visibility()[ idx(t) ] ;           // height of the target
+    zs = _s[2] + heightmap[ idx(s) ] ;   // height of the sensor
+    zt = heightmap[ idx(t) ] ;           // height of the target
     d0 = distance( s, t ) ;
 
     a = (zs - zt) / d0 ; // d > 0
@@ -62,7 +64,7 @@ bool visibility_map::is_visible( const point_xy_t& s, const point_xy_t& t) {//{{
     // test the condition for each point of the line
     for ( auto& p: line) {
         d = distance( s, p ) ;
-        z = get_visibility()[ idx(p) ] ;
+        z = heightmap[ idx(p) ] ;
         if ( a*d + z - zs > 0 ) {
             visible = false ;
             break;
