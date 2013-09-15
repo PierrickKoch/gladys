@@ -4,6 +4,7 @@
  * Graph Library for Autonomous and Dynamic Systems
  *
  * author:  Pierrick Koch <pierrick.koch@laas.fr>
+ *          Cyril Robin <cyril.robin@laas.fr>
  * created: 2013-07-02
  * license: BSD
  */
@@ -20,6 +21,8 @@
 #endif
 
 #include <boost/property_tree/json_parser.hpp>
+
+#include "gladys/point.hpp"
 
 namespace gladys {
 
@@ -94,6 +97,22 @@ public:
 
     void set_velocity(double velocity) {
         pt.put("robot.velocity", velocity);
+    }
+
+    point_xyzt_t get_sensor_pos() const {
+        point_xyzt_t p ;
+        p[0] = pt.get<double>("sensor.x");
+        p[1] = pt.get<double>("sensor.y");
+        p[2] = pt.get<double>("sensor.z");
+        p[3] = pt.get<double>("sensor.t");
+        return p ;
+    }
+
+    void set_sensor_pos( point_xyzt_t p ) {
+        pt.put("sensor.x", p[0] );
+        pt.put("sensor.y", p[1] );
+        pt.put("sensor.z", p[2] );
+        pt.put("sensor.t", p[3] );
     }
 
     void save(const std::string& filepath) const {
