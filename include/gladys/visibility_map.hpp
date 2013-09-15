@@ -71,7 +71,7 @@ public:
     }
 
     /* getters */
-    const gdal::raster& get_heightmap() {
+    const gdal::raster& get_heightmap() const {
         return dtm.get_band("Z_MAX");
     }
 

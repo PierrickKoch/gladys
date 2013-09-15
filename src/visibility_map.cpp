@@ -35,8 +35,8 @@ bool visibility_map::is_visible( const point_xy_t& s, const point_xy_t& t) {//{{
     ns[0] = s[0] + _s[0] ; // x
     ns[1] = s[1] + _s[1] ; // y
 
-    /* Check trivial case where s = t */
-    if ( s == t )
+    /* Check trivial case where s is next to t */
+    if ( distance( s, t ) < 1.0 )
         return visible ;
     // TODO: check if == is well defined
 

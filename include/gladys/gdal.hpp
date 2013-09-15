@@ -188,6 +188,9 @@ public:
     raster& get_band(const std::string& name) {
         return bands[ get_band_id(name) ];
     }
+    const raster& get_band(const std::string& name) const {
+        return bands[ get_band_id(name) ];
+    }
 
     /** Save as GeoTiff
      *
