@@ -1,6 +1,6 @@
 #!/bin/sh
 
-__NEW_VER=0.1.5
+__NEW_VER=0.1.6
 
 __PKGNAME=gladys
 __IS_WIP_=wip/
@@ -37,7 +37,7 @@ make update
 make print-PLIST
 # update PLIST only if changes
 test `diff -u0 PLIST PLIST.guess | wc -l` -gt 5 && mv PLIST.guess PLIST
-scp $__RPKROOT/distfiles/$__ARCHIVE anna.laas.fr:/usr/local/openrobots/distfiles/$__PKGNAME/
 git commit . -m"[$__IS_WIP_$__PKGNAME] Update to $__DIRNAME"
 
+scp $__RPKROOT/distfiles/$__ARCHIVE anna.laas.fr:/usr/local/openrobots/distfiles/$__PKGNAME/
 rm $__SHORTLG
