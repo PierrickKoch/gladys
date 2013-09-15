@@ -45,6 +45,16 @@ Feel free to fork, pull request or submit issues to improve the project!
 * https://help.github.com/articles/fork-a-repo
 * https://help.github.com/articles/using-pull-requests
 
+### STYLE
+
+Please configure your editor to insert 4 spaces instead of TABs, maximum line
+length to 79, `lower_case_with_underscores` instead of `CamelCase`. Most of the
+rules are taken from [Python PEP8](http://www.python.org/dev/peps/pep-0008/)
+
+Other ideas can be found in Google Guides:
+[Python](http://google-styleguide.googlecode.com/svn/trunk/pyguide.html),
+[C++](http://google-styleguide.googlecode.com/svn/trunk/cppguide.xml).
+
 
 LICENSE
 -------
