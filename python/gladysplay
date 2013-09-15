@@ -124,14 +124,17 @@ class MainWindow(QtGui.QMainWindow):
         # Return a copy (buffer copied, so no need to hold it ourself)
         return image.copy()
 
-    def show_region(self):
+    def setup_next_region(self):
+        if not self._weight:
+            return -1
         if not self._region:
             t_start = time.time()
-            self._region_map = self._weight.get_region()
-            self._region = self._region_map.get_bands_as_uchar()
+            region_map = self._weight.get_region()
+            self._region = region_map.get_bands_as_uchar()
             print("Got the region bands (%.3fs)" \
                 % (time.time() - t_start) )
         names = self._region.keys()
+        # Select the next region layer to show
         if self._raster not in names:
             self._raster = names[0]
         else:
@@ -140,35 +143,33 @@ class MainWindow(QtGui.QMainWindow):
                 self._raster = names[index]
             else:
                 return -1
-        t_start = time.time()
         if self._raster not in self._images:
             self._images[self._raster+".lut"] = "HSVH"
             self._images[self._raster] = self.i8u2rgb(
-                    self._region_map.get_width(),
-                    self._region_map.get_height(),
+                    self._weight.get_width(),
+                    self._weight.get_height(),
                     self._region[self._raster] )
-        if not self._images[self._raster]:
-            print("%s region band is null, skip it."%self._raster)
-            return self.show_region()
-        self.image_label.set_image( self._images[self._raster] )
-        print("Display the %s region band (%.3fs)" \
-            % (self._raster, time.time() - t_start) )
 
-    def show_weight(self):
-        t_start = time.time()
+    def setup_weight(self):
         self._raster = "weight"
-        if 'weight' not in self._images:
+        if self._raster not in self._images:
             self._weight = self.ng.get_map() # saving weight-map to get region
-            band = self._weight.get_weight_band_uchar()
-            self._images[self._raster] = self.i8u2rgb(self._weight.get_width(),
-                self._weight.get_height(), band)
+            weight_band = self._weight.get_weight_band_uchar()
             self._images[self._raster+".lut"] = "HSVH"
-        self.image_label.set_image( self._images[self._raster] )
-        print("Display the weight map (%.3fs)" % (time.time() - t_start) )
+            self._images[self._raster] = self.i8u2rgb(
+                    self._weight.get_width(),
+                    self._weight.get_height(),
+                    weight_band)
 
     def switch_raster(self):
-        if not self._weight or self.show_region() == -1:
-            self.show_weight()
+        t_start = time.time()
+
+        if self.setup_next_region() == -1:
+            self.setup_weight()
+
+        # Display the image
+        self.image_label.set_image( self._images[self._raster] )
+        print("Display %s (%.3fs)" % (self._raster, time.time() - t_start) )
 
     def switch_lut(self):
         lname = self._images[self._raster+".lut"]
