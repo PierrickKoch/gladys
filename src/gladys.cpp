@@ -61,6 +61,11 @@ path_cost_util_t gladys::navigation(const points_t& start, const points_t& goal,
 
 /* perception */
 
+bool gladys::is_visible(const point_xy_t& locA, const point_xy_t& locB)
+{
+    return visibility.is_visible(locA, locB);
+}
+
 points_probs_t gladys::can_see(int sensor, const points_t& location) {
     points_probs_t pbs;
     return pbs;
@@ -84,10 +89,11 @@ double gladys::look_at(int sensor, const points_t& observe) {
 
 /* communication */
 
-bool gladys::can_communicate(int sensor, const point_xyz_t& locA,
-    const point_xyz_t& locB)
+bool gladys::can_communicate(const point_xyz_t& locA, const point_xyz_t& locB)
 {
-    return true;
+    point_xy_t xyA = {locA[0], locA[1]};
+    point_xy_t xyB = {locB[0], locB[1]};
+    return is_visible(xyA, xyB);
 }
 
 } // namespace gladys

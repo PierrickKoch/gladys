@@ -19,7 +19,7 @@ void visibility_map::_load() {//{{{
     height = dtm.get_height();
     // gdal::raster aka. vector<float>
     const auto& heightmap = get_heightmap();
-    // TODO
+    // TODO cache stuff
 }//}}}
 
 /* computing function */

@@ -86,6 +86,7 @@ public:
      *
      * (relative to the ground level, aka. sensor's height)
      * used to build the visibility map
+     * we might need to consider a field of view as well
      */
     point_xyzt_t get_sensor_pos() const {
         point_xyzt_t p ;

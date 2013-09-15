@@ -77,14 +77,14 @@ public:
     path_cost_util_t navigation(const points_t& start, const points_t& goal,
         int optimisation, const motion_constraints_t& constraints);
     /* perception TODO location = <X,Y,W> */
+    bool is_visible(const point_xy_t& locA, const point_xy_t& locB);
     points_probs_t can_see(int sensor, const points_t& location);
     points_t is_visible_from(int sensor, const points_t& visible, float qmin);
     bool test_visibility_link(int sensor, const points_t& location,
         const points_t& visible,float qmin);
     double look_at(int sensor, const points_t& observe);
     /* communication location = <X,Y,Z> */
-    bool can_communicate(int sensor, const point_xyz_t& locA,
-        const point_xyz_t& locB);
+    bool can_communicate(const point_xyz_t& locA, const point_xyz_t& locB);
 
 };
 
