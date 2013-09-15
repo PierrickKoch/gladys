@@ -57,7 +57,7 @@ BOOST_AUTO_TEST_CASE( test_raster_to_graph )
 
     // create a robot model (JSON configuration file)
     std::ofstream robot_cfg(robotm_path);
-    robot_cfg<<"{\"robot\":{\"eyez\":1.0,\"mass\":1.0,\"radius\":1.0,\"velocity\":1.0}}";
+    robot_cfg<<"{\"robot\":{\"mass\":1.0,\"radius\":1.0,\"velocity\":1.0}}";
     robot_cfg.close();
 
     // create a region map (GeoTiff image)
@@ -88,7 +88,7 @@ BOOST_AUTO_TEST_CASE( test_raster_to_graph )
     BOOST_CHECK_EQUAL( path.size() , 16 );
 
     robot_cfg.open(robotm_path);
-    robot_cfg<<"{\"robot\":{\"eyez\":1.0,\"mass\":1.0,\"radius\":2.0,\"velocity\":1.0}}";
+    robot_cfg<<"{\"robot\":{\"mass\":1.0,\"radius\":2.0,\"velocity\":1.0}}";
     robot_cfg.close();
     std::string dtm_path = "/tmp/test_gladys_dtm.tif";
     gdal dtm;

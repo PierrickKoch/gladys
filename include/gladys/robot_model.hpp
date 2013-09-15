@@ -41,11 +41,10 @@ public:
     void load(const std::string& filepath) {
         read_json(filepath, pt);
         // throw an exception if a key is not found
-        if (pt.get<double>("robot.eyez")     <= 0 or
-            pt.get<double>("robot.mass")     <= 0 or
+        if (pt.get<double>("robot.mass")     <= 0 or
             pt.get<double>("robot.radius")   <= 0 or
             pt.get<double>("robot.velocity") <= 0 )
-            throw std::runtime_error("[robot_model] eyez, mass, radius and velocity must be positive");
+            throw std::runtime_error("[robot_model] mass, radius and velocity must be positive");
     }
 
     /* TODO get a **dymanic** map for weight function
@@ -58,22 +57,6 @@ public:
        string("SLOPE")      -> float(0.6)
        ...
      */
-
-    /** get the Z position of the eye sensor
-     * (relative to the ground level, aka. sensor's height)
-     *
-     * used to build the visibility map
-     * this is acceptable for this version,
-     * but we later need to have a more precise sensor model
-     * (orientation and field of view)
-     */
-    double get_eyez() const {
-        return pt.get<double>("robot.eyez");
-    }
-
-    void set_eyez(double eyez) {
-        pt.put("robot.eyez", eyez);
-    }
 
     double get_mass() const {
         return pt.get<double>("robot.mass");
@@ -99,6 +82,11 @@ public:
         pt.put("robot.velocity", velocity);
     }
 
+    /** get the position of the eye sensor
+     *
+     * (relative to the ground level, aka. sensor's height)
+     * used to build the visibility map
+     */
     point_xyzt_t get_sensor_pos() const {
         point_xyzt_t p ;
         p[0] = pt.get<double>("sensor.x");
