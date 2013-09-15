@@ -21,7 +21,7 @@ namespace gladys {
 
 typedef std::array<double, 2> point_xy_t;  // XY
 typedef std::array<double, 3> point_xyz_t; // XYZ
-typedef std::array<double, 4> point_xyzt_t; // XYZ + Thêta
+typedef std::array<double, 4> point_xyzt_t; // XYZ + Theta
 typedef std::vector<point_xy_t> points_t; // list of points
 typedef std::deque<point_xy_t> path_t; // path = deque for push_front
 

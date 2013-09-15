@@ -25,9 +25,8 @@ namespace gladys {
 class visibility_map {
     gdal dtm; // digital terrain map (multi-layers GeoTiff)
     robot_model rmdl;
-
-    size_t width  = dtm.get_width();    // dtm width
-    size_t height = dtm.get_height();   // dtm height
+    size_t width;  // dtm width
+    size_t height; // dtm height
 
     void _load();
 
@@ -68,7 +67,7 @@ public:
      *
      */
     double idx( const point_xy_t& p ) const {
-        return p[0] + p[1]*width ;
+        return p[0] + p[1] * width;
     }
 
 
