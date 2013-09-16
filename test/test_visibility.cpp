@@ -26,11 +26,13 @@ BOOST_AUTO_TEST_CASE( test_visibility_map )
 
     // create a robot model (JSON configuration file)
     std::ofstream robot_cfg(robotm_path);
-    robot_cfg   << "{"
-                << "\"robot\":{\"mass\":1.0,\"radius\":1.0,\"velocity\":1.0},"
-                << "\"sensor\":{\"range\":20.0,\"fov\":6.28,"
-                << "\"pose\":{\"x\":0.1,\"y\":0.2,\"z\":0.7,\"t\":0.0}"
-                << "}" ;
+    robot_cfg
+        << "{"
+            << "\"robot\":{\"mass\":1.0,\"radius\":1.0,\"velocity\":1.0},"
+            << "\"sensor\":{\"range\":20.0,\"fov\":6.28,"
+                <<   "\"pose\":{\"x\":0.1,\"y\":0.2,\"z\":0.7,\"t\":0.0}"
+            << "}"
+        << "}" ;
     robot_cfg.close();
 
     // create a dtm map (GeoTiff image)
