@@ -32,8 +32,8 @@ typedef struct {
     double distance;
 } motion_constraints_t;
 
-typedef std::pair<points_t, float> points_prob_t;
-typedef std::vector<points_prob_t> points_probs_t;
+typedef std::pair<point_xy_t, float> points_prob_t;
+typedef std::vector<points_prob_t>   points_probs_t;
 typedef struct {} behaviour_t;
 
 /*
@@ -62,29 +62,30 @@ public:
     }
 
     /* state */
-    state_t get_current_state();
-    state_t create_new_state(int P, int A);
-    void load_state(int id);
-    void delete_state(int id);
-    void clear_old_state(); // clear all except current
+    state_t get_current_state() const;
+    state_t create_new_state(int P, int A) const;
+    void load_state(int id) const;
+    void delete_state(int id) const;
+    void clear_old_state() const; // clear all except current
     /* motion */
     points_t accessibility(const points_t& start,
-        const motion_constraints_t& constraints);
+        const motion_constraints_t& constraints) const;
     /* simulation */
     points_probs_t simulation(const points_t& start,
-        const motion_constraints_t& constraints, behaviour_t behaviour);
+        const motion_constraints_t& constraints, behaviour_t behaviour) const;
     /* navigation */
     path_cost_util_t navigation(const points_t& start, const points_t& goal,
         int optimisation, const motion_constraints_t& constraints);
     /* perception TODO location = <X,Y,W> */
-    bool is_visible(const point_xy_t& locA, const point_xy_t& locB);
-    points_probs_t can_see(int sensor, const points_t& location);
-    points_t is_visible_from(int sensor, const points_t& visible, float qmin);
-    bool test_visibility_link(int sensor, const points_t& location,
-        const points_t& visible,float qmin);
-    double look_at(int sensor, const points_t& observe);
+    bool is_visible(const point_xy_t& locA, const point_xy_t& locB) const;
+    points_probs_t can_see(const point_xy_t& locA, const points_t& llocB) const;
+    points_t is_visible_from(const point_xy_t& locA, const points_t& llocB,
+        float qmin) const;
+    bool test_visibility_link(const points_t& llocA, const points_t& llocB,
+        float qmin) const;
+    double look_at(int sensor, const points_t& observe) const;
     /* communication location = <X,Y,Z> */
-    bool can_communicate(const point_xyz_t& locA, const point_xyz_t& locB);
+    bool can_communicate(const point_xyz_t& locA, const point_xyz_t& locB) const;
 
 };
 

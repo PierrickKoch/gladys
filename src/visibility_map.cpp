@@ -23,7 +23,7 @@ void visibility_map::_load() {//{{{
 }//}}}
 
 /* computing function */
-bool visibility_map::is_visible( const point_xy_t& s, const point_xy_t& t) {//{{{
+bool visibility_map::is_visible( const point_xy_t& s, const point_xy_t& t) const {//{{{
     // gdal::raster aka. vector<float>
     const auto& heightmap = get_heightmap();
 

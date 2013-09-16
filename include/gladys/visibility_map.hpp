@@ -57,7 +57,7 @@ public:
      * @returns true if visible.
      *
      */
-    bool is_visible( const point_xy_t& s, const point_xy_t& t) ;
+    bool is_visible( const point_xy_t& s, const point_xy_t& t) const ;
 
     /** Get the index of the point in the raster
      *
