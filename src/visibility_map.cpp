@@ -24,25 +24,25 @@ void visibility_map::_load() {//{{{
 
 /* computing function */
 bool visibility_map::is_visible( const point_xy_t& s, const point_xy_t& t) {//{{{
-
-    /* init */
-    bool visible = true ;
     // gdal::raster aka. vector<float>
     const auto& heightmap = get_heightmap();
 
-    point_xyzt_t _s = rmdl.get_sensor_pos() ; // relative sensor position
+    point_xyzt_t _s = rmdl.get_sensor_pose() ; // relative sensor position
     point_xy_t ns ;   // sensor position
     ns[0] = s[0] + _s[0] ; // x
     ns[1] = s[1] + _s[1] ; // y
 
     /* Check trivial case where s is next to t */
-    if ( distance( s, t ) < 1.0 )
-        return visible ;
-    // TODO: check if == is well defined
+    double distance_st = distance( s, t );
+    // TODO check if this threshold is valid (robot.radius)
+    if ( distance_st <= rmdl.get_radius() )
+        return true ;
+    else if ( distance_st > rmdl.get_sensor_range() )
+        return false ;
 
     // From now, dist( ns, t) > 0
     /* Get the projection of the visibility line with Bresenham's line algorithm */
-    points_t line = bresenham( s, t) ;
+    points_t line = bresenham( s, t ) ;
 
     /* Test the visibility link along the line  :
      * for each point from the Bresenham's line, we check the height :
@@ -65,13 +65,11 @@ bool visibility_map::is_visible( const point_xy_t& s, const point_xy_t& t) {//{{
     for ( auto& p: line) {
         d = distance( s, p ) ;
         z = heightmap[ idx(p) ] ;
-        if ( a*d + z - zs > 0 ) {
-            visible = false ;
-            break;
-        }
+        if ( a*d + z - zs > 0 )
+            return false ;
     }
 
-    return visible ;
+    return true ;
 }//}}}
 
 

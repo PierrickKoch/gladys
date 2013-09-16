@@ -86,22 +86,38 @@ public:
      *
      * (relative to the ground level, aka. sensor's height)
      * used to build the visibility map
-     * we might need to consider a field of view as well
+     * we need to consider a better orientation for flying observers
      */
-    point_xyzt_t get_sensor_pos() const {
+    point_xyzt_t get_sensor_pose() const {
         point_xyzt_t p ;
-        p[0] = pt.get<double>("sensor.x");
-        p[1] = pt.get<double>("sensor.y");
-        p[2] = pt.get<double>("sensor.z");
-        p[3] = pt.get<double>("sensor.t");
+        p[3] = pt.get<double>("sensor.pose.x");
+        p[3] = pt.get<double>("sensor.pose.y");
+        p[3] = pt.get<double>("sensor.pose.z");
+        p[3] = pt.get<double>("sensor.pose.t");
         return p ;
     }
 
-    void set_sensor_pos( point_xyzt_t p ) {
-        pt.put("sensor.x", p[0] );
-        pt.put("sensor.y", p[1] );
-        pt.put("sensor.z", p[2] );
-        pt.put("sensor.t", p[3] );
+    double get_sensor_fov() const {
+        return pt.get<double>("sensor.fov");
+    }
+
+    double get_sensor_range() const {
+        return pt.get<double>("sensor.range");
+    }
+
+    void set_sensor_pose( point_xyzt_t p ) {
+        pt.put("sensor.pose.x", p[0] );
+        pt.put("sensor.pose.y", p[1] );
+        pt.put("sensor.pose.z", p[2] );
+        pt.put("sensor.pose.t", p[3] );
+    }
+
+    void set_sensor_fov(double fov) {
+        pt.put("sensor.fov", fov );
+    }
+
+    void set_sensor_range(double range) {
+        pt.put("sensor.range", range );
     }
 
     void save(const std::string& filepath) const {
