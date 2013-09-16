@@ -10,13 +10,15 @@
 #include <ostream> // standard C error stream
 #include <cstdlib> // exit status, rand
 #include <ctime>   // time
-
-#include <string>
-#include <sstream>
+#include <string>  // stoul
 
 #include "gladys/gdal.hpp"
 #include "gladys/visibility_map.hpp"
 
+/**
+ * time ./test/bench_visibility ~/sandbox/gladys/tmp/caylusRessacLidar-0.5.dtm.tif ~/sandbox/gladys/tmp/robot.json 1000000
+ * 1M points take ~7.6 seconds
+ */
 int main(int argc, char * argv[])
 {
     if (argc < 4) {
@@ -28,11 +30,11 @@ int main(int argc, char * argv[])
     // create a visibility map from the dtm
     gladys::visibility_map vm;
     vm.load(argv[1], argv[2]);
-    double random_x, random_y,
-           coef_x = vm.get_width()  / RAND_MAX,
-           coef_y = vm.get_height() / RAND_MAX;
+    double coef_x = static_cast<double>( vm.get_width()  ) / RAND_MAX,
+           coef_y = static_cast<double>( vm.get_height() ) / RAND_MAX;
 
     size_t n_points = std::stoul(argv[3]);
+    // std::cout<<"bench "<<n_points<<" points, ["<<coef_x<<","<<coef_y<<"]"<<std::endl;
     std::srand(std::time(0)); //use current time as seed for random generator
     for (size_t i = 0; i < n_points; i++) {
         p_start[0] = coef_x * std::rand();
