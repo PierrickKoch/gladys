@@ -20,7 +20,7 @@ echo "Changes since v$__OLD_VER:" > $__SHORTLG
 echo "" >> $__SHORTLG
 git shortlog v$__OLD_VER..HEAD >> $__SHORTLG
 
-vi CMakeLists.txt # edit new version TODO use `sed` s/$__OLD_VER/$__NEW_VER/g
+sed -i.bak -e "s/set(PACKAGE_VERSION \"$__OLD_VER\")/set(PACKAGE_VERSION \"$__NEW_VER\")/" CMakeLists.txt
 
 git commit . -m"Bump to v$__NEW_VER"
 git tag v$__NEW_VER -F $__SHORTLG
@@ -28,7 +28,7 @@ git tag v$__NEW_VER -F $__SHORTLG
 git archive --format=tar --prefix=$__DIRNAME/ v$__NEW_VER | gzip > $__RPKROOT/distfiles/$__ARCHIVE
 cd $__RPKROOT/$__IS_WIP_$__PKGNAME
 
-vi Makefile # edit new version TODO use `sed` VERSION=$__NEW_VER
+sed -i.bak -e "s/VERSION=\([\t]*\)$__OLD_VER/VERSION=\1$__NEW_VER/" Makefile
 
 make distinfo
 make clean
@@ -40,4 +40,8 @@ test `diff -u0 PLIST PLIST.guess | wc -l` -gt 5 && mv PLIST.guess PLIST
 git commit . -m"[$__IS_WIP_$__PKGNAME] Update to $__DIRNAME"
 
 scp $__RPKROOT/distfiles/$__ARCHIVE anna.laas.fr:/usr/local/openrobots/distfiles/$__PKGNAME/
+
+echo "You need to push in '$__RPKROOT/$__IS_WIP_$__PKGNAME' and '$OLDPWD'"
+echo "... After checking everything is fine :-)"
+
 rm $__SHORTLG
