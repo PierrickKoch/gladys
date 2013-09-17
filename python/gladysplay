@@ -34,23 +34,33 @@ class ImageLabel(QtGui.QLabel):
     def __init__(self):
         QtGui.QLabel.__init__(self)
         self.path = QtGui.QPolygonF()
+        self.frontiers = QtGui.QPolygonF()
     def set_image(self, image):
         self.setPixmap(QtGui.QPixmap.fromImage(image))
     def paint_path(self, path):
-        self.path = QtGui.QPolygonF()
-        for x, y in path:
-            self.path.append(QtCore.QPointF(x, y))
+        self.path = QtGui.QPolygonF([ QtCore.QPointF(x, y) for x, y in path ])
+        self.repaint()
+    def paint_frontiers(self, frontiers):
+        self.frontiers = QtGui.QPolygonF([ QtCore.QPointF(x, y) for frontier \
+            in frontiers for x, y in frontier ])
         self.repaint()
     def paintEvent(self, event):
         QtGui.QLabel.paintEvent(self, event)
         painter = QtGui.QPainter(self)
         painter.setPen(QtGui.QPen(QtCore.Qt.black, 2))
         painter.drawPoints(self.path)
+        painter.setPen(QtGui.QPen(QtCore.Qt.white, 2))
+        painter.drawPoints(self.frontiers)
 
 class MainWindow(QtGui.QMainWindow):
     def __init__(self, argv):
         super(MainWindow, self).__init__()
         self.ng = self.start = self.end = None
+        # Frontier exploration
+        self.frontier_detector= None
+        self.frontiers = []
+        # Don't display by default
+        self.display_frontiers = False
 
         # image viewer
         self.image_label = ImageLabel()
@@ -72,6 +82,7 @@ class MainWindow(QtGui.QMainWindow):
               " - C         = clear start and end points\n"
               " - N         = switch {region,weight} view\n"
               " - L         = switch {gray,hsvh} LUT\n"
+              " - F         = compute frontiers for exploration\n"
               " - Escape    = quit\n")
 
         # key bindings
@@ -81,6 +92,7 @@ class MainWindow(QtGui.QMainWindow):
         self.bind(QtCore.Qt.Key_C,      self.clear_points)
         self.bind(QtCore.Qt.Key_N,      self.switch_raster)
         self.bind(QtCore.Qt.Key_L,      self.switch_lut)
+        self.bind(QtCore.Qt.Key_F,      self.start_frontiers_computation)
 
         self._raster = ""
         self._images = {}
@@ -93,6 +105,9 @@ class MainWindow(QtGui.QMainWindow):
         print("Loading graph...")
         # start to load the graph in 50ms
         QtCore.QTimer.singleShot(50, self.load_nav_graph)
+        print("Loading frontier module...")
+        # start to load the module in 50ms
+        QtCore.QTimer.singleShot(50, self.load_frontiers)
 
     def i8u2rgb(self, width, height, image8u):
         """ Convert a grayscale image to RGB """
@@ -172,6 +187,14 @@ class MainWindow(QtGui.QMainWindow):
         print("Graph loaded (%.3fs)" % (time.time() - t_start) )
         self.switch_raster()
 
+    def load_frontiers(self):
+        t_start = time.time()
+        self.frontier_detector = gladys.frontier_detector(self.fregion, self.frobot)
+        #TODO Do not duplicate the weight_map ! (re-use self.ng)
+        print("Frontier_Exploration loaded (%.3fs)" % (time.time() - t_start) )
+        self.switch_raster()
+
+
     def update_path(self, path):
         self.image_label.paint_path(path)
 
@@ -188,6 +211,22 @@ class MainWindow(QtGui.QMainWindow):
         self.update_path(pp)
         self.start = self.end = None
 
+    def compute_frontiers(self):
+        if not self.frontier_detector:
+            print("[error] not ready to compute frontiers: no frontier module :-( ")
+            return
+
+        print("Computing frontiers for exploration from the seed %s" % str(self.start) )
+        t_start = time.time()
+        self.frontiers = self.frontier_detector.compute_frontiers(self.start) # use the default algorithm
+        print("Got %i frontiers (%.3fs)" % ( len(self.frontiers), \
+            (time.time() - t_start) ) )
+        # Display
+        self.display_frontiers = False # to force toggle behaviour into display mode
+        self.image_label.paint_frontiers(self.frontiers)
+        self.start = self.end = None
+
+
     def bind(self, key, func):
         self._bindings[key] = func
 
@@ -197,6 +236,13 @@ class MainWindow(QtGui.QMainWindow):
             QtCore.QTimer.singleShot(50, self.search)
         else:
             print("select start and end points")
+
+    def start_frontiers_computation(self):
+        if self.start :
+            # start search in 50ms
+            QtCore.QTimer.singleShot(50, self.compute_frontiers)
+        else:
+            print("Please select start point")
 
     def clear_points(self):
         self.start = self.end = None
