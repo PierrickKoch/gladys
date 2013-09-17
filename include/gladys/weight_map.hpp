@@ -26,6 +26,7 @@ class weight_map {
     gdal terrains; // probalistic models (multi-layers GeoTiff)
     gdal map; // weight map (after inflating robot size)
     robot_model rmdl;
+    size_t width ;
     enum {W_FLAG_OBSTACLE=-2, W_UNKNOWN=-1};
 public:
     /* Names of the visual terrain classes */
@@ -123,6 +124,10 @@ public:
 
     double get_utm_pose_y() const {
         return map.get_utm_pose_y();
+    }
+
+    double idx(const point_xy_t &p) const {
+        return ( p[0]+p[1]*width ) ;
     }
 
     void save(const std::string& filepath) {
