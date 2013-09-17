@@ -12,6 +12,11 @@
 #include "gladys/visibility_map.hpp"
 #include "gladys/bresenham.hpp"
 
+// Espilon, for float comparison
+#ifndef EPS
+#define EPS 0.05
+#endif
+
 namespace gladys {
 
 void visibility_map::_load() {//{{{
@@ -32,12 +37,12 @@ bool visibility_map::is_visible( const point_xy_t& s, const point_xy_t& t) const
     ns[0] = s[0] + _s[0] ; // x
     ns[1] = s[1] + _s[1] ; // y
 
-    /* Check trivial case where s is next to t */
+    /* Check trivial cases : "s is next to t" or "t out of range" */
     double distance_st = distance( s, t );
     // TODO check if this threshold is valid (robot.radius)
-    if ( distance_st <= rmdl.get_radius() )
+    if ( distance_st < rmdl.get_radius()  + EPS )
         return true ;
-    else if ( distance_st > rmdl.get_sensor_range() )
+    else if ( distance_st > rmdl.get_sensor_range() - EPS )
         return false ;
 
     // From now, dist( ns, t) > 0
@@ -65,7 +70,7 @@ bool visibility_map::is_visible( const point_xy_t& s, const point_xy_t& t) const
     for ( auto& p: line) {
         d = distance( s, p ) ;
         z = heightmap[ idx(p) ] ;
-        if ( a*d + z - zs > 0 )
+        if ( a*d + z - zs > 0 + EPS )
             return false ;
     }
 
