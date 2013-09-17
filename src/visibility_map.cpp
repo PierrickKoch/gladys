@@ -22,8 +22,6 @@ namespace gladys {
 void visibility_map::_load() {//{{{
     width  = dtm.get_width();
     height = dtm.get_height();
-    // gdal::raster aka. vector<float>
-    const auto& heightmap = get_heightmap();
     // TODO cache stuff
 }//}}}
 
@@ -31,6 +29,7 @@ void visibility_map::_load() {//{{{
 bool visibility_map::is_visible( const point_xy_t& s, const point_xy_t& t) const {//{{{
     // gdal::raster aka. vector<float>
     const auto& heightmap = get_heightmap();
+    const auto& npointsmap = get_npointsmap();
 
     point_xyzt_t _s = rmdl.get_sensor_pose() ; // relative sensor position
     point_xy_t ns ;   // sensor position
@@ -43,6 +42,13 @@ bool visibility_map::is_visible( const point_xy_t& s, const point_xy_t& t) const
     if ( distance_st < rmdl.get_radius()  + EPS )
         return true ;
     else if ( distance_st > rmdl.get_sensor_range() - EPS )
+        return false ;
+
+    /* Check if both s and t are known (we need zmax !)
+     * else we cannot say if they are visible or not,
+     * and assume there is no visibility link by default */
+    if ( get_npointsmap()[ idx(s) ] < 1 - EPS
+    ||   get_npointsmap()[ idx(t) ] < 1 - EPS)
         return false ;
 
     // From now, dist( ns, t) > 0
@@ -68,6 +74,9 @@ bool visibility_map::is_visible( const point_xy_t& s, const point_xy_t& t) const
 
     // test the condition for each point of the line
     for ( auto& p: line) {
+        // if p is unknown (never observed), then assume we can see though it.
+        if ( get_npointsmap()[ idx(p) ] < 1 - EPS )
+            continue;
         d = distance( s, p ) ;
         z = heightmap[ idx(p) ] ;
         if ( a*d + z - zs > 0 + EPS )
