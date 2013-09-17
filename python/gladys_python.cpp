@@ -12,6 +12,7 @@
 
 #include "gladys/gdal.hpp"
 #include "gladys/nav_graph.hpp"
+#include "gladys/frontier_exploration.hpp"
 
 namespace bpy = boost::python;
 
@@ -36,6 +37,28 @@ static bpy::list py_search(gladys::nav_graph& self, bpy::tuple start, bpy::tuple
     bpy::list retval;
     for (auto &i : cxx_retval)
         retval.append(bpy::make_tuple(i[0], i[1]));
+    return retval;
+}
+
+static bpy::list py_compute_frontiers(gladys::frontier_detector& self, bpy::tuple seed) {
+    // optionally check that seed has the required
+    // size of 2 using bpy::len()
+
+    // convert arguments and call the C++ search method
+    gladys::point_xy_t _seed = {bpy::extract<double>(seed[0]), bpy::extract<double>(seed[1])};
+    self.compute_frontiers(_seed);
+    const std::vector< gladys::points_t > cxx_retval = self.get_frontiers();
+
+    // converts the returned value into a list of lists of 2-tuples (= list of
+    // frontiers)
+    bpy::list retval;
+    for (auto & _f : cxx_retval) {
+        bpy::list f;
+        for (auto &p : _f)
+            f.append(bpy::make_tuple(p[0], p[1]));
+        retval.append(f);
+    }
+
     return retval;
 }
 
@@ -120,5 +143,9 @@ BOOST_PYTHON_MODULE(libgladys_python)
         .def("get_map", &py_weight_map_get_map)
         .def("get_region", &py_weight_map_get_region)
         .def("get_weight_band_uchar", &py_weight_map_get_weight_band_uchar)
+        ;
+    // frontier_exploration
+    bpy::class_<gladys::frontier_detector>("frontier_detector", bpy::init<std::string, std::string>())
+        .def("compute_frontiers", &py_compute_frontiers)
         ;
 }
