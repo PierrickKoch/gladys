@@ -9,6 +9,7 @@ add_gladys_test(test_dstar)
 add_gladys_test(test_bresenham)
 add_gladys_test(test_visibility)
 add_gladys_test(test_frontier)
+add_gladys_test(test_cache)
 
 add_executable(bench_visibility bench_visibility.cpp)
 target_link_libraries(bench_visibility gladys)
