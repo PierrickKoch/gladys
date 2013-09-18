@@ -26,8 +26,12 @@ class nav_graph {
     weight_map map;
     graph_t g;
     vertex_map_t vertices;
+    size_t width;
+    size_t height;
+    double scale_x;
+    double scale_y;
 
-    vertex_t get_vertex_or_create(const double& x, const double &y) {
+    vertex_t get_vertex_or_create(double x, double y) {
         point_xy_t p = {x, y};
         return get_vertex_or_create(p);
     }
@@ -55,6 +59,10 @@ public:
     }
     void load(const std::string& f_region, const std::string& f_robot_model) {
         map.load(f_region, f_robot_model);
+        width   = map.get_width();
+        height  = map.get_height();
+        scale_x = map.get_scale_x();
+        scale_y = map.get_scale_y();
         _load();
     }
     void _load();
@@ -66,7 +74,7 @@ public:
         vertices[p] = v;
         return v;
     }
-    vertex_t new_vertex(const double& x, const double &y) {
+    vertex_t new_vertex(double x, double y) {
         point_xy_t p = {x, y};
         return new_vertex(p);
     }

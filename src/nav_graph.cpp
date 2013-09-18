@@ -18,19 +18,17 @@
 namespace gladys {
 
 void nav_graph::_load() {
-    size_t px_x, px_y, width = map.get_width();
-    vertex_t vert_w, vert_n, vert_e, vert_s;
-    double scale_x = map.get_scale_x(), scale_y = map.get_scale_y();
     float weight;
-    gdal::raster weight_map = map.get_weight_band();
+    vertex_t vert_w, vert_n, vert_e, vert_s;
+    const gdal::raster& weight_map = map.get_weight_band();
     // most of the time this is equal to sqrt(2)/2
     float hypotenuse = 0.5 * std::sqrt( scale_x*scale_x + scale_y*scale_y );
 
     // XXX wrong, it must come from the under layer
     time_t t = std::time(0);
 
-    for (px_x = 0; px_x < map.get_width(); px_x++)
-    for (px_y = 0; px_y < map.get_height(); px_y++) {
+    for (size_t px_x = 0; px_x < width;  px_x++)
+    for (size_t px_y = 0; px_y < height; px_y++) {
         // weight is a float in ]1.0, 100.0]
         // or > if obstacle (+inf)
         // or < if unknown
@@ -52,7 +50,7 @@ void nav_graph::_load() {
         edge e;
         e.t = t;
         e.weight = hypotenuse * weight;
-        boost::add_edge(vert_w, vert_n, e , g);
+        boost::add_edge(vert_w, vert_n, e, g);
         boost::add_edge(vert_n, vert_e, e, g);
         boost::add_edge(vert_e, vert_s, e, g);
         boost::add_edge(vert_s, vert_w, e, g);
