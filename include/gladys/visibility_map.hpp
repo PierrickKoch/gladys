@@ -75,6 +75,10 @@ public:
         return dtm.get_band("Z_MAX");
     }
 
+    const gdal::raster& get_npointsmap() const {
+        return dtm.get_band("N_POINTS");
+    }
+
     const gdal& get_dtm() const {
         return dtm;
     }
