@@ -13,3 +13,6 @@ add_gladys_test(test_cache)
 
 add_executable(bench_visibility bench_visibility.cpp)
 target_link_libraries(bench_visibility gladys)
+
+add_executable(bench_areas bench_areas.cpp)
+target_link_libraries(bench_areas gladys)

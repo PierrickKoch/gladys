@@ -62,6 +62,15 @@ static bpy::list py_compute_frontiers(gladys::frontier_detector& self, bpy::tupl
     return retval;
 }
 
+static bpy::list py_get_areas(gladys::nav_graph& self, double radius) {
+    gladys::points_t cxx_retval = self.get_areas(radius);
+    // converts the returned value into a list of 2-tuples
+    bpy::list retval;
+    for (auto &i : cxx_retval)
+        retval.append(bpy::make_tuple(i[0], i[1]));
+    return retval;
+}
+
 static bpy::list py_get_band(gladys::gdal& self, const std::string& name) {
     return std_vector_to_py_list(self.get_band(name));
 }
@@ -129,6 +138,8 @@ BOOST_PYTHON_MODULE(libgladys_python)
         .def("save", &gladys::nav_graph::save)
         // nav_graph::astar_search
         .def("search", &py_search)
+        // nav_graph::astar_search
+        .def("get_areas", &py_get_areas)
         ;
     // weight_map
     bpy::class_<gladys::weight_map>("weight_map", bpy::init<>())

@@ -27,6 +27,8 @@ void nav_graph::_load() {
     // XXX wrong, it must come from the under layer
     time_t t = std::time(0);
 
+    std::cout<<"[nav graph tmp dbg] for for"<<std::endl;
+
     for (size_t px_x = 0; px_x < width;  px_x++)
     for (size_t px_y = 0; px_y < height; px_y++) {
         // weight is a float in ]1.0, 100.0]
@@ -60,6 +62,7 @@ void nav_graph::_load() {
         e.weight = scale_x * weight;
         boost::add_edge(vert_w, vert_e, e, g); // length = scale_x
     }
+    std::cout<<"[nav graph tmp dbg] end for for"<<std::endl;
 }
 
 path_t nav_graph::astar_search(const point_xy_t& start, const point_xy_t& goal) {
@@ -129,8 +132,8 @@ path_cost_util_t nav_graph::astar_search(const points_t& start, const points_t& 
 
 void 
 nav_graph::write_graphviz(std::ostream& out) const {
-    std::vector<std::string> vert_label(vertices.size());
-    for (auto& kv : vertices)
+    std::vector<std::string> vert_label(vertices_graphviz.size());
+    for (auto& kv : vertices_graphviz)
         vert_label[kv.second] = to_string(kv.first);
     // TODO write edge weight as well
     boost::write_graphviz( out, g,

@@ -186,6 +186,9 @@ class MainWindow(QtGui.QMainWindow):
         self.ng = gladys.nav_graph(self.fregion, self.frobot)
         print("Graph loaded (%.3fs)" % (time.time() - t_start) )
         self.switch_raster()
+        # t_start = time.time()
+        # TODO areas = self.ng.get_areas(10.0)
+        # print("Got areas %s (%.3fs)" % (str(areas), (time.time() - t_start) ) )
 
     def load_frontiers(self):
         t_start = time.time()

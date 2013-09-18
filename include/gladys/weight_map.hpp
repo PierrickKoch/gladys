@@ -95,6 +95,9 @@ public:
         return retval;
     }
 
+    const robot_model& get_robot_model() const {
+        return rmdl;
+    }
     const gdal& get_map() const {
         return map;
     }
