@@ -16,6 +16,7 @@
 #include <stdexcept>    // exceptions
 #include <deque>
 #include <vector>
+#include <limits> // for numeric_limits::infinity
 
 //#include <boost/graph/adjacency_list.hpp>
 
@@ -51,7 +52,7 @@ namespace gladys {
         // - inside the map
         assert( seed[0] > 0 && seed[0] < (width-1) && seed[1] > 0 && seed[1] < (height-1) );
         // - within the known area and not an obstacle
-        assert( data[ map.idx( seed ) ]  > 0 && data[ map.idx( seed ) ] != HUGE_VALF );
+        assert( data[ map.idx( seed ) ]  > 0 && data[ map.idx( seed ) ] != std::numeric_limits<float>::infinity() );
 
         /* {{{ compute frontiers with the WFD algorithm
          *
@@ -152,7 +153,7 @@ namespace gladys {
                 // and has at least one neighbour in "Open Space", ie a
                 // neighbour in the known area ard which is not an obstacle.
                 && ( ! (data[ map.idx( i )]  < 0                // unknown
-                    || data[ map.idx( i )] == HUGE_VALF ))) {   // obstacle
+                    || data[ map.idx( i )] == std::numeric_limits<float>::infinity() ))) {   // obstacle
                     // then proceed
                     mQueue.push_back( i );
                     mapOpenList[ map.idx( i )] = true ;
@@ -174,7 +175,7 @@ namespace gladys {
         // A point is a frontier iff it is in the open space 
         // (i.e. it is know and is not an obstacle )
         if ( data[ map.idx( p )]  < 0               // unknown
-        ||   data[ map.idx( p )] == HUGE_VALF )     // obstacle
+        ||   data[ map.idx( p )] == std::numeric_limits<float>::infinity() )     // obstacle
             return false ;
         // and at least one of is neighbour is unknown.
         for ( auto i : find_neighbours( p, height, width) )

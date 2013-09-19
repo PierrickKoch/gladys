@@ -10,8 +10,8 @@
 #ifndef WEIGHT_MAP_HPP
 #define WEIGHT_MAP_HPP
 
-#include <cmath>    // for HUGE_VALF
 #include <string>
+#include <limits> // for numeric_limits::infinity
 
 #include "gladys/gdal.hpp"
 #include "gladys/robot_model.hpp"
@@ -56,7 +56,7 @@ public:
         return weight == W_FLAG_OBSTACLE;
     }
     bool is_obstacle(float weight) const {
-        return weight == HUGE_VALF;
+        return weight == std::numeric_limits<float>::infinity();
     }
 
     /** compute a mix of ponderated classes
@@ -69,7 +69,7 @@ public:
         if (data[NO_3D_CLASS] > 0.9)
             return W_UNKNOWN; // UNKNOWN
         if (data[OBSTACLE] > 0.4) // TODO tune this threshold
-            return HUGE_VALF; // OBSTACLE
+            return std::numeric_limits<float>::infinity(); // OBSTACLE
         else // compute a mix of ponderated classes TODO dynamicaly json conf
             return 1 + 98 * (data[FLAT] * 0.1 + data[ROUGH] * 0.3 + data[SLOPE] * 0.6 );
     }
@@ -87,7 +87,7 @@ public:
             const auto& val = weight[idx];
             if (val < 0)
                 retval[idx] = 0;
-            else if (val == HUGE_VALF)
+            else if (val == std::numeric_limits<float>::infinity())
                 retval[idx] = 255;
             else
                 retval[idx] = std::floor(val * 2.54);
