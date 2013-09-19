@@ -58,8 +58,7 @@ class MainWindow(QtGui.QMainWindow):
         super(MainWindow, self).__init__()
         self.ng = self.start = self.end = None
         # Frontier exploration
-        self.frontier_detector= None
-        self.frontiers = []
+        self.frontier_detector = None
         # Don't display by default
         self.display_frontiers = False
 
@@ -221,15 +220,19 @@ class MainWindow(QtGui.QMainWindow):
 
         print("Computing frontiers for exploration from the seed %s" % str(self.start) )
         t_start = time.time()
-        self.frontiers = self.frontier_detector.compute_frontiers(self.start) # use the default algorithm
-        print("Got %i frontiers (%.3fs)" % ( len(self.frontiers), \
+        frontiers = self.frontier_detector.compute_frontiers(self.start) # use the default algorithm
+        print("Got %i frontiers (%.3fs)" % ( len(frontiers), \
             (time.time() - t_start) ) )
         scale_x = self.wm.get_scale_x()
         scale_y = self.wm.get_scale_y()
         scaled_frontiers = [(x/scale_x, y/scale_y) for x, y in self.frontiers]
         # Display
         self.display_frontiers = False # to force toggle behaviour into display mode
-        self.image_label.paint_frontiers(self.frontiers)
+        scale_x = self._weight.get_scale_x()
+        scale_y = self._weight.get_scale_y()
+        scaled_frontiers = [ (x/scale_x, y/scale_y) for frontier in frontiers \
+                             for x, y in frontier ]
+        self.image_label.paint_frontiers(scaled_frontiers)
         self.start = self.end = None
 
 
