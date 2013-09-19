@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 #include <array>
+#include <cmath>            // std::abs
 #include <sstream>
 #include <iostream>         // cout,cerr,endl
 #include <algorithm>        // for minmax
@@ -152,11 +153,11 @@ public:
     }
 
     double get_scale_x() const {
-        return transform[1]; // pixel width
+        return std::abs(transform[1]); // pixel width
     }
 
     double get_scale_y() const {
-        return transform[5]; // pixel height
+        return std::abs(transform[5]); // pixel height
     }
 
     double get_utm_pose_x() const {
