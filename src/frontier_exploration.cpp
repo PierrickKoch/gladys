@@ -32,13 +32,6 @@ namespace gladys {
 /*{{{ frontier_detector class
  ****************************************************************************/
 
-    /* constructors */
-    frontier_detector::frontier_detector(){}
-
-    frontier_detector::frontier_detector( const std::string& f_region, const std::string& f_robot_model ) {//{{{
-       ng = nav_graph( f_region, f_robot_model ) ;
-    }//}}}
-
     /* computing functions */
     void frontier_detector::compute_frontiers_WFD(const point_xy_t &_seed) {//{{{
         // Get the map

@@ -63,7 +63,7 @@ void nav_graph::_load() {
     }
 }
 
-path_t nav_graph::astar_search(const point_xy_t& start, const point_xy_t& goal) {
+path_t nav_graph::astar_search(const point_xy_t& start, const point_xy_t& goal) const {
     vertex_t goal_v = get_closest_vertex(goal);
     astar_goal_visitor vis(goal_v);
     path_t shortest_path;
@@ -92,7 +92,7 @@ path_t nav_graph::astar_search(const point_xy_t& start, const point_xy_t& goal) 
     return shortest_path;
 }
 
-path_cost_util_t nav_graph::astar_search(const points_t& start, const points_t& goal) {
+path_cost_util_t nav_graph::astar_search(const points_t& start, const points_t& goal) const {
     vertex_t gv;
     vertices_t goal_v;
     for (auto& p : goal)

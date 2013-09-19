@@ -125,7 +125,7 @@ BOOST_PYTHON_MODULE(libgladys_python)
         .def("get_bands_as_uchar", &py_get_bands_as_uchar)
         ;
     // nav_graph
-    bpy::class_<gladys::nav_graph>("nav_graph", bpy::init<std::string, std::string>())
+    bpy::class_<gladys::nav_graph>("nav_graph", bpy::init<gladys::weight_map>())
         .def("get_map", &py_nav_graph_get_map)
         .def("save", &gladys::nav_graph::save)
         // nav_graph::astar_search
@@ -146,7 +146,7 @@ BOOST_PYTHON_MODULE(libgladys_python)
         .def("get_weight_band_uchar", &py_weight_map_get_weight_band_uchar)
         ;
     // frontier_exploration
-    bpy::class_<gladys::frontier_detector>("frontier_detector", bpy::init<std::string, std::string>())
+    bpy::class_<gladys::frontier_detector>("frontier_detector", bpy::init<gladys::nav_graph>())
         .def("compute_frontiers", &py_compute_frontiers)
         ;
 }

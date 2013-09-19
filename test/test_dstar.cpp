@@ -44,7 +44,8 @@ BOOST_AUTO_TEST_CASE( test_dstar )
     region.save(region_path);
 
     // create a navigation graph from the map
-    nav_graph ng(region_path, robotm_path);
+    weight_map wm(region_path, robotm_path);
+    nav_graph ng(wm);
     std::ostringstream oss_graphviz;
     ng.write_graphviz(oss_graphviz);
     ng.write_graphviz(graphv_path); // for debug

@@ -23,7 +23,7 @@ namespace gladys {
  * nav_graph
  */
 class nav_graph {
-    weight_map map;
+    const weight_map& map;
     graph_t g;
     vertex_map_t vertices;
     size_t width;
@@ -44,21 +44,16 @@ class nav_graph {
     }
 
 public:
-    nav_graph() {}
+    //nav_graph() {}
     /** nav_graph constructor
      *
-     * @param f_region path to a region.tif file
-     * (multi-layers terrains classification probabilities, float32)
-     *
-     * @param f_robot_model TODO path to a robot model
-     * to generate the weight map (at least its size)
-     *
+     * @param w_map single layers weight map
      */
-    nav_graph(const std::string& f_region, const std::string& f_robot_model) {
-        load(f_region, f_robot_model);
+    nav_graph(const weight_map& w_map) : map(w_map) {
+        load();//w_map);
     }
-    void load(const std::string& f_region, const std::string& f_robot_model) {
-        map.load(f_region, f_robot_model);
+    void load() {//const weight_map& w_map) {
+        //map = w_map;
         width   = map.get_width();
         height  = map.get_height();
         scale_x = map.get_scale_x();
@@ -70,7 +65,7 @@ public:
     // vertices
     vertex_t new_vertex(const point_xy_t& p) {
         vertex_t v = boost::add_vertex(g);
-		g[v].pt = p;
+        g[v].pt = p;
         vertices[p] = v;
         return v;
     }
@@ -79,15 +74,15 @@ public:
         return new_vertex(p);
     }
 
-    vertex_t get_closest_vertex(const point_xy_t& p) {
-        vertex_map_t::iterator it = vertices.find(p);
+    vertex_t get_closest_vertex(const point_xy_t& p) const {
+        vertex_map_t::const_iterator it = vertices.find(p);
         if (it != vertices.end())
             return it->second;
 
         // else find closest vertex TODO optimize (scan all points)
         vertex_t closest_v;
         double tmp, closest_d = 1E+37;
-        for (auto& kv : vertices) {
+        for (const auto& kv : vertices) {
             tmp = distance_sq(p, kv.first);
             if (tmp < closest_d) {
                 closest_v = kv.second;
@@ -97,8 +92,8 @@ public:
         return closest_v;
     }
 
-    path_t astar_search(const point_xy_t& start, const point_xy_t& goal);
-    path_cost_util_t astar_search(const points_t& start, const points_t& goal);
+    path_t astar_search(const point_xy_t& start, const point_xy_t& goal) const;
+    path_cost_util_t astar_search(const points_t& start, const points_t& goal) const;
 
     /** Write graphviz .dot file
      *
@@ -110,7 +105,7 @@ public:
     void write_graphviz(std::ostream& out = std::cout) const;
     void write_graphviz(const std::string& filepath) const;
 
-    void save(const std::string& filepath) {
+    void save(const std::string& filepath) const {
         map.save(filepath);
     }
     const weight_map& get_map() const {

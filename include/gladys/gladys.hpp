@@ -40,6 +40,7 @@ typedef struct {} behaviour_t;
  * gladys
  */
 class gladys {
+    weight_map w_map;
     nav_graph navigation_graph;
     visibility_map visibility;
 public:
@@ -56,10 +57,10 @@ public:
      *
      */
     gladys(const std::string& f_region, const std::string& f_dtm,
-            const std::string& f_robot_model) {
-        navigation_graph.load(f_region, f_robot_model);
-        visibility.load(f_dtm, f_robot_model);
-    }
+            const std::string& f_robot_model) : 
+        w_map(f_region, f_robot_model), 
+        navigation_graph(w_map),
+        visibility(f_dtm, f_robot_model) {}
 
     /* state */
     state_t get_current_state() const;

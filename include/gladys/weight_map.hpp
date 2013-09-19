@@ -32,6 +32,10 @@ public:
     /* Names of the visual terrain classes */
     enum {NO_3D_CLASS, FLAT, OBSTACLE, ROUGH, SLOPE, N_RASTER};
 
+    weight_map() {}
+    weight_map(const std::string& f_region, const std::string& f_robot_model) {
+        load(f_region, f_robot_model);
+    }
     /** load region and robot model
      *
      * @param f_region path to a region.tif file
@@ -65,7 +69,7 @@ public:
      * @returns weight in [1, 100] or -1 if unknown
      *
      */
-    float compute_weight(const gdal::raster& data) {
+    float compute_weight(const gdal::raster& data) const {
         if (data[NO_3D_CLASS] > 0.9)
             return W_UNKNOWN; // UNKNOWN
         if (data[OBSTACLE] > 0.4) // TODO tune this threshold
@@ -130,7 +134,7 @@ public:
         return ( p[0]+p[1]*width ) ;
     }
 
-    void save(const std::string& filepath) {
+    void save(const std::string& filepath) const {
         map.save(filepath);
     }
 };

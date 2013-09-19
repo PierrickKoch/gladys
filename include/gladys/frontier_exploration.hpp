@@ -58,9 +58,9 @@ std::ostream& operator<< (std::ostream &out, const f_attributes& f) {//{{{
 /* frontier_detector class */
 class frontier_detector {
 
-private :
+private:
     /* internal data */
-    nav_graph ng ;                              // use for its weight_map and
+    const nav_graph& ng ;                       // use for its weight_map and
                                                 // the path pjanning
                                                 // TODO  use as constant
     std::vector< points_t > frontiers ;         // the list of the frontiers
@@ -128,18 +128,11 @@ public:
     /* Name of the available algorithms to compute frontiers */
     typedef enum {WFD, FFD} algo_t;
 
-    frontier_detector() ;
     /** frontier_detector constructor
      *
-     * Create a nav_graph which loads region and robot model
-     *
-     * @param f_region path to a region.tif file
-     * (multi-layers terrains classification probabilities, float32)
-     *
-     * @param f_robot_model to generate the weight map (at least its size)
-     *
+     * @param nav_graph graph
      */
-    frontier_detector( const std::string& f_region, const std::string& f_robot_model ) ;
+    frontier_detector( const nav_graph& _ng ) : ng(_ng) {}
 
     /* public computing functions */
     /** compute_frontiers

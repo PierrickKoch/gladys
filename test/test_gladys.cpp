@@ -19,18 +19,6 @@
 
 BOOST_AUTO_TEST_SUITE( gladys )
 
-BOOST_AUTO_TEST_CASE( test_write_graphviz )
-{
-    nav_graph obj;
-    obj.new_vertex(1,2);
-    obj.new_vertex(2,1);
-    obj.new_vertex(3,2);
-    std::ostringstream oss_graphviz;
-    obj.write_graphviz(oss_graphviz);
-    BOOST_TEST_MESSAGE( "oss_graphviz.size() = " << oss_graphviz.str().size() );
-    BOOST_CHECK_EQUAL( oss_graphviz.str().size() , 69 );
-}
-
 BOOST_AUTO_TEST_CASE( test_raster_to_graph )
 {
     std::string region_path = "/tmp/test_gladys_raster_to_graph.tif";
@@ -53,7 +41,8 @@ BOOST_AUTO_TEST_CASE( test_raster_to_graph )
     region.save(region_path);
 
     // create a navigation graph from the map
-    nav_graph ng(region_path, robotm_path);
+    weight_map wm(region_path, robotm_path);
+    nav_graph ng(wm);
     std::ostringstream oss_graphviz;
     ng.write_graphviz(oss_graphviz);
     ng.write_graphviz(graphv_path); // for debug
