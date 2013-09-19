@@ -10,6 +10,7 @@
 #include <ostream> // standard C error stream
 #include <cstdlib> // exit status
 
+#include "gladys/weight_map.hpp"
 #include "gladys/nav_graph.hpp"
 
 int main(int argc, char * argv[])
@@ -18,7 +19,8 @@ int main(int argc, char * argv[])
         std::cerr<<"usage: region_weight region.tif robot.json weight.tif"<<std::endl;
         return EXIT_FAILURE;
     }
-    gladys::nav_graph ng(argv[1], argv[2]);
+    gladys::weight_map wm(argv[1], argv[2]);
+    gladys::nav_graph ng(wm);
     ng.save(argv[3]);
     return EXIT_SUCCESS;
 }

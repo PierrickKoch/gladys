@@ -31,6 +31,10 @@ class visibility_map {
     void _load();
 
 public:
+    visibility_map() {}
+    visibility_map(const std::string& f_dtm, const std::string& f_robot_model) {
+        load(f_dtm, f_robot_model);
+    }
     /** load region and robot model
      *
      * @param f_region path to a region.tif file
