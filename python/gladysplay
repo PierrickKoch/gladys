@@ -196,7 +196,10 @@ class MainWindow(QtGui.QMainWindow):
 
 
     def update_path(self, path):
-        self.image_label.paint_path(path)
+        scale_x = self._weight.get_scale_x()
+        scale_y = self._weight.get_scale_y()
+        scaled_path = [(x/scale_x, y/scale_y) for x, y in path]
+        self.image_label.paint_path(scaled_path)
 
     def search(self):
         if not self.ng:
@@ -256,11 +259,13 @@ class MainWindow(QtGui.QMainWindow):
     # PySide.QtGui.QWidget.mousePressEvent(event)
     def mousePressEvent(self, event):
         pose = event.pos()
+        scale_x = self._weight.get_scale_x()
+        scale_y = self._weight.get_scale_y()
         if not self.start:
-            self.start = ( pose.x(), pose.y() )
+            self.start = ( scale_x*pose.x(), scale_y*pose.y() )
             print("start = %s" % str(self.start) )
         if not self.end:
-            self.end = ( pose.x(), pose.y() )
+            self.end = ( scale_x*pose.x(), scale_y*pose.y() )
             if self.end == self.start:
                 self.end = None
             else:
