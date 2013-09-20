@@ -27,6 +27,7 @@ def uint_to_rgb(hue):
     r, g, b = float_to_rgb(hue / 255.0)
     return int(r*255), int(g*255), int(b*255)
 
+# TODO see http://matplotlib.org/examples/color/colormaps_reference.html
 GRAY_COLORTABLE = [QtGui.QColor(i, i, i).rgb()          for i in range(256)]
 HSVH_COLORTABLE = [QtGui.QColor(*uint_to_rgb(i)).rgb()  for i in range(256)]
 

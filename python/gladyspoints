@@ -40,14 +40,14 @@ def main(argv=[]):
     xradius = int(radius/scale_x)
     yradius = int(radius/scale_y)
 
-    lpoint = []
+    points = []
     for i in range(xradius, width, xradius):
         for j in range(yradius, height, yradius):
             point = (round(i*scale_x, 3), round(j*scale_y, 3))
             if is_white((i,j), ifilter):
-                lpoint.append(point)
+                points.append(point)
 
-    print(json.dumps(lpoint))
+    print(json.dumps(points))
 
     return 0
 
