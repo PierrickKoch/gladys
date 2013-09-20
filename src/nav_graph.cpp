@@ -10,6 +10,7 @@
 #include <string>
 #include <cmath>
 #include <ctime>
+#include <limits>
 
 #include <boost/graph/graphviz.hpp>
 
@@ -92,6 +93,7 @@ path_t nav_graph::astar_search(const point_xy_t& start, const point_xy_t& goal) 
 }
 
 path_cost_util_t nav_graph::astar_search(const points_t& start, const points_t& goal) {
+    vertex_t gv;
     vertices_t goal_v;
     for (auto& p : goal)
         goal_v.push_back( get_closest_vertex( p ) );
@@ -116,6 +118,7 @@ path_cost_util_t nav_graph::astar_search(const points_t& start, const points_t& 
                 visitor(vis)
         );
     } catch (found_goal& e) {
+        gv = e.g ;
         for(vertex_t v = e.g;; v = predecessors[v]) {
             shortest_path.push_front(g[v].pt);
             if (predecessors[v] == v)
@@ -124,6 +127,10 @@ path_cost_util_t nav_graph::astar_search(const points_t& start, const points_t& 
     }
     path_cost_util_t res;
     res.path = shortest_path;
+    if (res.path.size() == 0 ) // no path_found
+        res.cost = std::numeric_limits<float>::infinity();
+    else
+        res.cost = distances[ gv ];
     return res;
 }
 
