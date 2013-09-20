@@ -16,7 +16,8 @@
 #include <stdexcept>    // exceptions
 #include <deque>
 #include <vector>
-#include <limits> // for numeric_limits::infinity
+#include <limits>       // for numeric_limits::infinity
+#include <cmath>        // for round()
 
 //#include <boost/graph/adjacency_list.hpp>
 
@@ -39,7 +40,7 @@ namespace gladys {
     }//}}}
 
     /* computing functions */
-    void frontier_detector::compute_frontiers_WFD(const point_xy_t &seed) {//{{{
+    void frontier_detector::compute_frontiers_WFD(const point_xy_t &_seed) {//{{{
         // Get the map
         const weight_map& map = ng.get_map();
 
@@ -51,7 +52,10 @@ namespace gladys {
         // Get the raster band
         const gdal::raster& data = map.get_weight_band() ;
 
-        // check conditions on seed :
+        // Deal with rounded value (ease the checks for position)
+        point_xy_t seed {std::round(_seed[0]), std::round(_seed[1]) };
+        
+        // Check conditions on seed :
         // - inside the map
         assert( seed[0] > 0 && seed[0] < (width-1) && seed[1] > 0 && seed[1] < (height-1) );
         // - within the known area and not an obstacle
@@ -83,7 +87,6 @@ namespace gladys {
         mQueue.push_back( seed );
         mapOpenList[ map.idx( seed )] = true ;
 
-        int c1 = 0;
         // Main while over queued map points
         while ( !mQueue.empty() ) {
 
@@ -95,10 +98,10 @@ namespace gladys {
                 continue ;
             }
 
+
             // else, if p is a frontier point,
             // compute the whole related frontier
             if ( is_frontier( p, height, width, data, map ) ) {
-                int c2 = 0 ;
 
                 fQueue.clear();
                 // create a new frontier
