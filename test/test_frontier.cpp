@@ -10,12 +10,9 @@
 #define BOOST_TEST_MODULE const_string test
 #include <boost/test/included/unit_test.hpp>
 
-#include <string>
 #include <sstream>
 
 #include "gladys/gdal.hpp"
-#include "gladys/gladys.hpp"
-#include "gladys/nav_graph.hpp"
 #include "gladys/frontier_exploration.hpp"
 
 using namespace gladys;
@@ -52,8 +49,6 @@ BOOST_AUTO_TEST_CASE( test_frontier )
      *  8    F F F F F F F F F
      *  9    U U U U O U U U U
      *
-     *
-     *
      */
     gdal region;
     region.set_size(weight_map::N_RASTER, 9, 9);
@@ -83,8 +78,10 @@ BOOST_AUTO_TEST_CASE( test_frontier )
     frontier_detector fd ( region_path, robotm_path ) ;
 
     // testing frontier detection with defult algorithm
-    point_xy_t seed {4,4};
-    fd.compute_frontiers( seed ) ;
+    point_xy_t r1 {4,4};
+    point_xy_t r2 {4,2};
+    points_t r_pos {r1, r2} ;
+    fd.compute_frontiers( r_pos ) ;
 
     std::vector< points_t > frontiers = fd.get_frontiers() ;
 
@@ -99,9 +96,7 @@ BOOST_AUTO_TEST_CASE( test_frontier )
     BOOST_TEST_MESSAGE( "Nbr of frontier points : c = " << c );
     BOOST_CHECK_EQUAL( c , 18 );
 
-    //TODO Check on seed position (exception handling)
 }
-
 
 BOOST_AUTO_TEST_SUITE_END();
 

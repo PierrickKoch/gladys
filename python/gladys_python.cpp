@@ -46,7 +46,8 @@ static bpy::list py_compute_frontiers(gladys::frontier_detector& self, bpy::tupl
 
     // convert arguments and call the C++ search method
     gladys::point_xy_t _seed = {bpy::extract<double>(seed[0]), bpy::extract<double>(seed[1])};
-    self.compute_frontiers(_seed);
+    gladys::points_t r_pos {_seed} ;
+    self.compute_frontiers( r_pos );
     const std::vector< gladys::points_t > cxx_retval = self.get_frontiers();
 
     // converts the returned value into a list of lists of 2-tuples (= list of
