@@ -1,0 +1,57 @@
+#!/usr/bin/env python
+
+import json
+
+try:
+    from PySide import QtCore, QtGui
+except ImportError:
+    print("[error] sudo apt-get install python-pyside")
+    import sys; sys.exit(1)
+
+try:
+    import gladys
+except ImportError:
+    print("[error] install gladys [and setup PYTHONPATH]")
+    import sys; sys.exit(1)
+
+def is_white(point, qimage):
+    color = QtGui.QColor( qimage.pixel(*point) )
+    for c in color.getRgbF():
+        if c < 1.0:
+            return False
+    return True
+
+def main(argv=[]):
+    if len(argv) < 4:
+        print("usage: %s geo.tif filter.png radius"%argv[0])
+        return 1
+
+    # get GeoTiff for scale info
+    geotiff = gladys.gdal(argv[1])
+    # get the filter for points
+    ifilter = QtGui.QImage(argv[2])
+    # get robot radius
+    radius  = float(argv[3])
+
+    width   = geotiff.get_width()
+    height  = geotiff.get_height()
+    scale_x = geotiff.get_scale_x()
+    scale_y = geotiff.get_scale_y()
+    xradius = int(radius/scale_x)
+    yradius = int(radius/scale_y)
+
+    lpoint = []
+    for i in range(xradius, width, xradius):
+        for j in range(yradius, height, yradius):
+            point = (round(i*scale_x, 3), round(j*scale_y, 3))
+            if is_white((i,j), ifilter):
+                lpoint.append(point)
+
+    print(json.dumps(lpoint))
+
+    return 0
+
+if __name__ == '__main__':
+    import sys
+    sys.exit( main(sys.argv) )
+
