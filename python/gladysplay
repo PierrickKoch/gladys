@@ -225,6 +225,9 @@ class MainWindow(QtGui.QMainWindow):
         self.frontiers = self.frontier_detector.compute_frontiers(self.start) # use the default algorithm
         print("Got %i frontiers (%.3fs)" % ( len(self.frontiers), \
             (time.time() - t_start) ) )
+        scale_x = self._weight.get_scale_x()
+        scale_y = self._weight.get_scale_y()
+        scaled_frontiers = [(x/scale_x, y/scale_y) for x, y in self.frontiers]
         # Display
         self.display_frontiers = False # to force toggle behaviour into display mode
         self.image_label.paint_frontiers(self.frontiers)
