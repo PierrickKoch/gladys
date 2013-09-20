@@ -63,6 +63,10 @@ inline std::ostream& operator<<(std::ostream& os, const std::array<T, N>& v) {
     return stream_it(os, v);
 }
 
+inline bool operator> (const points_t &v1, const points_t& v2) {
+    return (v1.size() > v2.size() );
+}
+
 /** Euclidian distance (squared)
  * usefull to compare a set of points (faster)
  */
