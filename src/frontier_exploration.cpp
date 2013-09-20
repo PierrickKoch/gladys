@@ -32,14 +32,17 @@ namespace gladys {
  ****************************************************************************/
 
     /* constructors */
-    frontier_detector::frontier_detector( const std::string& f_region, const std::string& f_robot_model ) : map( imap ){//{{{
-       imap.load( f_region, f_robot_model ) ;
-    }//}}}
+    frontier_detector::frontier_detector(){}
 
-    frontier_detector::frontier_detector(const weight_map& _map) : map(_map) {}
+    frontier_detector::frontier_detector( const std::string& f_region, const std::string& f_robot_model ) {//{{{
+       ng = nav_graph( f_region, f_robot_model ) ;
+    }//}}}
 
     /* computing functions */
     void frontier_detector::compute_frontiers_WFD(const point_xy_t &seed) {//{{{
+        // Get the map
+        const weight_map& map = ng.get_map();
+
         // Get size of the map
         size_t width, height;
         width   = map.get_width();
@@ -94,7 +97,7 @@ namespace gladys {
 
             // else, if p is a frontier point,
             // compute the whole related frontier
-            if ( is_frontier( p, height, width, data ) ) {
+            if ( is_frontier( p, height, width, data, map ) ) {
                 int c2 = 0 ;
 
                 fQueue.clear();
@@ -118,7 +121,7 @@ namespace gladys {
 
                     // if p is a frontier point,
                     // deal with it and its neighbours
-                    if ( is_frontier( q, height, width, data ) ) {
+                    if ( is_frontier( q, height, width, data, map) ) {
                         frontiers.back().push_back( q );
                         //for all neighbours of q
                         for ( auto i : find_neighbours( q, height, width) ) {
@@ -168,7 +171,7 @@ namespace gladys {
 
     bool frontier_detector::is_frontier(  const point_xy_t &p,     //{{{
                                     size_t height, size_t width,
-                                    const gdal::raster& data ) {
+                                    const gdal::raster& data, const weight_map& map ) {
 
         // NB: Remember that index = x + y * width
         
@@ -227,16 +230,19 @@ namespace gladys {
                 neighbours.push_back( point_xy_t { p[0]+1, p[1]+1 } );
         #endif
 
-        //std::cout << "...... #" << neighbours.size() << " neighbours for ("  << p[0] << " , " << p[1] << " ) " << std::endl ;
-
         return neighbours ;
     }//}}}
 
-    void frontier_detector::compute_frontiers(const point_xy_t &seed, algo_t algo ){//{{{
+    void frontier_detector::compute_frontiers(const points_t &r_pos, //{{{
+                            size_t max_nf, size_t min_size,
+                            algo_t algo ){
+
+        assert( r_pos.size() > 0 );
+
         // try running the algo
         switch(algo) {
             case WFD : // Wavefront Frontier Detection
-                compute_frontiers_WFD( seed ) ;
+                compute_frontiers_WFD( r_pos[0]) ;
                 break;
             case FFD : // Fast Frontier Detection
                 throw  std::runtime_error("Fast Frontier Detection is not imlemented yet");
@@ -246,15 +252,33 @@ namespace gladys {
                 break;
         }
 
-        // compute the frontiers attributes
-        compute_attributes( seed );
+        // filter frontiers (only keep "promising ones")
+        filter_frontiers( max_nf, min_size ) ;
 
-        // sort the frontiers attributes by the size criteria
-        std::sort( attributes.begin(), attributes.end(), std::greater<f_attributes>() ); // descending order
+        // compute the frontiers attributes
+        compute_attributes( r_pos );
 
     }//}}}
 
-    void frontier_detector::compute_attributes( const point_xy_t &seed ) {//{{{
+    void frontier_detector::filter_frontiers( size_t max_nf, size_t min_size ) {//{{{
+        //TODO
+        //std::vector< points_t > ff ;  // the filtered frontiers fist
+
+        //for (auto& f: frontiers)
+            //if (f.size() >= min_size )
+                //ff.push_back(f) ;
+
+        //frontiers.resize( max_nf ) ;
+        //if (ff.size() > max_nf ) {
+            //std::sort( ff.begin(), ff.end() ); // asending order using the size
+            //std::copy( ff.rbegin(), ff.rbegin() + max_nf, frontiers.begin() ) ;
+            //frontiers.resize( max_nf );
+        //}
+        //else 
+            //frontiers = ff ;
+    }//}}}
+
+    void frontier_detector::compute_attributes( const points_t &r_pos ) {//{{{
         /* init */
         size_t total_fPoints = 0 ;
         attributes.resize( frontiers.size() ) ;
@@ -264,14 +288,34 @@ namespace gladys {
             attributes[i].ID = i ;
             attributes[i].size = frontiers[i].size() ;
             total_fPoints += frontiers[i].size() ;
+
+            // we arbitrary took the medium point as the lookout
+            // TODO Find a better lookout
+            attributes[i].lookout   = frontiers[i][ attributes[i].size / 2 ] ;
+
+            points_t s, g ;
+            path_cost_util_t p ;
+            s.push_back( r_pos[0] );
+            g.push_back( attributes[i].lookout );
+            //attributes[i].distance  = distance( r_pos[0], attributes[i].lookout ) ;
+            p = ng.astar_search( s, g) ;
+            attributes[i].distance  = p.cost ;
+            attributes[i].path = p.path ;
+            attributes[i].proximity = 0 ; // TODO use utility ! (only one call to A*)
+            /* the proximity is increased by one for every other robot closer
+             * than the focused one */
+            for ( auto& r : r_pos ) {
+                points_t s2 {r} ;
+                double d = ng.astar_search( s2, g).cost ;
+                //if ( attributes[i].distance > distance( r_pos[0], r ))
+                if ( attributes[i].distance > d )
+                    attributes[i].proximity++ ;
+            }
         }
 
         for ( auto& a : attributes )
             a.ratio = (double) a.size / (double) total_fPoints ;
     }//}}}
-
-    //void frontier_detector::save_frontiers( const std::string& filepath ) {
-    //}
 
 //}}}
 
