@@ -1,4 +1,4 @@
-add_library( gladys SHARED gladys.cpp nav_graph.cpp weight_map.cpp
+add_library( gladys SHARED gladys.cpp gdal.cpp nav_graph.cpp weight_map.cpp
     visibility_map.cpp dstar.cpp bresenham.cpp frontier_exploration.cpp)
 target_link_libraries( gladys ${GDAL_LIBRARIES} )
 install(TARGETS gladys DESTINATION ${CMAKE_INSTALL_LIBDIR})
