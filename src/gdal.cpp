@@ -22,6 +22,7 @@ void gdal::_init() {
     // Register all known configured GDAL drivers.
     GDALAllRegister();
     set_transform(0, 0);
+    set_custom_origin(0, 0);
     set_utm(0);
 }
 
@@ -53,6 +54,8 @@ void gdal::save(const std::string& filepath) const {
 
     // see GDALDataset::GetGeoTransform()
     dataset->SetGeoTransform( (double *) transform.data() );
+    dataset->SetMetadataItem("CUSTOM_X_ORIGIN", std::to_string(custom_x_origin).c_str());
+    dataset->SetMetadataItem("CUSTOM_Y_ORIGIN", std::to_string(custom_y_origin).c_str());
 
     GDALRasterBand *band;
     for (int band_id = 0; band_id < bands.size(); band_id++) {
@@ -94,6 +97,12 @@ void gdal::load(const std::string& filepath) {
     // and write {0.0, 1.0, 0.0, 0.0, 0.0, 1.0} in transform anyway
     // so error handling here is kind of useless...
     dataset->GetGeoTransform( transform.data() );
+    const char *cxo = dataset->GetMetadataItem("CUSTOM_X_ORIGIN");
+    const char *cyo = dataset->GetMetadataItem("CUSTOM_Y_ORIGIN");
+    if (cxo != NULL)
+        custom_x_origin = std::atof(cxo);
+    if (cyo != NULL)
+        custom_y_origin = std::atof(cyo);
 
     GDALRasterBand *band;
     const char *name;

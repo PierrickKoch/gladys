@@ -30,6 +30,8 @@ class gdal {
     size_t height;
     int utm_zone;
     bool utm_north;
+    double custom_x_origin; // in meters
+    double custom_y_origin; // in meters
 
     void _init();
 
@@ -68,9 +70,19 @@ public:
         load(filepath);
     }
 
+    void set_custom_origin(double x, double y) {
+        custom_x_origin = x;
+        custom_y_origin = y;
+    }
+
     size_t idx(double x, double y) const {
         return std::ceil( x / get_scale_x() +
                           y / get_scale_y() * width );
+    }
+
+    size_t idx_custom(double x, double y) const {
+        return std::ceil( (x - custom_x_origin) / get_scale_x() +
+                          (y - custom_y_origin) / get_scale_y() * width );
     }
 
     size_t idx_utm(double x, double y) const {
