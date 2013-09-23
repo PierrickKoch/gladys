@@ -102,6 +102,9 @@ public:
     const gdal& get_map() const {
         return map;
     }
+    gdal& get_map() {
+        return map;
+    }
     const gdal& get_region() const {
         return terrains;
     }
