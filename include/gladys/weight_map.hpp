@@ -52,6 +52,15 @@ public:
     }
     void _load();
 
+    /**
+     * NOTE: Don't forget to set_transform GeoData
+     */
+    gdal::raster& setup_weight_band(size_t width, size_t height) {
+        map.set_size(1, width, height);
+        map.bands_name[0] = "WEIGHT";
+        return map.bands[0];
+    }
+
     void flag_as_obstacle(float& weight) {
         if (!is_obstacle(weight))
             weight = W_FLAG_OBSTACLE;
