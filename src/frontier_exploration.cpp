@@ -287,7 +287,8 @@ namespace gladys {
 
             // we arbitrary took the medium point as the lookout
             // TODO Find a better lookout
-            attributes[i].lookout   = frontiers[i][ attributes[i].size / 2 ] ;
+            //attributes[i].lookout   = frontiers[i][ attributes[i].size / 2 ] ;
+            attributes[i].lookout   = frontiers[i][0] ; // probably the closer point
 
             points_t s, g ;
             path_cost_util_t p ;
