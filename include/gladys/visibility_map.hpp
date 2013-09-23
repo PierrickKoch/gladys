@@ -70,8 +70,8 @@ public:
      * @returns the index of the point
      *
      */
-    double idx( const point_xy_t& p ) const {
-        return p[0] + p[1] * width;
+    size_t idx( const point_xy_t& p ) const {
+        return dtm.idx(p[0], p[1]);
     }
 
     /* getters */

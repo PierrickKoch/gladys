@@ -68,6 +68,16 @@ public:
         load(filepath);
     }
 
+    size_t idx(double x, double y) const {
+        return std::ceil( x / get_scale_x() +
+                          y / get_scale_y() * width );
+    }
+
+    size_t idx_utm(double x, double y) const {
+        return std::ceil( (x - get_utm_pose_x()) / get_scale_x() +
+                          (y - get_utm_pose_y()) / get_scale_y() * width );
+    }
+
     /** Copy meta-data from another instance
      *
      * @param copy another gdal instance
