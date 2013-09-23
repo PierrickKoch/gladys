@@ -183,6 +183,14 @@ public:
         return transform[3]; // upper left pixel position y
     }
 
+    double get_custom_x_origin() const {
+        return custom_x_origin;
+    }
+
+    double get_custom_y_origin() const {
+        return custom_y_origin;
+    }
+
     /** Get a band ID by its name (metadata)
      *
      * @param name Name of the band ID to get.
@@ -230,6 +238,8 @@ inline bool operator==( const gdal& lhs, const gdal& rhs ) {
         and lhs.get_scale_y() == rhs.get_scale_y()
         and lhs.get_utm_pose_x() == rhs.get_utm_pose_x()
         and lhs.get_utm_pose_y() == rhs.get_utm_pose_y()
+        and lhs.get_custom_x_origin() == rhs.get_custom_x_origin()
+        and lhs.get_custom_y_origin() == rhs.get_custom_y_origin()
         and lhs.bands_name == rhs.bands_name
         and lhs.bands == rhs.bands );
 }

@@ -24,6 +24,7 @@ BOOST_AUTO_TEST_CASE( test_gdal_equality )
     gdal gdal_to_file;
     gdal_to_file.set_size(5, 320, 240);
     gdal_to_file.set_utm(31);
+    gdal_to_file.set_custom_origin(12.3, 14.5);
     gdal_to_file.set_transform(123, 456, 0.4, 0.6);
     gdal_to_file.save(path);
     // load the file we just saved
@@ -47,6 +48,7 @@ BOOST_AUTO_TEST_CASE( test_gdal_scale )
     gdal obj;
     obj.set_size(2, size_x, size_y);
     obj.set_utm(31); // utm zone
+    obj.set_custom_origin(12.3, 14.5);
     obj.set_transform(utm_x, utm_y, scale_x, scale_y);
 
     BOOST_CHECK_EQUAL(obj.idx(0, 0), 0);
@@ -68,6 +70,7 @@ BOOST_AUTO_TEST_CASE( test_gdal_scale_utm )
     gdal obj;
     obj.set_size(2, size_x, size_y);
     obj.set_utm(31); // utm zone
+    obj.set_custom_origin(12.3, 14.5);
     obj.set_transform(utm_x, utm_y, scale_x, scale_y);
 
     BOOST_CHECK_EQUAL(obj.idx_utm(utm_x,     utm_y),     0);
