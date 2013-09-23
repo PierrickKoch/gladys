@@ -33,6 +33,9 @@ public:
     enum {NO_3D_CLASS, FLAT, OBSTACLE, ROUGH, SLOPE, N_RASTER};
 
     weight_map() {}
+    weight_map(const gdal& _map) {
+        map = _map;
+    }
     weight_map(const std::string& f_region, const std::string& f_robot_model) {
         load(f_region, f_robot_model);
     }
