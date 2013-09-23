@@ -132,7 +132,7 @@ BOOST_PYTHON_MODULE(libgladys_python)
         .def("search", &py_search)
         ;
     // weight_map
-    bpy::class_<gladys::weight_map>("weight_map", bpy::init<>())
+    bpy::class_<gladys::weight_map>("weight_map", bpy::init<std::string, std::string>())
         .def("save", &gladys::weight_map::save)
         .def("load", &gladys::weight_map::load)
         .def("get_width", &gladys::weight_map::get_width)

@@ -98,7 +98,6 @@ class MainWindow(QtGui.QMainWindow):
         self._raster = ""
         self._images = {}
         self._region = None
-        self._weight = None
         self._lut    = {
                 'HSVH': HSVH_COLORTABLE,
                 'GRAY': GRAY_COLORTABLE,
@@ -124,11 +123,11 @@ class MainWindow(QtGui.QMainWindow):
         return image.copy()
 
     def setup_next_region(self):
-        if not self._weight:
+        if not self.wm:
             return -1
         if not self._region:
             t_start = time.time()
-            region_map = self._weight.get_region()
+            region_map = self.wm.get_region()
             self._region = region_map.get_bands_as_uchar()
             print("Got the region bands (%.3fs)" \
                 % (time.time() - t_start) )
@@ -145,19 +144,18 @@ class MainWindow(QtGui.QMainWindow):
         if self._raster not in self._images:
             self._images[self._raster+".lut"] = "HSVH"
             self._images[self._raster] = self.i8u2rgb(
-                    self._weight.get_width(),
-                    self._weight.get_height(),
+                    self.wm.get_width(),
+                    self.wm.get_height(),
                     self._region[self._raster] )
 
     def setup_weight(self):
         self._raster = "weight"
         if self._raster not in self._images:
-            self._weight = self.ng.get_map() # saving weight-map to get region
-            weight_band = self._weight.get_weight_band_uchar()
+            weight_band = self.wm.get_weight_band_uchar()
             self._images[self._raster+".lut"] = "HSVH"
             self._images[self._raster] = self.i8u2rgb(
-                    self._weight.get_width(),
-                    self._weight.get_height(),
+                    self.wm.get_width(),
+                    self.wm.get_height(),
                     weight_band)
 
     def switch_raster(self):
@@ -184,21 +182,22 @@ class MainWindow(QtGui.QMainWindow):
 
     def load_nav_graph(self):
         t_start = time.time()
-        self.ng = gladys.nav_graph(self.fregion, self.frobot)
+        self.wm = gladys.weight_map(self.fregion, self.frobot)
+        self.ng = gladys.nav_graph(self.wm)
         print("Graph loaded (%.3fs)" % (time.time() - t_start) )
         self.switch_raster()
 
     def load_frontiers(self):
         t_start = time.time()
-        self.frontier_detector = gladys.frontier_detector(self.fregion, self.frobot)
+        self.frontier_detector = gladys.frontier_detector(self.ng)
         #TODO Do not duplicate the weight_map ! (re-use self.ng)
         print("Frontier_Exploration loaded (%.3fs)" % (time.time() - t_start) )
         self.switch_raster()
 
 
     def update_path(self, path):
-        scale_x = self._weight.get_scale_x()
-        scale_y = self._weight.get_scale_y()
+        scale_x = self.wm.get_scale_x()
+        scale_y = self.wm.get_scale_y()
         scaled_path = [(x/scale_x, y/scale_y) for x, y in path]
         self.image_label.paint_path(scaled_path)
 
@@ -225,8 +224,8 @@ class MainWindow(QtGui.QMainWindow):
         self.frontiers = self.frontier_detector.compute_frontiers(self.start) # use the default algorithm
         print("Got %i frontiers (%.3fs)" % ( len(self.frontiers), \
             (time.time() - t_start) ) )
-        scale_x = self._weight.get_scale_x()
-        scale_y = self._weight.get_scale_y()
+        scale_x = self.wm.get_scale_x()
+        scale_y = self.wm.get_scale_y()
         scaled_frontiers = [(x/scale_x, y/scale_y) for x, y in self.frontiers]
         # Display
         self.display_frontiers = False # to force toggle behaviour into display mode
@@ -263,8 +262,8 @@ class MainWindow(QtGui.QMainWindow):
     # PySide.QtGui.QWidget.mousePressEvent(event)
     def mousePressEvent(self, event):
         pose = event.pos()
-        scale_x = self._weight.get_scale_x()
-        scale_y = self._weight.get_scale_y()
+        scale_x = self.wm.get_scale_x()
+        scale_y = self.wm.get_scale_y()
         if not self.start:
             self.start = ( scale_x*pose.x(), scale_y*pose.y() )
             print("start = %s" % str(self.start) )
