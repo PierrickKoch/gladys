@@ -27,6 +27,10 @@
 #define HEIGHT_CONNEXITY
 #endif
 
+#ifndef EPS
+#define EPS 0.05
+#endif
+
 namespace gladys {
 
 /*{{{ frontier_detector class
@@ -50,11 +54,18 @@ namespace gladys {
         
         // Check conditions on seed :
         // - inside the map
-        assert( seed[0] > 0 && seed[0] < (width-1) && seed[1] > 0 && seed[1] < (height-1) );
+        std::cerr   << "[Frontier] seed is ("<<seed[0] <<","<<seed[1] 
+                    << ") ; index is " << map.index( seed )
+                    << " in map (" << width << "," << height << ")." << std::endl;
+        assert( seed[0] > 0 - EPS  && seed[0] < (width-1 + EPS) && seed[1] > 0 - EPS && seed[1] < (height-1 + EPS) );
+        std::cerr   << "[Frontier] assertion #1 OK." << std::endl; 
         // - within the known area and not an obstacle
-        assert( data[ map.index( seed ) ]  > 0 && data[ map.index( seed ) ] != std::numeric_limits<float>::infinity() );
+        std::cerr   << "[Frontier] data has size : " << data.size() << std::endl;
+        std::cerr   << "[Frontier] data(index) = " << data[ map.index( seed ) ] << std::endl;
+        assert( data[ map.index( seed ) ]  > 0 - EPS && data[ map.index( seed ) ] != std::numeric_limits<float>::infinity() );
+        std::cerr   << "[Frontier] assertion #2 OK." << std::endl; 
 
-        /* {{{ compute frontiers with the WFD algorithm
+        /* {{{ compute frontiers with the WFD algorithm
          *
          * Use the description given by :
          * "Robot Exploration with Fast Frontier Detection : Theory and
@@ -80,8 +91,11 @@ namespace gladys {
         mQueue.push_back( seed );
         mapOpenList[ map.index( seed )] = true ;
 
+        std::cerr   << "[Frontier] Detection : starting the main loop..." << std::endl; 
         // Main while over queued map points
         while ( !mQueue.empty() ) {
+
+            std::cerr   << "[Frontier] Detection : main loop..." << std::endl; 
 
             p = mQueue.front();
             mQueue.pop_front();
@@ -96,6 +110,7 @@ namespace gladys {
             // compute the whole related frontier
             if ( is_frontier( p, height, width, data, map ) ) {
 
+                std::cerr   << "[Frontier] Detection : main loop : frontier detected !" << std::endl; 
                 fQueue.clear();
                 // create a new frontier
                 frontiers.push_back( points_t() );
@@ -106,6 +121,7 @@ namespace gladys {
                 // while over potential frontier points
                 while ( !fQueue.empty() ) {
 
+                    std::cerr   << "[Frontier] Detection : inner loop..." << std::endl; 
                     q = fQueue.front();
                     fQueue.pop_front();
 
@@ -235,7 +251,9 @@ namespace gladys {
 
         assert( r_pos.size() > 0 );
 
+
         // try running the algo
+        std::cerr   << "[Frontier] Running frontier detection..." << std::endl ;
         switch(algo) {
             case WFD : // Wavefront Frontier Detection
                 compute_frontiers_WFD( r_pos[0]) ;
@@ -249,10 +267,14 @@ namespace gladys {
         }
 
         // filter frontiers (only keep "promising ones")
+        std::cerr   << "[Frontier] Filtering frontiers..." << std::endl ;
         filter_frontiers( max_nf, min_size ) ;
 
         // compute the frontiers attributes
+        std::cerr   << "[Frontier] Computing frontiers attributes..." << std::endl ;
         compute_attributes( r_pos );
+
+        std::cerr   << "[Frontier] Done." << std::endl ;
 
     }//}}}
 
