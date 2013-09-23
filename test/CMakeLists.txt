@@ -4,6 +4,7 @@ macro(add_gladys_test name)
     add_test(${name} ${name})
 endmacro()
 
+add_gladys_test(test_gdal)
 add_gladys_test(test_gladys)
 add_gladys_test(test_dstar)
 add_gladys_test(test_bresenham)
