@@ -51,19 +51,25 @@ namespace gladys {
 
         // Deal with rounded value (ease the checks for position)
         point_xy_t seed {std::round(_seed[0]), std::round(_seed[1]) };
-        
+
         // Check conditions on seed :
         // - inside the map
         std::cerr   << "[Frontier] seed is ("<<seed[0] <<","<<seed[1] 
                     << ") ; index is " << map.index_utm( seed )
                     << " in map (" << width << "," << height << ")." << std::endl;
-        assert( seed[0] > x_min - EPS  && seed[0] < (x_max-1 + EPS) && seed[1] > y_min - EPS && seed[1] < (y_max-1 + EPS) );
-        std::cerr   << "[Frontier] assertion #1 OK." << std::endl; 
+
+        if ( seed[0] < x_min + EPS || seed[0] > (x_max-1 - EPS) 
+        ||   seed[1] < y_min + EPS || seed[1] > (y_max-1 - EPS) ){
+            throw std::runtime_error("[Frontier] Seed out of map boundaries...") ;
+        }
         // - within the known area and not an obstacle
         std::cerr   << "[Frontier] data has size : " << data.size() << std::endl;
         std::cerr   << "[Frontier] data(index_utm) = " << data[ map.index_utm( seed ) ] << std::endl;
-        assert( data[ map.index_utm( seed ) ]  > 0 - EPS && data[ map.index_utm( seed ) ] != 100 && !(map.is_obstacle(data[ map.index_utm( seed ) ]) ));
-        std::cerr   << "[Frontier] assertion #2 OK." << std::endl; 
+        if ( data[ map.index_utm( seed ) ]  < 0 + EPS 
+        ||   data[ map.index_utm( seed ) ] == 100 
+        ||   map.is_obstacle(data[ map.index_utm( seed ) ]) ){
+            throw std::runtime_error("[Frontier] The seed is unknown or obstacle : unable to compute frontiers (and yes, it's a feature! XD )") ;
+        }
 
         /* {{{ compute frontiers with the WFD algorithm
          *
@@ -187,7 +193,6 @@ namespace gladys {
             return false ;
         // and at least one of is neighbour is unknown.
         for ( auto i : find_neighbours( p, x_min, x_max, y_min, y_max) )
-            //if ( data[ map.index_utm( i ) ] < 0 )          // unknown
             if ( data[ map.index_utm( i ) ] == 100 )          // unknown
                 return true ;
 
@@ -240,7 +245,7 @@ namespace gladys {
     }//}}}
 
     void frontier_detector::compute_frontiers(const points_t &r_pos, //{{{
-                            size_t max_nf, size_t min_size,
+                            size_t max_nf, size_t min_size, double min_dist, double max_dist,
                             algo_t algo ){
 
         assert( r_pos.size() > 0 );
@@ -260,37 +265,63 @@ namespace gladys {
                 break;
         }
 
+        //TODO check if there are any frontier (return something if not)
+
         // filter frontiers (only keep "promising ones")
         std::cerr   << "[Frontier] Filtering frontiers..." << std::endl ;
-        filter_frontiers( max_nf, min_size ) ;
+        filter_frontiers(r_pos, max_nf, min_size, min_dist, max_dist ) ;
 
+        //TODO check if there are any frontier left (return something if not)
+        
         // compute the frontiers attributes
         std::cerr   << "[Frontier] Computing frontiers attributes..." << std::endl ;
-        compute_attributes( r_pos );
+        compute_attributes( r_pos, min_dist, max_dist );
 
         std::cerr   << "[Frontier] Done." << std::endl ;
 
+        //TODO return success
+        
     }//}}}
 
-    void frontier_detector::filter_frontiers( size_t max_nf, size_t min_size ) {//{{{
-        //TODO
-        //std::vector< points_t > ff ;  // the filtered frontiers fist
+    void frontier_detector::filter_frontiers(   const points_t& r_pos, //{{{
+                                                size_t max_nf, size_t min_size, 
+                                                double min_dist, double max_dist ) {
 
-        //for (auto& f: frontiers)
-            //if (f.size() >= min_size )
-                //ff.push_back(f) ;
+        std::cerr   << "[Frontier] Filtering frontiers (among #" << frontiers.size() << " frontiers)." << std::endl ;
 
-        //frontiers.resize( max_nf ) ;
-        //if (ff.size() > max_nf ) {
-            //std::sort( ff.begin(), ff.end() ); // asending order using the size
-            //std::copy( ff.rbegin(), ff.rbegin() + max_nf, frontiers.begin() ) ;
-            //frontiers.resize( max_nf );
-        //}
-        //else 
-            //frontiers = ff ;
+        /* init */
+        std::vector< points_t > ff ;  // the filtered frontiers fist
+
+        // Quikly compute some "cheap" attributes
+        // and filter over them
+        for ( unsigned int i = 0 ; i < frontiers.size() ; i++ ) {
+            if (frontiers[i].size() < min_size)
+                continue; //too small
+
+            // check if a lookout respects distance criterias
+            for (auto& pt : frontiers[i] ) {
+                double d = distance( r_pos[0], pt) ;
+                if ( d > min_dist - EPS && d < max_dist + EPS) {
+                    ff.push_back( frontiers[i] ) ;
+                    break;
+                }
+            }
+        }
+
+        puts("plop");
+        // filtering over the size if too much frontiers left !
+        if (ff.size() > max_nf ) {
+            std::sort( ff.begin(), ff.end() ); // asending order using the size
+            std::copy( ff.rbegin(), ff.rbegin() + max_nf, frontiers.begin() ) ;
+            frontiers.resize( max_nf );
+        }
+        else 
+            frontiers = ff ;
+        puts("toto");
+
     }//}}}
 
-    void frontier_detector::compute_attributes( const points_t &r_pos ) {//{{{
+    void frontier_detector::compute_attributes( const points_t &r_pos, double min_dist, double max_dist ) {//{{{
         /* init */
         size_t total_fPoints = 0 ;
         attributes.resize( frontiers.size() ) ;
@@ -299,7 +330,7 @@ namespace gladys {
 
         /* loop over the frontiers list */
         for ( unsigned int i = 0 ; i < frontiers.size() ; i++ ) {
-            std::cerr   << "[Frontier #"<<i<<"] Computing attributes (size is "<<frontiers[i].size() <<")." << std::endl ;
+            //std::cerr   << "[Frontier #"<<i<<"] Computing attributes (size is "<<frontiers[i].size() <<")." << std::endl ;
             attributes[i].ID = i ;
             attributes[i].size = frontiers[i].size() ;
             total_fPoints += frontiers[i].size() ;
@@ -307,16 +338,25 @@ namespace gladys {
             // we arbitrary took the medium point as the lookout
             // TODO Find a better lookout
             //attributes[i].lookout   = frontiers[i][ attributes[i].size / 2 ] ;
-            attributes[i].lookout   = frontiers[i][0] ; // probably the closer point
+            //attributes[i].lookout   = frontiers[i][0] ; // probably the closer point
+            // Choose the first lookout verifying the distance criterias
+            // Note that there is at least one because of the filter !
+            for (auto& pt : frontiers[i] ) {
+                double d = distance( r_pos[0], pt) ;
+                if ( d > min_dist - EPS && d < max_dist + EPS) {
+                    attributes[i].lookout = pt ;
+                    attributes[i].distance  = d ;
+                    break;
+                }
+            }
 
             points_t s, g ;
             path_cost_util_t p ;
             s.push_back( r_pos[0] );
             g.push_back( attributes[i].lookout );
-            //attributes[i].distance  = distance( r_pos[0], attributes[i].lookout ) ;
-            std::cerr   << "[Frontier #"<<i<<"] Computing path and distances." << std::endl ;
+            std::cerr   << "[Frontier #"<<i<<"] Computing path and costs." << std::endl ;
             p = ng.astar_search( s, g) ;
-            attributes[i].distance  = p.cost ;
+            attributes[i].cost = p.cost ;
             attributes[i].path = p.path ;
             attributes[i].proximity = 0 ; // TODO use utility ! (only one call to A*)
             std::cerr   << "[Frontier #"<<i<<"] A-star 0 = ok." << std::endl ;
@@ -326,8 +366,8 @@ namespace gladys {
                 points_t s2 {r_pos[r]} ;
                 std::cerr   << "[Frontier #"<<i<<"] A-star " << r << std::endl ;
                 double d = ng.astar_search( s2, g).cost ;
-                //if ( attributes[i].distance > distance( r_pos[0], r ))
-                if ( attributes[i].distance > d )
+                //if ( attributes[i].cost > distance( r_pos[0], r ))
+                if ( attributes[i].cost > d )
                     attributes[i].proximity++ ;
             }
         }
