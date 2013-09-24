@@ -34,8 +34,9 @@ public:
     double ratio ;              // importance of the frontier among others 
                                 // ( max = 1  ; "value < 0" <=> unknown)
     point_xy_t lookout ;        // point from wich we want to observe the frontier
+    double distance ;           // euclidian distance to the lookout
     path_t path ;               // path to the lookout, from the robot
-    double distance;            // the cost of this path
+    double cost ;               // the cost of this path
     unsigned int proximity ;    // proximity is the number of robot closer to
                                 // the look-out than the robot which computed
                                 // the frontier
@@ -44,7 +45,8 @@ public:
 std::ostream& operator<< (std::ostream &out, const f_attributes& f) {//{{{
     out << "{ #" << f.ID << ": size = " << f.size << "; ratio = " << f.ratio 
         << "; lookout = (" << f.lookout[0] << "," << f.lookout[1] 
-        << "); path size = " << f.path.size() << "; distance = " << f.distance
+        << "); euclidian distance = " << f.distance
+        << "; path size = " << f.path.size() << "; cost = " << f.cost
         << "; proximity = " << f.proximity 
         << " }";
     return out;
@@ -82,12 +84,15 @@ private:
 
     /** filter frontiers
      *
-     * Aims at reducing the number of frontier by keeping only the nost
+     * Quickly compute some attributes to discard non-"valuable" frontiers.
+     * Aims at reducing the number of frontier by keeping only the most
      * promising ones, and discarding the others. (This speeds up the
-     * computation of attributes, and eases the planning beyond.)
+     * computation of costly attributes, and eases the planning beyond.)
      *
      */
-    void filter_frontiers( size_t max_nf, size_t min_size ) ;
+    void filter_frontiers(  const points_t& r_pos,
+                            size_t max_nf, size_t min_size,
+                            double min_dist, double max_dist) ;
 
     /** compute_attributes
      *
@@ -98,7 +103,8 @@ private:
      * is assume to be the robot running the algorithm.
      *
      */
-    void compute_attributes( const points_t &r_pos );
+    void compute_attributes( const points_t &r_pos,
+                             double min_dist, double max_dist) ;
 
     /** is_frontier
      *
@@ -157,7 +163,8 @@ public:
      *
      */
     void compute_frontiers( const points_t &r_pos,
-                            size_t max_nf = 10, size_t min_size = 2,
+                            size_t max_nf = 20, size_t min_size = 2,
+                            double min_dist = 1.6, double max_dist = 50.0,
                             algo_t algo = WFD );
 
     /* getters */
