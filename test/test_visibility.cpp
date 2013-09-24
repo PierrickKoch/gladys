@@ -39,7 +39,7 @@ BOOST_AUTO_TEST_CASE( test_visibility_map )
     gladys::gdal dtm;
     dtm.set_size(2, 9, 9);
     // add a small wall in the middle of the map
-    dtm.bands_name[0] = "Z_MAX";
+    dtm.names[0] = "Z_MAX";
     dtm.get_band("Z_MAX").assign(9*9, 0.5);
     for (int i=0 ; i<9 ; i++ )
         dtm.get_band("Z_MAX")[ 5 + i*9 ] = 1.3;
@@ -48,7 +48,7 @@ BOOST_AUTO_TEST_CASE( test_visibility_map )
     dtm.get_band("Z_MAX")[ 8 + 8*9 ] = 1.1;
     dtm.get_band("Z_MAX")[ 0 + 5*9 ] = 0.6;
     // add a small band of never-observed points
-    dtm.bands_name[1] = "N_POINTS";
+    dtm.names[1] = "N_POINTS";
     dtm.get_band("N_POINTS").assign(9*9, 5.);
     for (int i=0 ; i<9 ; i++ )
         dtm.get_band("N_POINTS")[ 3 + i*9 ] = 0.0;

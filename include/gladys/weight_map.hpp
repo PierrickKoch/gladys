@@ -60,7 +60,7 @@ public:
      */
     gdal::raster& setup_weight_band(size_t width, size_t height) {
         map.set_size(1, width, height);
-        map.bands_name[0] = "WEIGHT";
+        map.names[0] = "WEIGHT";
         return map.bands[0];
     }
 

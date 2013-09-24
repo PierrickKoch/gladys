@@ -74,14 +74,14 @@ static bpy::list py_get_band_as_uchar(gladys::gdal& self, const std::string& nam
 static bpy::dict py_get_bands(gladys::gdal& self) {
     bpy::dict retval;
     for (size_t idx = 0; idx < self.bands.size(); idx++)
-        retval[ self.bands_name[idx] ] = std_vector_to_py_list( self.bands[idx] );
+        retval[ self.names[idx] ] = std_vector_to_py_list( self.bands[idx] );
     return retval;
 }
 
 static bpy::dict py_get_bands_as_uchar(gladys::gdal& self) {
     bpy::dict retval;
     for (size_t idx = 0; idx < self.bands.size(); idx++)
-        retval[ self.bands_name[idx] ] = std_vector_to_py_list(
+        retval[ self.names[idx] ] = std_vector_to_py_list(
             gladys::vfloat2vuchar( self.bands[idx] ) );
     return retval;
 }

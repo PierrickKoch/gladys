@@ -19,7 +19,7 @@ void weight_map::_load() {
     map.copy_meta(terrains, 1);
     gdal::raster& weights = map.bands[0];
     width = map.get_width();
-    map.bands_name[0] = "WEIGHT";
+    map.names[0] = "WEIGHT";
 
     gdal::raster data( terrains.bands.size() );
     for (size_t pos = 0; pos < width * map.get_height(); pos++) {

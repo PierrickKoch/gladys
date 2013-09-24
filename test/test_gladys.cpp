@@ -65,7 +65,7 @@ BOOST_AUTO_TEST_CASE( test_raster_to_graph )
     std::string dtm_path = "/tmp/test_gladys_dtm.tif";
     gdal dtm;
     dtm.set_size(2, 9, 9);
-    dtm.bands_name = {"Z_MIN", "Z_MAX"};
+    dtm.names = {"Z_MIN", "Z_MAX"};
     dtm.save(dtm_path);
     gladys obj(region_path, dtm_path, robotm_path);
     points_t start = {p1};

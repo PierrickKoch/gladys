@@ -40,7 +40,7 @@ public:
     typedef std::vector<raster> rasters;
     rasters bands;
     // metadata (bands name)
-    std::vector<std::string> bands_name;
+    std::vector<std::string> names;
 
     gdal() {
         _init();
@@ -63,7 +63,7 @@ public:
         utm_north = x.utm_north;
         transform = x.transform;
         bands = x.bands;
-        bands_name = x.bands_name;
+        names = x.names;
     }
     gdal(const std::string& filepath) {
         _init();
@@ -98,7 +98,7 @@ public:
         utm_zone  = copy.utm_zone;
         utm_north = copy.utm_north;
         transform = copy.transform;
-        bands_name = copy.bands_name;
+        names = copy.names;
         set_size(copy.bands.size(), copy.width, copy.height);
     }
 
@@ -153,7 +153,7 @@ public:
         width = x;
         height = y;
         bands.resize( n );
-        bands_name.resize( n );
+        names.resize( n );
         size_t size = x * y;
         for (auto& band: bands)
             band.resize( size );
@@ -197,8 +197,8 @@ public:
      * @throws std::out_of_range if name not found.
      */
     size_t get_band_id(const std::string& name) const {
-        for (size_t idx = 0; idx < bands_name.size(); idx++)
-            if (bands_name[idx] == name)
+        for (size_t idx = 0; idx < names.size(); idx++)
+            if (names[idx] == name)
                 return idx;
 
         throw std::out_of_range("[gdal] band name not found: " + name);
@@ -240,7 +240,7 @@ inline bool operator==( const gdal& lhs, const gdal& rhs ) {
         and lhs.get_utm_pose_y() == rhs.get_utm_pose_y()
         and lhs.get_custom_x_origin() == rhs.get_custom_x_origin()
         and lhs.get_custom_y_origin() == rhs.get_custom_y_origin()
-        and lhs.bands_name == rhs.bands_name
+        and lhs.names == rhs.names
         and lhs.bands == rhs.bands );
 }
 inline std::ostream& operator<<(std::ostream& os, const gdal& value) {

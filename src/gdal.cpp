@@ -62,7 +62,7 @@ void gdal::save(const std::string& filepath) const {
         band = dataset->GetRasterBand(band_id+1);
         band->RasterIO( GF_Write, 0, 0, width, height,
             (void *) bands[band_id].data(), width, height, GDT_Float32, 0, 0 );
-        band->SetMetadataItem("NAME", bands_name[band_id].c_str());
+        band->SetMetadataItem("NAME", names[band_id].c_str());
     }
 
     // close properly the dataset
@@ -114,7 +114,7 @@ void gdal::load(const std::string& filepath) {
             bands[band_id].data(), width, height, GDT_Float32, 0, 0 );
         name = band->GetMetadataItem("NAME");
         if (name != NULL)
-            bands_name[band_id] = name;
+            names[band_id] = name;
     }
 
     // close properly the dataset
