@@ -140,6 +140,9 @@ public:
         return map.index_custom(p[0], p[1]);
     }
 
+    size_t idx_utm( const point_xy_t& p ) const {
+        return map.idx_utm(p[0], p[1]);
+    }
     void save(const std::string& filepath) const {
         map.save(filepath);
     }
