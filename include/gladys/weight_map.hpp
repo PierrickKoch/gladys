@@ -145,8 +145,8 @@ public:
         return map.get_utm_pose_y();
     }
 
-    size_t idx( const point_xy_t& p ) const {
-        return map.idx(p[0], p[1]);
+    size_t index( const point_xy_t& p ) const {
+        return map.index_custom(p[0], p[1]);
     }
 
     void save(const std::string& filepath) const {

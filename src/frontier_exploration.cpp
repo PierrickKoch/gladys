@@ -52,7 +52,7 @@ namespace gladys {
         // - inside the map
         assert( seed[0] > 0 && seed[0] < (width-1) && seed[1] > 0 && seed[1] < (height-1) );
         // - within the known area and not an obstacle
-        assert( data[ map.idx( seed ) ]  > 0 && data[ map.idx( seed ) ] != std::numeric_limits<float>::infinity() );
+        assert( data[ map.index( seed ) ]  > 0 && data[ map.index( seed ) ] != std::numeric_limits<float>::infinity() );
 
         /* {{{ compute frontiers with the WFD algorithm
          *
@@ -78,7 +78,7 @@ namespace gladys {
         //init
         frontiers.empty();    // clear the previous frontiers
         mQueue.push_back( seed );
-        mapOpenList[ map.idx( seed )] = true ;
+        mapOpenList[ map.index( seed )] = true ;
 
         // Main while over queued map points
         while ( !mQueue.empty() ) {
@@ -87,7 +87,7 @@ namespace gladys {
             mQueue.pop_front();
 
             // if p has already been visited, then continue
-            if ( mapCloseList[ map.idx( p )] ) {
+            if ( mapCloseList[ map.index( p )] ) {
                 continue ;
             }
 
@@ -101,7 +101,7 @@ namespace gladys {
                 frontiers.push_back( points_t() );
 
                 fQueue.push_back( p );
-                frontierOpenList[ map.idx( p )] = true ;
+                frontierOpenList[ map.index( p )] = true ;
 
                 // while over potential frontier points
                 while ( !fQueue.empty() ) {
@@ -110,8 +110,8 @@ namespace gladys {
                     fQueue.pop_front();
 
                     // if q has already been visited, then continue
-                    if  ( mapCloseList[ map.idx( q ) ]
-                    || frontierCloseList[ map.idx( q ) ]) {
+                    if  ( mapCloseList[ map.index( q ) ]
+                    || frontierCloseList[ map.index( q ) ]) {
                         continue;
                     }
 
@@ -122,24 +122,24 @@ namespace gladys {
                         //for all neighbours of q
                         for ( auto i : find_neighbours( q, height, width) ) {
                             // if NOT marked yet
-                            if  ( !( mapCloseList[ map.idx( i ) ]
-                            || frontierCloseList[ map.idx( i ) ]
-                            || frontierOpenList[ map.idx( i ) ])) {
+                            if  ( !( mapCloseList[ map.index( i ) ]
+                            || frontierCloseList[ map.index( i ) ]
+                            || frontierOpenList[ map.index( i ) ])) {
                             // then proceed
                                 fQueue.push_back( i );
-                                frontierOpenList[ map.idx( i )] = true ;
+                                frontierOpenList[ map.index( i )] = true ;
                             }
                         }
                     }
                     // mark q
-                    frontierCloseList[ map.idx( q )] = true ;
+                    frontierCloseList[ map.index( q )] = true ;
                 }
 
                 // Note : no need to save the new frontier explicitly
 
                 // mark all points of the new frontier in the closed list
                 for ( auto i : frontiers.back() ) {
-                    mapCloseList[ map.idx( i )] = true ;
+                    mapCloseList[ map.index( i )] = true ;
                 }
 
             }
@@ -147,20 +147,20 @@ namespace gladys {
             //for all neighbours of p
             for ( auto i : find_neighbours( p, height, width) ) {
                 // if NOT marked yet
-                if  ( !( mapCloseList[ map.idx( i ) ]
-                || mapOpenList[ map.idx( i ) ])
+                if  ( !( mapCloseList[ map.index( i ) ]
+                || mapOpenList[ map.index( i ) ])
                 // and has at least one neighbour in "Open Space", ie a
                 // neighbour in the known area ard which is not an obstacle.
-                && ( ! (data[ map.idx( i )]  < 0                // unknown
-                    || data[ map.idx( i )] == std::numeric_limits<float>::infinity() ))) {   // obstacle
+                && ( ! (data[ map.index( i )]  < 0                // unknown
+                    || data[ map.index( i )] == std::numeric_limits<float>::infinity() ))) {   // obstacle
                     // then proceed
                     mQueue.push_back( i );
-                    mapOpenList[ map.idx( i )] = true ;
+                    mapOpenList[ map.index( i )] = true ;
                 }
             }
 
             //mark p
-            mapCloseList[ map.idx( p )] = true ;
+            mapCloseList[ map.index( p )] = true ;
         }
         //}}}
     }//}}}
@@ -173,12 +173,12 @@ namespace gladys {
         
         // A point is a frontier iff it is in the open space 
         // (i.e. it is know and is not an obstacle )
-        if ( data[ map.idx( p )]  < 0               // unknown
-        ||   data[ map.idx( p )] == std::numeric_limits<float>::infinity() )     // obstacle
+        if ( data[ map.index( p )]  < 0               // unknown
+        ||   data[ map.index( p )] == std::numeric_limits<float>::infinity() )     // obstacle
             return false ;
         // and at least one of is neighbour is unknown.
         for ( auto i : find_neighbours( p, height, width) )
-            if ( data[ map.idx( i ) ] < 0 )          // unknown
+            if ( data[ map.index( i ) ] < 0 )          // unknown
                 return true ;
 
         return false;

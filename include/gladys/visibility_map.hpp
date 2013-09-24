@@ -70,8 +70,8 @@ public:
      * @returns the index of the point
      *
      */
-    size_t idx( const point_xy_t& p ) const {
-        return dtm.idx(p[0], p[1]);
+    size_t index( const point_xy_t& p ) const {
+        return dtm.index_custom(p[0], p[1]);
     }
 
     /* getters */

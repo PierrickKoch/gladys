@@ -47,8 +47,8 @@ bool visibility_map::is_visible( const point_xy_t& s, const point_xy_t& t) const
     /* Check if both s and t are known (we need zmax !)
      * else we cannot say if they are visible or not,
      * and assume there is no visibility link by default */
-    if ( get_npointsmap()[ idx(s) ] < 1 - EPS
-    ||   get_npointsmap()[ idx(t) ] < 1 - EPS)
+    if ( npointsmap[ index(s) ] < 1 - EPS
+    ||   npointsmap[ index(t) ] < 1 - EPS)
         return false ;
 
     // From now, dist( ns, t) > 0
@@ -65,8 +65,8 @@ bool visibility_map::is_visible( const point_xy_t& s, const point_xy_t& t) const
     // where x = distance to the sensor (projection)
     // and y = height of the point
     double zs, zt, d0, a, d, z;
-    zs = _s[2] + heightmap[ idx(s) ] ;   // height of the sensor
-    zt = heightmap[ idx(t) ] ;           // height of the target
+    zs = _s[2] + heightmap[ index(s) ] ;   // height of the sensor
+    zt = heightmap[ index(t) ] ;           // height of the target
     d0 = distance( s, t ) ;
 
     a = (zs - zt) / d0 ; // d > 0
@@ -75,10 +75,10 @@ bool visibility_map::is_visible( const point_xy_t& s, const point_xy_t& t) const
     // test the condition for each point of the line
     for ( auto& p: line) {
         // if p is unknown (never observed), then assume we can see though it.
-        if ( get_npointsmap()[ idx(p) ] < 1 - EPS )
+        if ( npointsmap[ index(p) ] < 1 - EPS )
             continue;
         d = distance( s, p ) ;
-        z = heightmap[ idx(p) ] ;
+        z = heightmap[ index(p) ] ;
         if ( a*d + z - zs > 0 + EPS )
             return false ;
     }

@@ -75,17 +75,17 @@ public:
         custom_y_origin = y;
     }
 
-    size_t idx(double x, double y) const {
+    size_t index_raster(double x, double y) const {
         return std::ceil( x / get_scale_x() +
                           y / get_scale_y() * width );
     }
 
-    size_t idx_custom(double x, double y) const {
+    size_t index_custom(double x, double y) const {
         return std::ceil( (x - custom_x_origin) / get_scale_x() +
                           (y - custom_y_origin) / get_scale_y() * width );
     }
 
-    size_t idx_utm(double x, double y) const {
+    size_t index_utm(double x, double y) const {
         return std::ceil( (x - get_utm_pose_x()) / get_scale_x() +
                           (y - get_utm_pose_y()) / get_scale_y() * width );
     }
