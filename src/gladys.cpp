@@ -89,8 +89,11 @@ points_t gladys::is_visible_from(const point_xy_t& locA, const points_t& llocB,
 bool gladys::test_visibility_link(const points_t& llocA, const points_t& llocB,
     float qmin) const
 {
-    // TODO
-    return true;
+    for (const point_xy_t& locA : llocA)
+        for (const point_xy_t& locB : llocB)
+            if (is_visible(locA, locB))
+                return true;
+    return false;
 }
 double gladys::look_at(int sensor, const points_t& observe) const {
     // TODO
