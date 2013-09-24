@@ -28,7 +28,7 @@ class gdal {
     std::array<double, 6> transform;
     size_t width;
     size_t height;
-    int utm_zone;
+    int  utm_zone;
     bool utm_north;
     double custom_x_origin; // in meters
     double custom_y_origin; // in meters
@@ -39,7 +39,7 @@ public:
     typedef std::vector<float>  raster;
     typedef std::vector<raster> rasters;
     rasters bands;
-    // metadata (bands name)
+    // metadata (bands names)
     std::vector<std::string> names;
 
     gdal() {
@@ -250,13 +250,13 @@ inline std::ostream& operator<<(std::ostream& os, const gdal& value) {
 /** handy method to display a raster
  *
  * @param v vector of float
- * @returns vector of unisgned char
+ * @returns vector of uint8_t (unisgned char)
  *
  * distribute as:
  *   min(v) -> 0
  *   max(v) -> 255
  */
-inline std::vector<unsigned char> vfloat2vuchar(const std::vector<float>& v) {
+inline std::vector<uint8_t> vfloat2vuchar(const std::vector<float>& v) {
     auto minmax = std::minmax_element(v.begin(), v.end());
     float min = *minmax.first;
     float max = *minmax.second;
