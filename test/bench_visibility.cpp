@@ -12,7 +12,7 @@
 #include <ctime>   // time
 #include <string>  // stoul
 
-#include "gladys/gdal.hpp"
+#include "gdalwrap/gdal.hpp"
 #include "gladys/visibility_map.hpp"
 
 /**

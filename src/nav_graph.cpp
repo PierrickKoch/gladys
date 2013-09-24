@@ -21,7 +21,7 @@ namespace gladys {
 void nav_graph::_load() {
     float weight;
     vertex_t vert_w, vert_n, vert_e, vert_s;
-    const gdal::raster& weight_map = map.get_weight_band();
+    const gdalwrap::raster& weight_map = map.get_weight_band();
     // most of the time this is equal to sqrt(2)/2
     float hypotenuse = 0.5 * std::sqrt( scale_x*scale_x + scale_y*scale_y );
 

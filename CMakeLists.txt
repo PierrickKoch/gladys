@@ -7,8 +7,8 @@ set(PACKAGE_VERSION "0.1.7")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMakeModules")
 
-# Find GDAL ( export GDAL_ROOT=$prefix )
-find_package(GDAL REQUIRED)
+# C++11 GDAL wrapper
+find_package(GdalWrap REQUIRED)
 
 # Find Boost ( export BOOST_ROOT=$prefix )
 set(BOOST_MIN_VERSION "1.46.0") # 1.47 for Boost.Geometry (Ubuntu > 12.04)
@@ -19,7 +19,7 @@ find_package(PythonLibs)
 find_package(PythonInterp)
 
 include_directories(include)
-include_directories(${GDAL_INCLUDE_DIRS})
+include_directories(${GDALWRAP_INCLUDE_DIRS})
 include_directories(${Boost_INCLUDE_DIRS})
 
 # Filesystem Hierarchy Standard

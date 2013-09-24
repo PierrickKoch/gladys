@@ -10,7 +10,7 @@
 #include <string>
 #include <boost/python.hpp>
 
-#include "gladys/gdal.hpp"
+#include "gdalwrap/gdal.hpp"
 #include "gladys/nav_graph.hpp"
 #include "gladys/frontier_exploration.hpp"
 
@@ -63,26 +63,26 @@ static bpy::list py_compute_frontiers(gladys::frontier_detector& self, bpy::tupl
     return retval;
 }
 
-static bpy::list py_get_band(gladys::gdal& self, const std::string& name) {
+static bpy::list py_get_band(gdalwrap::gdal& self, const std::string& name) {
     return std_vector_to_py_list(self.get_band(name));
 }
 
-static bpy::list py_get_band_as_uchar(gladys::gdal& self, const std::string& name) {
-    return std_vector_to_py_list(gladys::vfloat2vuchar(self.get_band(name)));
+static bpy::list py_get_band_as_uchar(gdalwrap::gdal& self, const std::string& name) {
+    return std_vector_to_py_list(gdalwrap::vfloat2vuchar(self.get_band(name)));
 }
 
-static bpy::dict py_get_bands(gladys::gdal& self) {
+static bpy::dict py_get_bands(gdalwrap::gdal& self) {
     bpy::dict retval;
     for (size_t idx = 0; idx < self.bands.size(); idx++)
         retval[ self.names[idx] ] = std_vector_to_py_list( self.bands[idx] );
     return retval;
 }
 
-static bpy::dict py_get_bands_as_uchar(gladys::gdal& self) {
+static bpy::dict py_get_bands_as_uchar(gdalwrap::gdal& self) {
     bpy::dict retval;
     for (size_t idx = 0; idx < self.bands.size(); idx++)
         retval[ self.names[idx] ] = std_vector_to_py_list(
-            gladys::vfloat2vuchar( self.bands[idx] ) );
+            gdalwrap::vfloat2vuchar( self.bands[idx] ) );
     return retval;
 }
 
@@ -90,11 +90,11 @@ static gladys::weight_map py_nav_graph_get_map(gladys::nav_graph& self) {
     return self.get_map(); // cannot use reference with boost::python
 }
 
-static gladys::gdal py_weight_map_get_map(gladys::weight_map& self) {
+static gdalwrap::gdal py_weight_map_get_map(gladys::weight_map& self) {
     return self.get_map(); // cannot use reference with boost::python
 }
 
-static gladys::gdal py_weight_map_get_region(gladys::weight_map& self) {
+static gdalwrap::gdal py_weight_map_get_region(gladys::weight_map& self) {
     return self.get_region(); // cannot use reference with boost::python
 }
 static bpy::list py_weight_map_get_weight_band_uchar(gladys::weight_map& self) {
@@ -106,15 +106,15 @@ static bpy::list py_weight_map_get_weight_band_uchar(gladys::weight_map& self) {
 BOOST_PYTHON_MODULE(libgladys_python)
 {
     // gdal
-    bpy::class_<gladys::gdal>("gdal", bpy::init<std::string>())
-        .def("save", &gladys::gdal::save)
-        .def("load", &gladys::gdal::load)
-        .def("get_width", &gladys::gdal::get_width)
-        .def("get_height", &gladys::gdal::get_height)
-        .def("get_scale_x", &gladys::gdal::get_scale_x)
-        .def("get_scale_y", &gladys::gdal::get_scale_y)
-        .def("get_utm_pose_x", &gladys::gdal::get_utm_pose_x)
-        .def("get_utm_pose_y", &gladys::gdal::get_utm_pose_y)
+    bpy::class_<gdalwrap::gdal>("gdal", bpy::init<std::string>())
+        .def("save", &gdalwrap::gdal::save)
+        .def("load", &gdalwrap::gdal::load)
+        .def("get_width", &gdalwrap::gdal::get_width)
+        .def("get_height", &gdalwrap::gdal::get_height)
+        .def("get_scale_x", &gdalwrap::gdal::get_scale_x)
+        .def("get_scale_y", &gdalwrap::gdal::get_scale_y)
+        .def("get_utm_pose_x", &gdalwrap::gdal::get_utm_pose_x)
+        .def("get_utm_pose_y", &gdalwrap::gdal::get_utm_pose_y)
         // gdal::get_band
         .def("get_band", &py_get_band)
         // gdal::get_band distributed and converted from float to uchar [0-255]

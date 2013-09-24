@@ -43,7 +43,7 @@ namespace gladys {
         height  = map.get_height();
 
         // Get the raster band
-        const gdal::raster& data = map.get_weight_band() ;
+        const gdalwrap::raster& data = map.get_weight_band() ;
 
         // Deal with rounded value (ease the checks for position)
         point_xy_t seed {std::round(_seed[0]), std::round(_seed[1]) };
@@ -167,7 +167,7 @@ namespace gladys {
 
     bool frontier_detector::is_frontier(  const point_xy_t &p,     //{{{
                                     size_t height, size_t width,
-                                    const gdal::raster& data, const weight_map& map ) {
+                                    const gdalwrap::raster& data, const weight_map& map ) {
 
         // NB: Remember that index = x + y * width
         

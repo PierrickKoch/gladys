@@ -11,7 +11,7 @@ add_library( gladys_python SHARED gladys_python.cpp )
 target_link_libraries( gladys_python gladys )
 target_link_libraries( gladys_python ${Boost_LIBRARIES} )
 target_link_libraries( gladys_python ${PYTHON_LIBRARIES} )
-target_link_libraries( gladys_python ${GDAL_LIBRARIES} )
+target_link_libraries( gladys_python ${GDALWRAP_LIBRARIES} )
 
 install(TARGETS gladys_python DESTINATION ${PYTHON_SITE_PACKAGES})
 install(FILES   gladys.py     DESTINATION ${PYTHON_SITE_PACKAGES})

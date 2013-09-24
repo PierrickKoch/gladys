@@ -13,7 +13,7 @@
 #include <string>
 #include <limits> // for numeric_limits::infinity
 
-#include "gladys/gdal.hpp"
+#include "gdalwrap/gdal.hpp"
 #include "gladys/robot_model.hpp"
 
 namespace gladys {
@@ -23,8 +23,8 @@ namespace gladys {
  * to single layers weight map (after inflating obstacles by robot size)
  */
 class weight_map {
-    gdal terrains; // probalistic models (multi-layers GeoTiff)
-    gdal map; // weight map (after inflating robot size)
+    gdalwrap::gdal terrains; // probalistic models (multi-layers GeoTiff)
+    gdalwrap::gdal map; // weight map (after inflating robot size)
     robot_model rmdl;
     size_t width ;
     enum {W_FLAG_OBSTACLE=-2, W_UNKNOWN=-1};
@@ -33,7 +33,7 @@ public:
     enum {NO_3D_CLASS, FLAT, OBSTACLE, ROUGH, SLOPE, N_RASTER};
 
     weight_map() {}
-    weight_map(const gdal& _map) {
+    weight_map(const gdalwrap::gdal& _map) {
         map = _map;
     }
     weight_map(const std::string& f_region, const std::string& f_robot_model) {
@@ -58,7 +58,7 @@ public:
     /**
      * NOTE: Don't forget to set_transform GeoData
      */
-    gdal::raster& setup_weight_band(size_t width, size_t height) {
+    gdalwrap::raster& setup_weight_band(size_t width, size_t height) {
         map.set_size(1, width, height);
         map.names[0] = "WEIGHT";
         return map.bands[0];
@@ -81,7 +81,7 @@ public:
      * @returns weight in [1, 100] or -1 if unknown
      *
      */
-    float compute_weight(const gdal::raster& data) const {
+    float compute_weight(const gdalwrap::raster& data) const {
         if (data[NO_3D_CLASS] > 0.9)
             return W_UNKNOWN; // UNKNOWN
         if (data[OBSTACLE] > 0.4) // TODO tune this threshold
@@ -90,7 +90,7 @@ public:
             return 1 + 98 * (data[FLAT] * 0.1 + data[ROUGH] * 0.3 + data[SLOPE] * 0.6 );
     }
 
-    const gdal::raster& get_weight_band() const {
+    const gdalwrap::raster& get_weight_band() const {
         return map.bands[0];
     }
 
@@ -111,13 +111,13 @@ public:
         return retval;
     }
 
-    const gdal& get_map() const {
+    const gdalwrap::gdal& get_map() const {
         return map;
     }
-    gdal& get_map() {
+    gdalwrap::gdal& get_map() {
         return map;
     }
-    const gdal& get_region() const {
+    const gdalwrap::gdal& get_region() const {
         return terrains;
     }
 

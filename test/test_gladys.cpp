@@ -13,7 +13,7 @@
 #include <string>
 #include <sstream>
 
-#include "gladys/gdal.hpp"
+#include "gdalwrap/gdal.hpp"
 #include "gladys/gladys.hpp"
 #include "gladys/nav_graph.hpp"
 
@@ -32,7 +32,7 @@ BOOST_AUTO_TEST_CASE( test_raster_to_graph )
     robot_cfg.close();
 
     // create a region map (GeoTiff image)
-    gdal region;
+    gdalwrap::gdal region;
     region.set_size(weight_map::N_RASTER, 9, 9);
     // add an obstacle at the center of the map
     region.bands[weight_map::FLAT    ].assign(9*9, 1);
@@ -63,7 +63,7 @@ BOOST_AUTO_TEST_CASE( test_raster_to_graph )
     robot_cfg<<"{\"robot\":{\"mass\":1.0,\"radius\":2.0,\"velocity\":1.0}}";
     robot_cfg.close();
     std::string dtm_path = "/tmp/test_gladys_dtm.tif";
-    gdal dtm;
+    gdalwrap::gdal dtm;
     dtm.set_size(2, 9, 9);
     dtm.names = {"Z_MIN", "Z_MAX"};
     dtm.save(dtm_path);

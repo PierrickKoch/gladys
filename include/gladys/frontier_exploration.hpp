@@ -109,7 +109,7 @@ private:
      */
     bool is_frontier(  const point_xy_t &p, 
                       size_t height, size_t width,
-                      const gdal::raster& data, const weight_map& map ) ;
+                      const gdalwrap::raster& data, const weight_map& map ) ;
 
     /** find_neighbours()
      *

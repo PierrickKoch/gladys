@@ -14,21 +14,21 @@
 #include <cmath>
 #include <sstream>
 
-#include "gladys/gdal.hpp"
+#include "gdalwrap/gdal.hpp"
 
 BOOST_AUTO_TEST_SUITE( gladys )
 
 BOOST_AUTO_TEST_CASE( test_gdal_equality )
 {
     std::string path = "/tmp/test_gladys_gdal.tif";
-    gdal gdal_to_file;
+    gdalwrap::gdal gdal_to_file;
     gdal_to_file.set_size(5, 320, 240);
     gdal_to_file.set_utm(31);
     gdal_to_file.set_custom_origin(12.3, 14.5);
     gdal_to_file.set_transform(123, 456, 0.4, 0.6);
     gdal_to_file.save(path);
     // load the file we just saved
-    gdal gdal_from_file(path);
+    gdalwrap::gdal gdal_from_file(path);
 
     BOOST_CHECK_EQUAL( gdal_from_file, gdal_to_file );
     gdal_from_file.bands[0][0] += 2;
@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE( test_gdal_scale )
            utm_x   = 123.4,
            utm_y   = 456.7;
     std::string path = "/tmp/test_gladys_gdal.tif";
-    gdal obj;
+    gdalwrap::gdal obj;
     obj.set_size(2, size_x, size_y);
     obj.set_utm(31); // utm zone
     obj.set_custom_origin(12.3, 14.5);
@@ -67,7 +67,7 @@ BOOST_AUTO_TEST_CASE( test_gdal_scale_utm )
            utm_x   = 123.4,
            utm_y   = 456.7;
     std::string path = "/tmp/test_gladys_gdal.tif";
-    gdal obj;
+    gdalwrap::gdal obj;
     obj.set_size(2, size_x, size_y);
     obj.set_utm(31); // utm zone
     obj.set_custom_origin(12.3, 14.5);

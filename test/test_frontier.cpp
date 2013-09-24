@@ -12,7 +12,7 @@
 
 #include <sstream>
 
-#include "gladys/gdal.hpp"
+#include "gdalwrap/gdal.hpp"
 #include "gladys/frontier_exploration.hpp"
 
 using namespace gladys;
@@ -50,7 +50,7 @@ BOOST_AUTO_TEST_CASE( test_frontier )
      *  9    U U U U O U U U U
      *
      */
-    gdal region;
+    gdalwrap::gdal region;
     region.set_size(weight_map::N_RASTER, 9, 9);
     region.bands[weight_map::FLAT    ].assign(9*9, 1);
     // add frontiers (top and bottom)

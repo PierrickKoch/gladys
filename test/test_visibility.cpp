@@ -13,7 +13,7 @@
 #include <string>
 #include <sstream>
 
-#include "gladys/gdal.hpp"
+#include "gdalwrap/gdal.hpp"
 #include "gladys/visibility_map.hpp"
 
 BOOST_AUTO_TEST_SUITE( visibility )
@@ -36,7 +36,7 @@ BOOST_AUTO_TEST_CASE( test_visibility_map )
     robot_cfg.close();
 
     // create a dtm map (GeoTiff image)
-    gladys::gdal dtm;
+    gdalwrap::gdal dtm;
     dtm.set_size(2, 9, 9);
     // add a small wall in the middle of the map
     dtm.names[0] = "Z_MAX";

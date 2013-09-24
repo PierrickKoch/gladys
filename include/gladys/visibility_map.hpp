@@ -13,7 +13,7 @@
 
 #include <string>
 
-#include "gladys/gdal.hpp"
+#include "gdalwrap/gdal.hpp"
 #include "gladys/robot_model.hpp"
 #include "gladys/point.hpp"
 
@@ -23,7 +23,7 @@ namespace gladys {
  * from digital terrain map (in multi-layers GeoTiff)
  */
 class visibility_map {
-    gdal dtm; // digital terrain map (multi-layers GeoTiff)
+    gdalwrap::gdal dtm; // digital terrain map (multi-layers GeoTiff)
     robot_model rmdl;
     size_t width;  // dtm width
     size_t height; // dtm height
@@ -75,15 +75,15 @@ public:
     }
 
     /* getters */
-    const gdal::raster& get_heightmap() const {
+    const gdalwrap::raster& get_heightmap() const {
         return dtm.get_band("Z_MAX");
     }
 
-    const gdal::raster& get_npointsmap() const {
+    const gdalwrap::raster& get_npointsmap() const {
         return dtm.get_band("N_POINTS");
     }
 
-    const gdal& get_dtm() const {
+    const gdalwrap::gdal& get_dtm() const {
         return dtm;
     }
 

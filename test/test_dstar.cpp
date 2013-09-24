@@ -13,7 +13,7 @@
 #include <string>
 #include <sstream>
 
-#include "gladys/gdal.hpp"
+#include "gdalwrap/gdal.hpp"
 #include "gladys/gladys.hpp"
 #include "gladys/nav_graph.hpp"
 #include "gladys/dstar.hpp"
@@ -35,7 +35,7 @@ BOOST_AUTO_TEST_CASE( test_dstar )
     robot_cfg.close();
 
     // create a region map (GeoTiff image)
-    gdal region;
+    gdalwrap::gdal region;
     region.set_size(weight_map::N_RASTER, 9, 9);
     // add an obstacle at the center of the map
     region.bands[weight_map::FLAT    ].assign(9*9, 1);

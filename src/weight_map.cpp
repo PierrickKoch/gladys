@@ -9,7 +9,7 @@
  */
 #include <cmath>
 
-#include "gladys/gdal.hpp"
+#include "gdalwrap/gdal.hpp"
 #include "gladys/weight_map.hpp"
 
 namespace gladys {
@@ -17,11 +17,11 @@ namespace gladys {
 void weight_map::_load() {
     assert(terrains.bands.size() == N_RASTER);
     map.copy_meta(terrains, 1);
-    gdal::raster& weights = map.bands[0];
+    gdalwrap::raster& weights = map.bands[0];
     width = map.get_width();
     map.names[0] = "WEIGHT";
 
-    gdal::raster data( terrains.bands.size() );
+    gdalwrap::raster data( terrains.bands.size() );
     for (size_t pos = 0; pos < width * map.get_height(); pos++) {
         for (size_t band_id = 0; band_id < data.size(); band_id++)
             data[band_id] = terrains.bands[band_id][pos];

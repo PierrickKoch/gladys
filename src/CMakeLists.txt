@@ -1,6 +1,6 @@
 file(GLOB gladys_SRCS "*.cpp")
 add_library( gladys SHARED ${gladys_SRCS} )
-target_link_libraries( gladys ${GDAL_LIBRARIES} )
+target_link_libraries( gladys ${GDALWRAP_LIBRARIES} )
 install(TARGETS gladys DESTINATION ${CMAKE_INSTALL_LIBDIR})
 install_pkg_config_file(gladys
     DESCRIPTION "Graph Library for Autonomous and Dynamic Systems"
