@@ -268,7 +268,7 @@ namespace gladys {
         //TODO check if there are any frontier (return something if not)
 
         // filter frontiers (only keep "promising ones")
-        std::cerr   << "[Frontier] Filtering frontiers..." << std::endl ;
+        std::cerr   << "[Frontier] Filtering frontiers (among #" << frontiers.size() << " frontiers)." << std::endl ;
         filter_frontiers(r_pos, max_nf, min_size, min_dist, max_dist ) ;
 
         //TODO check if there are any frontier left (return something if not)
@@ -286,8 +286,6 @@ namespace gladys {
     void frontier_detector::filter_frontiers(   const points_t& r_pos, //{{{
                                                 size_t max_nf, size_t min_size, 
                                                 double min_dist, double max_dist ) {
-
-        std::cerr   << "[Frontier] Filtering frontiers (among #" << frontiers.size() << " frontiers)." << std::endl ;
 
         /* init */
         std::vector< points_t > ff ;  // the filtered frontiers fist
@@ -308,7 +306,6 @@ namespace gladys {
             }
         }
 
-        puts("plop");
         // filtering over the size if too much frontiers left !
         if (ff.size() > max_nf ) {
             std::sort( ff.begin(), ff.end() ); // asending order using the size
@@ -317,7 +314,6 @@ namespace gladys {
         }
         else 
             frontiers = ff ;
-        puts("toto");
 
     }//}}}
 
