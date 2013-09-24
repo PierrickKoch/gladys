@@ -108,7 +108,7 @@ private:
      *
      */
     bool is_frontier(  const point_xy_t &p, 
-                      size_t height, size_t width,
+                      int x_min, int x_max, int y_min, int y_max,
                       const gdalwrap::raster& data, const weight_map& map ) ;
 
     /** find_neighbours()
@@ -122,7 +122,7 @@ private:
      * @param width : the height of the map.
      * 
      */
-    points_t find_neighbours( const point_xy_t &p, size_t height, size_t width);
+     points_t find_neighbours( const point_xy_t &p, int x_min, int x_max, int y_min, int y_max) ;
 
 public:
     /* Name of the available algorithms to compute frontiers */
