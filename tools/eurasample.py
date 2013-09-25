@@ -63,7 +63,6 @@ class MainWindow(QtGui.QMainWindow):
               "-------\n"
               " - Click     = select points\n"
               " - C         = clear points\n"
-              " - S         = save image\n"
               " - Space     = start utm\n"
               " - Escape    = quit\n")
 
@@ -132,6 +131,10 @@ class MainWindow(QtGui.QMainWindow):
         # convert from custom to UTM
         points = [ [x + custom_origin_x, y + custom_origin_y] \
                   for x,y in self.points_pnt ]
+        # dump points in UTM
+        with open('%s.utm.txt'%self.path_image, 'w') as f:
+            for x,y in points:
+                f.write("%f %f\n"%(x,y))
         # convert from UTM to pixel
         points = [ [(x - self.origin_x) / self.scale_x, \
                     (y - self.origin_y) / self.scale_y] \
@@ -143,10 +146,6 @@ class MainWindow(QtGui.QMainWindow):
         painter.end()
         # show image
         self.image_label.set_image(self.image_map)
-        # dump points in UTM
-        with open('%s.utm.txt'%self.path_image, 'w') as f:
-            for x,y in points:
-                f.write("%f %f\n"%(x,y))
 
     def save_image(self):
         self.image_map.save(self.path_image)
