@@ -1,0 +1,98 @@
+#!/usr/bin/env python
+
+import struct
+import colorsys
+
+try:
+    from PySide import QtCore, QtGui
+except ImportError:
+    print("[error] sudo apt-get install python-pyside")
+    import sys; sys.exit(1)
+
+try:
+    import gladys
+except ImportError:
+    print("[error] install gladys [and setup PYTHONPATH]")
+    import sys; sys.exit(1)
+
+def float_to_rgb(hue):
+    assert(0.0 <= hue <= 1.0)
+    # from blue to red (instead of red to red)
+    # aka from 240 to 0 instead of 0 to 360 degrees (HSV)
+    hue = (1 - hue) / 1.5
+    return colorsys.hsv_to_rgb(hue, 1, 1)
+
+def uint_to_rgb(hue):
+    r, g, b = float_to_rgb(hue / 255.0)
+    return int(r*255), int(g*255), int(b*255)
+
+# TODO see http://matplotlib.org/examples/color/colormaps_reference.html
+GRAY_COLORTABLE = [QtGui.QColor(i, i, i).rgb()          for i in range(256)]
+HSVH_COLORTABLE = [QtGui.QColor(*uint_to_rgb(i)).rgb()  for i in range(256)]
+
+def i8u2rgb(width, height, image8u):
+    """ Convert a grayscale image to RGB """
+    # Convert from list(uint8_t) to bytes() [TODO find memoryview in bpy]
+    buff = struct.pack('%iB'%len(image8u), *image8u)
+    assert(len(buff) == width * height)
+    # QImage does not holds the buffer, it is valid only in this scope (!)
+    image = QtGui.QImage(buff, width, height, width, QtGui.QImage.Format_Indexed8)
+    # Set image lookup table (LUT) / PySide.QtGui.QImage.setColorTable()
+    # http://qt-project.org/doc/qt-5.1/qtgui/qimage.html#setColorTable
+    image.setColorTable(HSVH_COLORTABLE)
+    # Return a copy (buffer copied, so no need to hold it ourself)
+    return image.convertToFormat(QtGui.QImage.Format_ARGB32)
+
+
+def main(argv=[]):
+    if len(argv) < 4:
+        print("usage: %s geo.tif points.log trajectory.log out.png"%argv[0])
+        return 1
+
+    # get GeoTiff for scale info
+    geotiff = gladys.gdal(argv[1])
+    with open(argv[2]) as fpoints:
+        buff = fpoints.read().strip().split('\n')
+        points = [line.split() for line in buff]
+    with open(argv[3]) as ftrajec:
+        buff = ftrajec.read().strip().split('\n')[1:-1]
+        trajec = [line.split() for line in buff]
+
+    width   = geotiff.get_width()
+    height  = geotiff.get_height()
+    scale_x = geotiff.get_scale_x()
+    scale_y = geotiff.get_scale_y()
+    custm_x = geotiff.get_custom_x_origin()
+    custm_y = geotiff.get_custom_y_origin()
+
+    # rotate +90.0 (relatif Z center image) AND flip verticaly
+    def point(x, y):
+        return QtCore.QPointF( (float(y) - custm_y ) / scale_y, \
+                               (float(x) - custm_x ) / scale_x)
+        #return QtCore.QPointF( (float(x) - custm_x ) / scale_x, \
+        #                       (float(y) - custm_y ) / scale_y)
+
+    bands = geotiff.get_bands_as_uchar()
+    image = i8u2rgb(width, height, bands['Z_MAX'])
+    # image.fill(QtGui.QColor(0, 0, 0, 0)) # transparency
+
+    polypts = QtGui.QPolygonF([ point(x, y) for x, y          in points ])
+    polytra = QtGui.QPolygonF([ point(x, y) for d,y,p,r,x,y,z in trajec ])
+
+    painter = QtGui.QPainter(image)
+    # painter.translate(width/2., -height/2.) # change center
+    # painter.rotate(-90) # rotate
+    painter.setPen(QtGui.QPen(QtCore.Qt.black, 5))
+    painter.drawPoints(polypts) # draw points
+    painter.setPen(QtGui.QPen(QtCore.Qt.white, 2))
+    painter.drawPoints(polytra) # draw trajectory
+    painter.end()
+
+    image.save(argv[4])
+
+    return 0
+
+if __name__ == '__main__':
+    import sys
+    sys.exit( main(sys.argv) )
+
