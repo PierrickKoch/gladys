@@ -92,6 +92,7 @@ class MainWindow(QtGui.QMainWindow):
         self.compute_origin()
         self.draw_all_utm()
         self.save_image()
+        self.clear_points()
 
 
     def compute_scale(self):
@@ -128,14 +129,24 @@ class MainWindow(QtGui.QMainWindow):
         # if pom.log (else custom = 0)
         custom_origin_x = 354320.393534
         custom_origin_y = 5275994.529841
-        points = [[(x + custom_origin_x - self.origin_x) / self.scale_x, \
-                   (y + custom_origin_y - self.origin_y) / self.scale_y] \
-                  for x,y in self.points_pnt]
+        # convert from custom to UTM
+        points = [ [x + custom_origin_x, y + custom_origin_y] \
+                  for x,y in self.points_pnt ]
+        # convert from UTM to pixel
+        points = [ [(x - self.origin_x) / self.scale_x, \
+                    (y - self.origin_y) / self.scale_y] \
+                  for x,y in points ]
+        # draw points
         painter = QtGui.QPainter(self.image_map)
         painter.setPen(QtGui.QPen(QtCore.Qt.green, 1)) # <- here is the path size !
         painter.drawPoints(QtGui.QPolygonF([ QtCore.QPointF(x, y) for x, y in points ]))
         painter.end()
+        # show image
         self.image_label.set_image(self.image_map)
+        # dump points in UTM
+        with open('%s.utm.txt'%self.path_image, 'w') as f:
+            for x,y in points:
+                f.write("%f %f\n"%(x,y))
 
     def save_image(self):
         self.image_map.save(self.path_image)
