@@ -339,7 +339,7 @@ namespace gladys {
             // Note that there is at least one because of the filter !
             for (auto& pt : frontiers[i] ) {
                 double d = distance( r_pos[0], pt) ;
-                if ( d > min_dist - EPS && d < max_dist + EPS) {
+                if ( d > min_dist && d < max_dist) {
                     attributes[i].lookout = pt ;
                     attributes[i].distance  = d ;
                     break;
@@ -354,6 +354,7 @@ namespace gladys {
             p = ng.astar_search( s, g) ;
             attributes[i].cost = p.cost ;
             attributes[i].path = p.path ;
+            attributes[i].path.push_back(attributes[i].lookout );
             attributes[i].proximity = 0 ; // TODO use utility ! (only one call to A*)
             std::cerr   << "[Frontier #"<<i<<"] A-star 0 = ok." << std::endl ;
             /* the proximity is increased by one for every other robot closer
