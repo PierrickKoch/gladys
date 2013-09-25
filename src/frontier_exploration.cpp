@@ -26,6 +26,10 @@
 #define EPS 0.05
 #endif
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
 namespace gladys {
 
 /*{{{ frontier_detector class
@@ -244,7 +248,7 @@ namespace gladys {
         return neighbours ;
     }//}}}
 
-    void frontier_detector::compute_frontiers(const points_t &r_pos, //{{{
+    void frontier_detector::compute_frontiers(const points_t &r_pos, double yaw, //{{{
                             size_t max_nf, size_t min_size, double min_dist, double max_dist,
                             algo_t algo ){
 
@@ -275,7 +279,7 @@ namespace gladys {
         
         // compute the frontiers attributes
         std::cerr   << "[Frontier] Computing frontiers attributes..." << std::endl ;
-        compute_attributes( r_pos, min_dist, max_dist );
+        compute_attributes( r_pos, yaw, min_dist, max_dist );
 
         std::cerr   << "[Frontier] Done." << std::endl ;
 
@@ -317,7 +321,7 @@ namespace gladys {
 
     }//}}}
 
-    void frontier_detector::compute_attributes( const points_t &r_pos, double min_dist, double max_dist ) {//{{{
+    void frontier_detector::compute_attributes( const points_t &r_pos, double yaw, double min_dist, double max_dist ) {//{{{
         /* init */
         size_t total_fPoints = 0 ;
         attributes.resize( frontiers.size() ) ;
@@ -331,20 +335,38 @@ namespace gladys {
             attributes[i].size = frontiers[i].size() ;
             total_fPoints += frontiers[i].size() ;
 
+            std::cerr   << "[Frontier #"<<i<<"] size is " << attributes[i].size << std::endl ;
             // we arbitrary took the medium point as the lookout
             // TODO Find a better lookout
-            //attributes[i].lookout   = frontiers[i][ attributes[i].size / 2 ] ;
-            //attributes[i].lookout   = frontiers[i][0] ; // probably the closer point
-            // Choose the first lookout verifying the distance criterias
+            // Choose the lookout verifying the distance criterias
+            // and minimising the yaw changes
             // Note that there is at least one because of the filter !
+            std::cerr   << "[Frontier #"<<i<<"][lookout] yaw before = " << yaw << std::endl ;
+            yaw = fmod(yaw, (2*M_PI)); //modulo
+            if ( yaw >   M_PI ) yaw -= 2*M_PI; // consider yaw in ]-Pi,Pi]
+            if ( yaw <= -M_PI ) yaw += 2*M_PI; // consider yaw in ]-Pi,Pi]
+            double min_diff_yaw = 7.0 ;
+            std::cerr   << "[Frontier #"<<i<<"][lookout] yaw after = " << yaw << std::endl ;
             for (auto& pt : frontiers[i] ) {
                 double d = distance( r_pos[0], pt) ;
-                if ( d > min_dist && d < max_dist) {
+                double curr_yaw = yaw_angle( r_pos[0], pt) ;
+                std::cerr   << "[Frontier #"<<i<<"][lookout] considered curr_yaw = " << curr_yaw << std::endl ;
+                double curr_diff_yaw = yaw - curr_yaw ;
+                if ( curr_diff_yaw >   M_PI ) curr_diff_yaw -= 2*M_PI; // consider yaw in ]-Pi,Pi]
+                if ( curr_diff_yaw <= -M_PI ) curr_diff_yaw += 2*M_PI; // consider yaw in ]-Pi,Pi]
+                curr_diff_yaw = fabs( curr_diff_yaw );
+                if ( d > min_dist && d < max_dist 
+                &&   curr_diff_yaw < min_diff_yaw ) {
+                    min_diff_yaw = curr_diff_yaw ;
+                    std::cerr   << "[Frontier #"<<i<<"][lookout] Maj min_diff_yaw = " << min_diff_yaw << std::endl ;
                     attributes[i].lookout = pt ;
                     attributes[i].distance  = d ;
-                    break;
+                    //break;
                 }
             }
+            attributes[i].yaw_diff = min_diff_yaw ;
+            std::cerr   << "[Frontier #"<<i<<"][lookout] final min_diff_yaw is = " << attributes[i].yaw_diff << std::endl ;
+            std::cerr   << "[Frontier #"<<i<<"] lookout is ("<<attributes[i].lookout[0] << "," <<attributes[i].lookout[1] <<")" << std::endl ;
 
             points_t s, g ;
             path_cost_util_t p ;
