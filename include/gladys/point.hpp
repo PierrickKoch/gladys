@@ -17,6 +17,10 @@
 #include <ostream>
 #include <sstream>
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
 namespace gladys {
 
 typedef std::array<double, 2> point_xy_t;  // XY
@@ -91,6 +95,18 @@ inline double distance_sq(const point_xyzt_t& pA, const point_xyzt_t& pB) {
 template <class Point>
 inline double distance(const Point& pA, const Point& pB) {
     return std::sqrt(distance_sq(pA, pB));
+}
+
+/* angle computation */
+// compute yaw ; return value in ]-Pi,Pi]
+// this version should be use when y-axis is inverted (goes down)
+inline double yaw_angle_y_inv(const point_xy_t& pA, const point_xy_t& pB) {
+    double yaw = std::atan2(pB[1] - pA[1], - pB[0] + pA[0]) ; // use (-y)
+    yaw = std::fmod(yaw, (2*M_PI)); //modulo
+    if ( yaw >   M_PI ) yaw -= 2*M_PI; // consider yaw in ]-Pi,Pi]
+    if ( yaw <= -M_PI ) yaw += 2*M_PI; // consider yaw in ]-Pi,Pi]
+
+    return yaw;
 }
 
 } // namespace gladys

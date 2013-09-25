@@ -43,11 +43,12 @@ static bpy::list py_search(gladys::nav_graph& self, bpy::tuple start, bpy::tuple
 static bpy::list py_compute_frontiers(gladys::frontier_detector& self, bpy::tuple seed) {
     // optionally check that seed has the required
     // size of 2 using bpy::len()
+    double yaw = 0 ; // TODO fake/work around here
 
     // convert arguments and call the C++ search method
     gladys::point_xy_t _seed = {bpy::extract<double>(seed[0]), bpy::extract<double>(seed[1])};
     gladys::points_t r_pos {_seed} ;
-    self.compute_frontiers( r_pos );
+    self.compute_frontiers( r_pos, yaw );
     const std::vector< gladys::points_t > cxx_retval = self.get_frontiers();
 
     // converts the returned value into a list of lists of 2-tuples (= list of

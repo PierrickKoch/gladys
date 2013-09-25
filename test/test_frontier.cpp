@@ -84,7 +84,8 @@ BOOST_AUTO_TEST_CASE( test_frontier )
     point_xy_t r1 {4,4};
     point_xy_t r2 {4,2};
     points_t r_pos {r1, r2} ;
-    fd.compute_frontiers( r_pos ) ;
+    double yaw = 0 ;
+    fd.compute_frontiers( r_pos, yaw ) ;
 
     std::vector< points_t > frontiers = fd.get_frontiers() ;
 

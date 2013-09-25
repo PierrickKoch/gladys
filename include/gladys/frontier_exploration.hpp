@@ -35,6 +35,7 @@ public:
                                 // ( max = 1  ; "value < 0" <=> unknown)
     point_xy_t lookout ;        // point from wich we want to observe the frontier
     double distance ;           // euclidian distance to the lookout
+    double yaw_diff;            // yaw difference to the lookout
     path_t path ;               // path to the lookout, from the robot
     double cost ;               // the cost of this path
     unsigned int proximity ;    // proximity is the number of robot closer to
@@ -46,6 +47,7 @@ std::ostream& operator<< (std::ostream &out, const f_attributes& f) {//{{{
     out << "{ #" << f.ID << ": size = " << f.size << "; ratio = " << f.ratio 
         << "; lookout = (" << f.lookout[0] << "," << f.lookout[1] 
         << "); euclidian distance = " << f.distance
+        << "; yaw difference = " << f.yaw_diff
         << "; path size = " << f.path.size() << "; cost = " << f.cost
         << "; proximity = " << f.proximity 
         << " }";
@@ -103,7 +105,7 @@ private:
      * is assume to be the robot running the algorithm.
      *
      */
-    void compute_attributes( const points_t &r_pos,
+    void compute_attributes( const points_t &r_pos, double yaw,
                              double min_dist, double max_dist) ;
 
     /** is_frontier
@@ -162,7 +164,7 @@ public:
      * @throws : throw an exception if the algo provided is invalid.
      *
      */
-    void compute_frontiers( const points_t &r_pos,
+    void compute_frontiers( const points_t &r_pos, double yaw,
                             size_t max_nf = 20, size_t min_size = 2,
                             double min_dist = 1.6, double max_dist = 50.0,
                             algo_t algo = WFD );
