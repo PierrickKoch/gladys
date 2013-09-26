@@ -37,14 +37,14 @@ def main(argv=[]):
     height  = geotiff.get_height()
     scale_x = geotiff.get_scale_x()
     scale_y = geotiff.get_scale_y()
-    xradius = int(radius/scale_x)
-    yradius = int(radius/scale_y)
+    xradius = int(radius/abs(scale_x))
+    yradius = int(radius/abs(scale_y))
 
     points = []
     for i in range(xradius, width, xradius):
         for j in range(yradius, height, yradius):
             if is_white((i,j), ifilter):
-                points.append(point_pix2custom(geotiff, *point))
+                points.append(gladys.point_pix2custom(geotiff, i, j))
 
     print(json.dumps(points))
 
@@ -53,4 +53,3 @@ def main(argv=[]):
 if __name__ == '__main__':
     import sys
     sys.exit( main(sys.argv) )
-
