@@ -195,9 +195,7 @@ class MainWindow(QtGui.QMainWindow):
 
 
     def update_path(self, path):
-        scale_x = self.wm.get_scale_x()
-        scale_y = self.wm.get_scale_y()
-        scaled_path = [(x/scale_x, y/scale_y) for x, y in path]
+        scaled_path = [gladys.point_utm2pix(self.wm, x, y) for x, y in path]
         self.image_label.paint_path(scaled_path)
 
     def search(self):
@@ -223,14 +221,10 @@ class MainWindow(QtGui.QMainWindow):
         frontiers = self.frontier_detector.compute_frontiers(self.start) # use the default algorithm
         print("Got %i frontiers (%.3fs)" % ( len(frontiers), \
             (time.time() - t_start) ) )
-        scale_x = self.wm.get_scale_x()
-        scale_y = self.wm.get_scale_y()
-        scaled_frontiers = [(x/scale_x, y/scale_y) for x, y in self.frontiers]
         # Display
         self.display_frontiers = False # to force toggle behaviour into display mode
-        scale_x = self._weight.get_scale_x()
-        scale_y = self._weight.get_scale_y()
-        scaled_frontiers = [ (x/scale_x, y/scale_y) for frontier in frontiers \
+        scaled_frontiers = [ gladys.point_utm2pix(self.wm, x, y) \
+                             for frontier in frontiers \
                              for x, y in frontier ]
         self.image_label.paint_frontiers(scaled_frontiers)
         self.start = self.end = None
@@ -265,13 +259,11 @@ class MainWindow(QtGui.QMainWindow):
     # PySide.QtGui.QWidget.mousePressEvent(event)
     def mousePressEvent(self, event):
         pose = event.pos()
-        scale_x = self.wm.get_scale_x()
-        scale_y = self.wm.get_scale_y()
         if not self.start:
-            self.start = ( scale_x*pose.x(), scale_y*pose.y() )
+            self.start = gladys.point_pix2utm( self.wm, pose.x(), pose.y() )
             print("start = %s" % str(self.start) )
         if not self.end:
-            self.end = ( scale_x*pose.x(), scale_y*pose.y() )
+            self.end =   gladys.point_pix2utm( self.wm, pose.x(), pose.y() )
             if self.end == self.start:
                 self.end = None
             else:

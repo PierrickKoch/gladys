@@ -28,6 +28,9 @@ void nav_graph::_load() {
     // XXX wrong, it must come from the under layer
     time_t t = std::time(0);
 
+    double utm_x = map.get_utm_pose_x(),
+           utm_y = map.get_utm_pose_y();
+
     for (size_t px_x = 0; px_x < width;  px_x++)
     for (size_t px_y = 0; px_y < height; px_y++) {
         // weight is a float in ]1.0, 100.0]
@@ -40,11 +43,11 @@ void nav_graph::_load() {
         if (weight <= 1)
             weight = 100.0;
 
-        vert_w = get_vertex_or_create(scale_x * (px_x - 0.5), scale_y * (px_y      ));
-        vert_n = get_vertex_or_create(scale_x * (px_x      ), scale_y * (px_y - 0.5));
+        vert_w = get_vertex_or_create(utm_x + scale_x * (px_x - 0.5), utm_y + scale_y * (px_y      ));
+        vert_n = get_vertex_or_create(utm_x + scale_x * (px_x      ), utm_y + scale_y * (px_y - 0.5));
         // new vertex
-        vert_e = new_vertex(scale_x * (px_x + 0.5), scale_y * (px_y      ));
-        vert_s = new_vertex(scale_x * (px_x      ), scale_y * (px_y + 0.5));
+        vert_e = new_vertex          (utm_x + scale_x * (px_x + 0.5), utm_y + scale_y * (px_y      ));
+        vert_s = new_vertex          (utm_x + scale_x * (px_x      ), utm_y + scale_y * (px_y + 0.5));
 
         // create edges and set weight
         // length = .5 * math.sqrt( scale_x**2 + scale_y**2 )
@@ -56,9 +59,9 @@ void nav_graph::_load() {
         boost::add_edge(vert_e, vert_s, e, g);
         boost::add_edge(vert_s, vert_w, e, g);
         // also add straight connexions
-        e.weight = scale_y * weight;
+        e.weight = std::abs(scale_y) * weight;
         boost::add_edge(vert_n, vert_s, e, g); // length = scale_y
-        e.weight = scale_x * weight;
+        e.weight = std::abs(scale_x) * weight;
         boost::add_edge(vert_w, vert_e, e, g); // length = scale_x
     }
 }
