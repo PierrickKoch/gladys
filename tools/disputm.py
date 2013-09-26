@@ -44,6 +44,7 @@ class MainWindow(QtGui.QMainWindow):
               " - C         = clear points\n"
               " - Space     = get points UTM\n"
               " - Escape    = quit\n")
+
         # key bindings
         self._bindings = {}
         self.bind(QtCore.Qt.Key_Escape, self.close)

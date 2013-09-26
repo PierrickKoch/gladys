@@ -117,6 +117,7 @@ BOOST_PYTHON_MODULE(libgladys_python)
         .def("get_utm_pose_y", &gdalwrap::gdal::get_utm_pose_y)
         .def("get_custom_x_origin", &gdalwrap::gdal::get_custom_x_origin)
         .def("get_custom_y_origin", &gdalwrap::gdal::get_custom_y_origin)
+        .def("set_custom_origin", &gdalwrap::gdal::set_custom_origin)
         // gdal::get_band
         .def("get_band", &py_get_band)
         // gdal::get_band distributed and converted from float to uchar [0-255]
