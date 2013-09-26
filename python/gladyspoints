@@ -43,9 +43,8 @@ def main(argv=[]):
     points = []
     for i in range(xradius, width, xradius):
         for j in range(yradius, height, yradius):
-            point = (round(i*scale_x, 3), round(j*scale_y, 3))
             if is_white((i,j), ifilter):
-                points.append(point)
+                points.append(point_pix2custom(geotiff, *point))
 
     print(json.dumps(points))
 
