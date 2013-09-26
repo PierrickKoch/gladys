@@ -63,6 +63,7 @@ class MainWindow(QtGui.QMainWindow):
               "-------\n"
               " - Click     = select points\n"
               " - C         = clear points\n"
+              " - U         = get points UTM\n"
               " - Space     = start utm\n"
               " - Escape    = quit\n")
 
@@ -72,6 +73,7 @@ class MainWindow(QtGui.QMainWindow):
         self._bindings = {}
         self.bind(QtCore.Qt.Key_Escape, self.close)
         self.bind(QtCore.Qt.Key_C,      self.clear_points)
+        self.bind(QtCore.Qt.Key_U,      self.get_utm_coord)
         self.bind(QtCore.Qt.Key_Space,  self.start_utm)
 
     def bind(self, key, func):
@@ -93,6 +95,12 @@ class MainWindow(QtGui.QMainWindow):
         self.save_image()
         self.clear_points()
 
+    def get_utm_coord(self):
+        def point_pix2utm(x, y):
+            return ( x * self.scale_x + self.origin_x ,
+                     y * self.scale_y + self.origin_y )
+        for point in self.points_pix:
+            print("%s -> %s" % ( str(point), str(point_pix2utm(*point)) ) )
 
     def compute_scale(self):
         scal_x = []
