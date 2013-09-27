@@ -55,17 +55,18 @@ points_probs_t gladys::simulation(const points_t& start,
 
 /* navigation */
 
-path_cost_util_t gladys::navigation(const points_t& start, const points_t& goal,
-    int optimisation, const motion_constraints_t& constraints)
+//path_cost_util_t gladys::navigation(const points_t& start, const points_t& goal,
+//    int optimisation, const motion_constraints_t& constraints)
+path_cost_util_t gladys::navigation(const points_t& start, const points_t& goal)
 {
-    return navigation_graph.astar_search(start, goal);
+    return navigation_graph.astar_search_custom(start, goal);
 }
 
 /* perception */
 
 bool gladys::is_visible(const point_xy_t& locA, const point_xy_t& locB) const
 {
-    return visibility.is_visible(locA, locB);
+    return visibility.is_visible_custom(locA, locB);
 }
 
 points_probs_t gladys::can_see(const point_xy_t& locA, const points_t& llocB) const

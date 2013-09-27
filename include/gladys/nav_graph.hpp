@@ -89,6 +89,33 @@ public:
 
     path_t astar_search(const point_xy_t& start, const point_xy_t& goal) const;
     path_cost_util_t astar_search(const points_t& start, const points_t& goal) const;
+    path_cost_util_t astar_search_custom(const points_t& start,
+                                         const points_t& goal) const {
+        // from custom frame to UTM and back to custom
+        path_cost_util_t pcu = astar_search( custom_to_utm(start),
+                                             custom_to_utm(goal ) );
+        pcu.path = utm_to_custom(pcu.path);
+        return pcu;
+    }
+
+    point_xy_t custom_to_utm(const point_xy_t& p) const {
+        return map.get_map().point_custom2utm(p[0], p[1]);
+    }
+    point_xy_t utm_to_custom(const point_xy_t& p) const {
+        return map.get_map().point_utm2custom(p[0], p[1]);
+    }
+    points_t custom_to_utm(const points_t& pts) const {
+        points_t ptsc;
+        for (const auto& p : pts)
+            ptsc.push_back( custom_to_utm(p) );
+        return ptsc;
+    }
+    path_t utm_to_custom(const path_t& pts) const {
+        path_t ptsc;
+        for (const auto& p : pts)
+            ptsc.push_back( utm_to_custom(p) );
+        return ptsc;
+    }
 
     /** Write graphviz .dot file
      *
