@@ -33,7 +33,8 @@ sed -i.bak -e "s/VERSION=\([\t]*\)$__OLD_VER/VERSION=\1$__NEW_VER/" Makefile
 make distinfo
 make clean
 make deinstall
-make update
+n=`cat /proc/cpuinfo | grep "cpu cores" | uniq | awk '{print $NF}'`
+make -j$n update
 make print-PLIST
 # update PLIST only if changes
 test `diff -u0 PLIST PLIST.guess | wc -l` -gt 5 && mv PLIST.guess PLIST
