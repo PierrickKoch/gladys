@@ -54,9 +54,20 @@ class MainWindow(QtGui.QMainWindow):
     def point_pix2utm(self, point):
         return gladys.point_pix2utm(self.image_gdal, *point)
 
+    def point_pix2custom(self, point):
+        return gladys.point_pix2custom(self.image_gdal, *point)
+
     def get_utm_coord(self):
+        utm_coordinates = []
+        custom_coordinates = []
         for point in self.points_pix:
-            print("%s -> %s" % ( str(point), str(self.point_pix2utm(point)) ) )
+            utm    = self.point_pix2utm(point)
+            custom = self.point_pix2custom(point)
+            utm_coordinates.append(utm)
+            custom_coordinates.append(custom)
+            print("%s -> %s" % ( str(point), str(utm) ) )
+        for x, y in custom_coordinates:
+            print("%f %f" % (x, y) )
 
     def clear_points(self):
         self.points_pix = []
