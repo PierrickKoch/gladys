@@ -70,6 +70,12 @@ private:
     std::vector< points_t > frontiers ;         // the list of the frontiers
     std::vector< f_attributes > attributes ;    // the frontiers attributes
 
+    // area to explore (generally smaller than the whole weightmap)
+    int x_origin ;                              // x origin of the area to explore
+    int y_origin ;                              // y origin of the area to explore
+    size_t height_max ;                         // height of the area to explore
+    size_t width_max ;                          // width of the area to explore
+
     /* hidden computing functions */
     /** compute_frontiers_WFD
      *
@@ -140,7 +146,18 @@ public:
      *
      * @param nav_graph graph
      */
-    frontier_detector( const nav_graph& _ng ) : ng(_ng) {}
+    frontier_detector( const nav_graph& _ng,
+                       int _x_origin,
+                       int _y_origin,
+                       size_t _height_max,
+                       size_t _width_max ) :
+            ng(_ng) 
+    {//{{{
+        x_origin = _x_origin ;
+        y_origin = _y_origin ;
+        height_max = _height_max ;
+        width_max = _width_max ;
+    }//}}}
 
     /* public computing functions */
     /** compute_frontiers

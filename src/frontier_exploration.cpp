@@ -45,10 +45,10 @@ namespace gladys {
         width   = map.get_width();
         height  = map.get_height();
         int x_min, x_max, y_min, y_max;
-        x_min = map.get_utm_pose_x();
-        y_min = map.get_utm_pose_y();
-        x_max = x_min + width ;
-        y_max = y_min + height ;
+        x_min = std::max( (int) map.get_utm_pose_x(), x_origin );
+        y_min = std::max( (int) map.get_utm_pose_y(), y_origin );
+        x_max = std::min( x_min + width, x_origin + height_max ) ;
+        y_max = std::min( y_min + height, y_origin + width_max ) ;
 
         // Get the raster band
         const gdalwrap::raster& data = map.get_weight_band() ;

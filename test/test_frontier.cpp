@@ -78,7 +78,7 @@ BOOST_AUTO_TEST_CASE( test_frontier )
     // (Create the weight_map, assumed to be good; cf other unit test)
     weight_map wm ( region_path, robotm_path ) ;
     nav_graph ng ( wm ) ;
-    frontier_detector fd ( ng ) ;
+    frontier_detector fd ( ng, -5, -5, 20, 20 ) ; // area wider than the map! (part of the test)
 
     // testing frontier detection with defult algorithm
     point_xy_t r1 {4,4};
