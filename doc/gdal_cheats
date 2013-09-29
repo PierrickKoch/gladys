@@ -1,0 +1,6 @@
+
+# set meta-data
+gdal_translate -of PNG -mo "CUSTOM_X_ORIGIN=398369.610000" -mo "CUSTOM_Y_ORIGIN=4903128.010000" image.png image.custom.png
+
+# scale down at 10 percent
+gdal_translate -outsize 10% 10% image.tif image.10p.tif 
