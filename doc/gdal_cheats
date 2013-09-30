@@ -4,3 +4,6 @@ gdal_translate -of PNG -mo "CUSTOM_X_ORIGIN=398369.610000" -mo "CUSTOM_Y_ORIGIN=
 
 # scale down at 10 percent
 gdal_translate -outsize 10% 10% image.tif image.10p.tif 
+
+# crop
+gdal_translate -srcwin 3700 3900 4500 4500 orthodsm_geo.tif heightmap.tif
