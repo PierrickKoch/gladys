@@ -1,6 +1,6 @@
 #!/bin/sh
 
-__NEW_VER=0.2
+__NEW_VER=0.2.1
 
 __PKGNAME=gladys
 __IS_WIP_=wip/
