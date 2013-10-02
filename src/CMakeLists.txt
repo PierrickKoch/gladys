@@ -6,6 +6,7 @@ install_pkg_config_file(gladys
     DESCRIPTION "Graph Library for Autonomous and Dynamic Systems"
     CFLAGS
     LIBS -lgladys
+    REQUIRES gdalwrap
     VERSION ${PACKAGE_VERSION})
 
 add_executable( region_graph main/region_graph.cpp )
