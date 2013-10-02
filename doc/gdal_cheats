@@ -1,29 +1,27 @@
-
-# set meta-data
-gdal_translate -of PNG -mo "CUSTOM_X_ORIGIN=398369.610000" -mo "CUSTOM_Y_ORIGIN=4903128.010000" image.png image.custom.png
-
-# scale down at 10 percent
-gdal_translate -outsize 10% 10% image.tif image.10p.tif 
-
-# crop
-gdal_translate -srcwin 3700 3900 4500 4500 orthodsm_geo.tif heightmap.tif
-
-
 # region-map from ortho-image w/gimp
 
+# crop
 gdal_translate -srcwin 2500 3000 5500 5000 slowtry_orthomosaic_geo_rgb.tif image.tif
+# add custom meta-data (custom UTM origin)
 gdal_translate -mo "CUSTOM_X_ORIGIN=398369.610000" -mo "CUSTOM_Y_ORIGIN=4903128.010000" image.tif image.custom.tif
+# scale down
 gdal_translate -outsize 10% 10% image.custom.tif image.custom.10p.tif
+# -of PNG will produce a .aux.xml containing the Geodesic meta-data
 gdal_translate -of PNG image.custom.10p.tif image.custom.10p.png
 gimp image.custom.10p.png # color Red = Obstacle, Green = FLAT, Blue = ROUGH.
+# recreate GeoTiff from the gimp file and the .aux.xml
 gdal_translate -of GTiff image.custom.10p.png image.custom.10p.rgba.tif
+# create a valid region-map GeoTiff
 clara_rgba_to_region image.custom.10p.rgba.tif image.custom.10p.rgba.region.tif
 
 # dtm from dsm
 
+# crop
 gdal_translate -srcwin 2500 3000 5500 5000 slowtry_orthodsm_geo.tif dsm.tif
-mv dsm.tif 2500-3000-5500x5000/
+# add custom meta-data (custom UTM origin)
 gdal_translate -mo "CUSTOM_X_ORIGIN=398369.610000" -mo "CUSTOM_Y_ORIGIN=4903128.010000" dsm.tif dsm.custom.tif
+# scale down
 gdal_translate -outsize 10% 10% dsm.custom.tif dsm.custom.10p.tif
+# create a valid dtm GeoTiff
 clara_dsm_to_dtm dsm.custom.10p.tif dsm.custom.10p.dtm.tif
 
