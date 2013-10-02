@@ -29,7 +29,7 @@ class weight_map {
     size_t width ;
     enum {W_FLAG_OBSTACLE=-2, W_UNKNOWN=-1};
 public:
-    /* Names of the visual terrain classes */
+    /* DEPRECATED ! Names of the visual terrain classes */
     enum {NO_3D_CLASS, FLAT, OBSTACLE, ROUGH, SLOPE, N_RASTER};
 
     weight_map() {}

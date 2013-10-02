@@ -15,7 +15,7 @@
 namespace gladys {
 
 void weight_map::_load() {
-    assert(terrains.bands.size() == N_RASTER);
+    assert(terrains.bands.size() > 1);
     map.copy_meta(terrains, 1);
     gdalwrap::raster& weights = map.bands[0];
     width = map.get_width();
