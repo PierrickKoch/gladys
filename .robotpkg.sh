@@ -33,7 +33,7 @@ sed -i.bak -e "s/VERSION=\([\t]*\)$__OLD_VER/VERSION=\1$__NEW_VER/" Makefile
 make distinfo
 make clean
 make deinstall
-n=`grep "cpu cores" /proc/cpuinfo | uniq | awk '{print $NF}'`
+n=`awk '/cpu cores/ {print $NF; exit}' /proc/cpuinfo`
 make MAKE_JOBS=$n update
 make print-PLIST
 # update PLIST only if changes

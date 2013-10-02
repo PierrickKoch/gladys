@@ -2,7 +2,7 @@
 echo "GLADYS"
 echo "======"
 uname -a # show kernel info
-n=`cat /proc/cpuinfo | grep "cpu cores" | uniq | awk '{print $NF}'`
+n=`awk '/cpu cores/ {print $NF; exit}' /proc/cpuinfo`
 
 SRC_DIR=$(pwd)
 mkdir devel
