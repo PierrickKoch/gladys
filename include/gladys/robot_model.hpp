@@ -12,15 +12,18 @@
 #define ROBOT_MODEL_HPP
 
 #include <string>
+#include <map>
 
 #include <boost/version.hpp>
 // json_parser bug #6785 in boost 1.49
 // https://svn.boost.org/trac/boost/ticket/6785
+// https://bugs.launchpad.net/bugs/1232800
 #if ((BOOST_VERSION % 100) == 1) && ((BOOST_VERSION / 100 % 1000) == 49)
 #error Boost 1.49 json_parser bug #6785
 #endif
 
 #include <boost/property_tree/json_parser.hpp>
+// http://www.boost.org/doc/libs/1_54_0/doc/html/boost_propertytree/parsers.html#boost_propertytree.parsers.json_parser
 
 #include "gladys/point.hpp"
 
@@ -57,6 +60,15 @@ public:
        string("SLOPE")      -> float(0.6)
        ...
      */
+    std::map<std::string, float> get_costs() const {
+        std::map<std::string, float> costs;
+        costs["FLAT"]  = 0.0; // v-max     on flat   ground
+        costs["ROUGH"] = 2.0; // v-max / 2 on rought ground
+        costs["SLOPE"] = 3.0; // v-max / 3 on slope  ground
+        // threshold not cost ["OBSTACLE"] = 1E+6;
+        // threshold not cost ["NO_3D_CLASS"] = -1;
+        return costs;
+    }
 
     double get_mass() const {
         return pt.get<double>("robot.mass");

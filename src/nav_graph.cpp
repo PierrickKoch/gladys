@@ -33,14 +33,14 @@ void nav_graph::_load() {
 
     for (size_t px_x = 0; px_x < width;  px_x++)
     for (size_t px_y = 0; px_y < height; px_y++) {
-        // weight is a float in ]1.0, 100.0]
+        // weight is a float in seconds per meter
         // or > if obstacle (+inf)
         // or < if unknown
         weight = weight_map[px_x + px_y * width];
 
         // if unknown, then weight is max (100)
         // in order to allow exploration plan in unknown areas.
-        if (weight <= 1)
+        if (weight <= 0)
             weight = 100.0;
 
         vert_w = get_vertex_or_create(utm_x + scale_x * (px_x - 0.5), utm_y + scale_y * (px_y      ));

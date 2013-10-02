@@ -8,6 +8,7 @@
  * license: BSD
  */
 #include <cmath>
+#include <map>
 
 #include "gdalwrap/gdal.hpp"
 #include "gladys/weight_map.hpp"
@@ -21,10 +22,10 @@ void weight_map::_load() {
     width = map.get_width();
     map.names[0] = "WEIGHT";
 
-    gdalwrap::raster data( terrains.bands.size() );
+    std::map<std::string, float> data;
     for (size_t pos = 0; pos < width * map.get_height(); pos++) {
         for (size_t band_id = 0; band_id < data.size(); band_id++)
-            data[band_id] = terrains.bands[band_id][pos];
+            data[ terrains.names[band_id] ] = terrains.bands[band_id][pos];
         weights[pos] = compute_weight(data);
     }
 

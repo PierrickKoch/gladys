@@ -12,6 +12,7 @@
 
 #include <string>
 #include <limits> // for numeric_limits::infinity
+#include <map>
 
 #include "gdalwrap/gdal.hpp"
 #include "gladys/robot_model.hpp"
@@ -77,17 +78,21 @@ public:
 
     /** compute a mix of ponderated classes
      *
-     * w/ threshold on obstacle
-     * @returns weight in [1, 100] or -1 if unknown
-     *
+     * w/ threshold on obstacle and unknown
+     * @returns weight from probabilities ponderated by robot model
+     *          (in seconds per meter)
      */
-    float compute_weight(const gdalwrap::raster& data) const {
-        if (data[NO_3D_CLASS] > 0.9)
+    float compute_weight(std::map<std::string, float>& data) const {
+        if (data["NO_3D_CLASS"] > 0.9)
             return W_UNKNOWN; // UNKNOWN
-        if (data[OBSTACLE] > 0.4) // TODO tune this threshold
+        if (data["OBSTACLE"] > 0.4) // TODO tune this threshold
             return std::numeric_limits<float>::infinity(); // OBSTACLE
-        else // compute a mix of ponderated classes TODO dynamicaly json conf
-            return 1 + 98 * (data[FLAT] * 0.1 + data[ROUGH] * 0.3 + data[SLOPE] * 0.6 );
+        // compute a mix of ponderated classes TODO dynamicaly json conf
+        float weight = 1.0;
+        std::map<std::string, float> costs = rmdl.get_costs();
+        for (const auto& kv : data)
+            weight += kv.second * costs[kv.first];
+        return weight / rmdl.get_velocity();
     }
 
     const gdalwrap::raster& get_weight_band() const {
