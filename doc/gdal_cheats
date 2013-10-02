@@ -7,3 +7,23 @@ gdal_translate -outsize 10% 10% image.tif image.10p.tif
 
 # crop
 gdal_translate -srcwin 3700 3900 4500 4500 orthodsm_geo.tif heightmap.tif
+
+
+# region-map from ortho-image w/gimp
+
+gdal_translate -srcwin 2500 3000 5500 5000 slowtry_orthomosaic_geo_rgb.tif image.tif
+gdal_translate -mo "CUSTOM_X_ORIGIN=398369.610000" -mo "CUSTOM_Y_ORIGIN=4903128.010000" image.tif image.custom.tif
+gdal_translate -outsize 10% 10% image.custom.tif image.custom.10p.tif
+gdal_translate -of PNG image.custom.10p.tif image.custom.10p.png
+gimp image.custom.10p.png # color Red = Obstacle, Green = FLAT, Blue = ROUGH.
+gdal_translate -of GTiff image.custom.10p.png image.custom.10p.rgba.tif
+clara_rgba_to_region image.custom.10p.rgba.tif image.custom.10p.rgba.region.tif
+
+# dtm from dsm
+
+gdal_translate -srcwin 2500 3000 5500 5000 slowtry_orthodsm_geo.tif dsm.tif
+mv dsm.tif 2500-3000-5500x5000/
+gdal_translate -mo "CUSTOM_X_ORIGIN=398369.610000" -mo "CUSTOM_Y_ORIGIN=4903128.010000" dsm.tif dsm.custom.tif
+gdal_translate -outsize 10% 10% dsm.custom.tif dsm.custom.10p.tif
+clara_dsm_to_dtm dsm.custom.10p.tif dsm.custom.10p.dtm.tif
+
