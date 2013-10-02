@@ -136,7 +136,7 @@ class MainWindow(QtGui.QMainWindow):
             self._raster = names[0]
         else:
             index = names.index(self._raster) + 1
-            if index < len(self._raster):
+            if index < len(names):
                 self._raster = names[index]
             else:
                 return -1
