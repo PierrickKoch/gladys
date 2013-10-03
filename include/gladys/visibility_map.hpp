@@ -50,13 +50,6 @@ public:
         _load();
     }
 
-    point_xy_t custom_to_utm(const point_xy_t& p) const {
-        return dtm.point_custom2utm(p[0], p[1]);
-    }
-    point_xy_t utm_to_custom(const point_xy_t& p) const {
-        return dtm.point_utm2custom(p[0], p[1]);
-    }
-
     /* computing function */
 
     /** test if point 't' (target) is visible from 's' (sensor)
@@ -69,11 +62,6 @@ public:
      *
      */
     bool is_visible( const point_xy_t& s, const point_xy_t& t) const ;
-    bool is_visible_custom( const point_xy_t& s, const point_xy_t& t) const {
-        // from custom frame to UTM
-        return is_visible( custom_to_utm(s),
-                           custom_to_utm(t) );
-    };
 
     /** Get the index of the point in the raster
      *
@@ -105,22 +93,6 @@ public:
 
     size_t get_height() const {
         return height;
-    }
-
-    double get_scale_x() const {
-        return dtm.get_scale_x();
-    }
-
-    double get_scale_y() const {
-        return dtm.get_scale_y();
-    }
-
-    double get_utm_pose_x() const {
-        return dtm.get_utm_pose_x();
-    }
-
-    double get_utm_pose_y() const {
-        return dtm.get_utm_pose_y();
     }
 
     void save(const std::string& filepath) {

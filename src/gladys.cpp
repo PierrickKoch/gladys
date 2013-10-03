@@ -66,7 +66,7 @@ path_cost_util_t gladys::navigation(const points_t& start, const points_t& goal)
 
 bool gladys::is_visible(const point_xy_t& locA, const point_xy_t& locB) const
 {
-    return visibility.is_visible_custom(locA, locB);
+    return visibility.is_visible(locA, locB);
 }
 
 points_probs_t gladys::can_see(const point_xy_t& locA, const points_t& llocB) const
