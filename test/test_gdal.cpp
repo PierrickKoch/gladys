@@ -51,11 +51,9 @@ BOOST_AUTO_TEST_CASE( test_gdal_scale )
     obj.set_custom_origin(12.3, 14.5);
     obj.set_transform(utm_x, utm_y, scale_x, scale_y);
 
-    BOOST_CHECK_EQUAL(obj.index_raster(0, 0), 0);
-    BOOST_CHECK_EQUAL(obj.index_raster(1, 0), std::ceil(1 / scale_x));
-    BOOST_CHECK_EQUAL(obj.index_raster(0, 1), std::ceil(1 / scale_y * size_x));
-    BOOST_CHECK_EQUAL(obj.index_raster(1, 1), std::ceil(1 / scale_x + 1 / scale_y * size_x));
-    BOOST_CHECK_EQUAL(obj.index_raster(5, 8), std::ceil(5 / scale_x + 8 / scale_y * size_x));
+    BOOST_CHECK_EQUAL(obj.index_pix(0, 0), 0);
+    BOOST_CHECK_EQUAL(obj.index_pix(1, 0), 1);
+    BOOST_CHECK_EQUAL(obj.index_pix(0, 1), size_x);
 }
 
 BOOST_AUTO_TEST_CASE( test_gdal_scale_utm )
@@ -74,10 +72,8 @@ BOOST_AUTO_TEST_CASE( test_gdal_scale_utm )
     obj.set_transform(utm_x, utm_y, scale_x, scale_y);
 
     BOOST_CHECK_EQUAL(obj.index_utm(utm_x,     utm_y),     0);
-    BOOST_CHECK_EQUAL(obj.index_utm(utm_x + 1, utm_y),     std::ceil(1 / scale_x));
-    BOOST_CHECK_EQUAL(obj.index_utm(utm_x,     utm_y + 1), std::ceil(1 / scale_y * size_x));
-    BOOST_CHECK_EQUAL(obj.index_utm(utm_x + 1, utm_y + 1), std::ceil(1 / scale_x + 1 / scale_y * size_x));
-    BOOST_CHECK_EQUAL(obj.index_utm(utm_x + 5, utm_y + 8), std::ceil(5 / scale_x + 8 / scale_y * size_x));
+    BOOST_CHECK_EQUAL(obj.index_utm(utm_x + 1, utm_y),     std::round(1 / scale_x));
+    BOOST_CHECK_EQUAL(obj.index_utm(utm_x,     utm_y + 1), std::round(1 / scale_y) * size_x);
 }
 
 // TODO test custom origin {x,y}
