@@ -1,5 +1,11 @@
 #!/usr/bin/env python
+"""
+TODO
+====
 
+- https://github.com/PySide/Examples/blob/master/examples/widgets/imageviewer.py
+- https://github.com/PySide/Examples/blob/master/examples/graphicsview/elasticnodes.py
+"""
 import json
 
 try:
@@ -25,24 +31,17 @@ def draw_path(paintable, path, sx=1.0, sy=1.0):
         painter.drawText(point, "%i"%num)
     painter.end()
 
-def draw_points(paintable, points, sx=1.0, sy=1.0):
-    painter = QtGui.QPainter(paintable)
-    painter.scale(sx, sy)
-    painter.setPen(QtGui.QPen(QtCore.Qt.red, 4))
-    # draw points
-    painter.drawPoints(points)
-    painter.end()
-
 class ImageLabel(QtGui.QLabel):
     def __init__(self):
         QtGui.QLabel.__init__(self)
         self.path   = QtGui.QPolygonF()
         self.points = QtGui.QPolygonF()
         self.scale  = 1.0
+        self.image_size = QtCore.QSize()
+        self.setScaledContents(True)
     def set_image(self, image):
-        self.image = image
-        size = image.size() * self.scale
-        self.setPixmap(QtGui.QPixmap.fromImage( image.scaled(size) ))
+        self.image_size = image.size()
+        self.setPixmap(QtGui.QPixmap.fromImage( image ))
     def add_point(self, x, y):
         self.points.append(QtCore.QPointF(x, y))
         self.repaint()
@@ -52,56 +51,76 @@ class ImageLabel(QtGui.QLabel):
     def paint_path(self, path):
         self.path = QtGui.QPolygonF([ QtCore.QPointF(x, y) for x, y in path ])
         self.repaint()
-    def apply_scale(self, scale=None):
-        if scale:
-            self.scale = scale
-        self.set_image(self.image)
-        self.repaint()
+    def apply_scale(self):
+        if self.scale < 0.1:
+            self.scale = 1.0
+        self.resize(self.image_size * self.scale)
     def paintEvent(self, event):
         # override QtGui.QLabel.paintEvent
         # called by QtGui.QLabel.repaint, in the GUI loop
         QtGui.QLabel.paintEvent(self, event)
-        draw_path  (self, self.path,   self.scale, self.scale)
-        draw_points(self, self.points, self.scale, self.scale)
+        painter = QtGui.QPainter(self)
+        painter.scale( self.scale, self.scale )
+        painter.setPen(QtGui.QPen(QtCore.Qt.red, 4))
+        # draw points
+        painter.drawPoints(self.points)
+        painter.end()
+        draw_path(self, self.path,   self.scale, self.scale)
+    # PySide.QtGui.QWidget.wheelEvent(event)
+    def wheelEvent(self, event):
+        if not event.modifiers() == QtCore.Qt.ControlModifier:
+            event.ignore() # NOTE : doc says to do so
+            return QtGui.QLabel.wheelEvent(self, event)
+        self.scale += event.delta() / 500.0;
+        self.apply_scale()
 
-class MainWindow(QtGui.QMainWindow):
+class ImageViewer(QtGui.QMainWindow):
     def __init__(self, argv):
-        super(MainWindow, self).__init__()
+        QtGui.QMainWindow.__init__(self)
         # image viewer
         self.image_label = ImageLabel()
-        self.setCentralWidget(self.image_label)
+        self.scroll_area = QtGui.QScrollArea()
 
-        self.setWindowTitle("Eurasample")
+        self.scroll_area.setWidget(self.image_label)
+        self.scroll_area.setAlignment(QtCore.Qt.AlignTop)
+        self.image_label.setAlignment(QtCore.Qt.AlignTop)
+        self.setCentralWidget(self.scroll_area)
+
+        self.setWindowTitle("Display UTM")
         self.resize(200, 200)
 
         self.points_pix = []
         self.image_gdal = gladys.gdal(argv[1])
         self.image_disp = QtGui.QImage(argv[1])
         self.image_label.set_image(self.image_disp)
+        self.image_label.adjustSize()
+        self.adjustSize()
 
         print("===============================\n"
               "  Welcome to Display UTM !\n"
               "===============================\n\n"
               "Actions\n"
               "-------\n"
-              " - Click     = select points\n"
-              " - C         = clear points\n"
-              " - Space     = get points UTM\n"
-              " - Escape    = quit\n")
+              " - Click      = select points\n"
+              " - Space      = get points\n"
+              " - C          = clear points\n"
+              " - Ctrl+Wheel = zoom in/out\n"
+              " - Escape     = quit\n")
 
         # key bindings
         self._bindings = {}
         self.bind(QtCore.Qt.Key_Escape, self.close)
         self.bind(QtCore.Qt.Key_C,      self.clear_points)
         self.bind(QtCore.Qt.Key_Space,  self.get_utm_coord)
-        self.bind(QtCore.Qt.Key_Q,      self.zoom_in)
-        self.bind(QtCore.Qt.Key_A,      self.zoom_out)
+        self.bind(QtCore.Qt.Key_Plus,   self.zoom_in)
+        self.bind(QtCore.Qt.Key_Minus,  self.zoom_out)
 
     def zoom_in(self):
-        self.image_label.apply_scale(2.0)
-
+        self.image_label.scale += .1;
+        self.image_label.apply_scale()
     def zoom_out(self):
-        self.image_label.apply_scale(0.5)
+        self.image_label.scale -= .1;
+        self.image_label.apply_scale()
 
     def point_pix2utm(self, point):
         return gladys.point_pix2utm(self.image_gdal, *point)
@@ -148,16 +167,15 @@ class MainWindow(QtGui.QMainWindow):
         if event.key() in self._bindings:
             self._bindings[event.key()]()
 
-    # PySide.QtGui.QWidget.wheelEvent(event)
-    def wheelEvent(self, event):
-        # TODO
-        self.image_label.scale += event.delta() / 400.0;
-        self.image_label.apply_scale()
-
     # PySide.QtGui.QWidget.mousePressEvent(event)
     def mousePressEvent(self, event):
         pose = event.pos()
-        point = [pose.x(), pose.y()]
+        scale = self.image_label.scale
+        # scroll_{x,y} position
+        hvalue = self.scroll_area.horizontalScrollBar().value()
+        vvalue = self.scroll_area.verticalScrollBar().value()
+        topleft = self.scroll_area.viewport().rect().topLeft()
+        point = [(pose.x() + hvalue) / scale, (pose.y() + vvalue) / scale]
         if self.points_pix and self.points_pix[-1] == point:
             return # skip double click
         self.points_pix.append(point)
@@ -168,7 +186,7 @@ def main(argv=[]):
         print("usage: %s geoimage"%argv[0])
         return 1
     app = QtGui.QApplication(argv)
-    mww = MainWindow(argv)
+    mww = ImageViewer(argv)
     mww.show()
     return app.exec_()
 
