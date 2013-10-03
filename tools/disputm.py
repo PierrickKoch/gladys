@@ -5,6 +5,7 @@ TODO
 
 - https://github.com/PySide/Examples/blob/master/examples/widgets/imageviewer.py
 - https://github.com/PySide/Examples/blob/master/examples/graphicsview/elasticnodes.py
+- use lxml to get real-time robot location (pom, picoweb, http/xml)
 """
 import json
 
@@ -103,6 +104,7 @@ class ImageViewer(QtGui.QMainWindow):
               "-------\n"
               " - Click      = select points\n"
               " - Space      = get points\n"
+              " - S          = save image\n"
               " - C          = clear points\n"
               " - Ctrl+Wheel = zoom in/out\n"
               " - Escape     = quit\n")
@@ -110,6 +112,7 @@ class ImageViewer(QtGui.QMainWindow):
         # key bindings
         self._bindings = {}
         self.bind(QtCore.Qt.Key_Escape, self.close)
+        self.bind(QtCore.Qt.Key_S,      self.save_image)
         self.bind(QtCore.Qt.Key_C,      self.clear_points)
         self.bind(QtCore.Qt.Key_Space,  self.get_utm_coord)
         self.bind(QtCore.Qt.Key_Plus,   self.zoom_in)
@@ -141,7 +144,6 @@ class ImageViewer(QtGui.QMainWindow):
         # display path
         self.image_label.paint_path(self.points_pix)
         self.save_custom(custom_coordinates)
-        self.save_image()
 
     def save_image(self):
         image = self.image_disp.copy()
