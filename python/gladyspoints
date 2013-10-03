@@ -44,7 +44,10 @@ def main(argv=[]):
     for i in range(xradius, width, xradius):
         for j in range(yradius, height, yradius):
             if is_white((i,j), ifilter):
-                points.append(gladys.point_pix2custom(geotiff, i, j))
+                custom = gladys.point_pix2custom(geotiff, i, j)
+                # test point in image (throw out of range if wrong)
+                geotiff.index_custom(*custom)
+                points.append(custom)
 
     print(json.dumps(points))
 
