@@ -67,7 +67,7 @@ bool visibility_map::is_visible( const point_xy_t& s, const point_xy_t& t) const
     double zs, zt, d0, a, d, z;
     zs = _s[2] + heightmap[ index(s) ] ;   // height of the sensor
     zt = heightmap[ index(t) ] ;           // height of the target
-    d0 = distance( s, t ) ;
+    d0 = distance_st ;
 
     a = (zs - zt) / d0 ; // d > 0
     // b = 1 and c = -zs
