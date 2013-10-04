@@ -36,8 +36,11 @@ BOOST_AUTO_TEST_CASE( test_raster_to_graph )
     region.set_size(weight_map::N_RASTER, 9, 9);
     // add an obstacle at the center of the map
     region.bands[weight_map::FLAT    ].assign(9*9, 1);
-    region.bands[weight_map::FLAT    ][4+4*9] = 0.5;
-    region.bands[weight_map::OBSTACLE][4+4*9] = 0.5;
+    for ( int i=1 ; i < 9 ; i++ ) {
+        region.bands[weight_map::FLAT    ][i+5*9] = 0.2 ;
+        region.bands[weight_map::OBSTACLE][i+5*9] = 0.8 ;
+    }
+
     region.save(region_path);
 
     // create a navigation graph from the map
@@ -52,12 +55,14 @@ BOOST_AUTO_TEST_CASE( test_raster_to_graph )
     BOOST_CHECK_EQUAL( oss_graphviz.str().size() , 8812 );
 
     point_xy_t p1 = {1, 1};
-    point_xy_t p2 = {9, 9};
+    point_xy_t p2 = {5, 9};
     path_t path = ng.astar_search(p1, p2);
     // g++ >= 4.7 or clang >= 3.1 : support initializer_list
-    // TODO BOOST_CHECK_EQUAL( path , {{0.5, 1.0}, {1.0, 1.5}, {1.5, 2.0}} );
     BOOST_TEST_MESSAGE( "path: " + to_string(path) );
-    BOOST_CHECK_EQUAL( path.size() , 16 );
+    BOOST_CHECK_EQUAL( path.size() , 14 );
+    point_xy_t check_point = {1.0, 6.5} ;
+    BOOST_CHECK_EQUAL( path[7][0], check_point[0] );
+    BOOST_CHECK_EQUAL( path[7][1], check_point[1] );
 
     robot_cfg.open(robotm_path);
     robot_cfg<<"{\"robot\":{\"mass\":1.0,\"radius\":2.0,\"velocity\":1.0}}";
@@ -71,7 +76,7 @@ BOOST_AUTO_TEST_CASE( test_raster_to_graph )
     points_t start = {p1};
     points_t goal  = {p2};
     path_cost_util_t pcu = obj.navigation(start, goal);
-    BOOST_TEST_MESSAGE( "path: " + to_string(pcu.path) );
+    BOOST_TEST_MESSAGE( "pcu path: " + to_string(pcu.path) );
     BOOST_CHECK_EQUAL( path.size() , pcu.path.size() );
 }
 
