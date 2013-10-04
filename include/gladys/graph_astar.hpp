@@ -43,6 +43,11 @@ typedef struct {
     double utility; // TMP
 } path_cost_util_t;
 
+typedef struct {
+    path_t path;
+    std::deque<double> costs ; // cumulative costs for if waypoints
+} detailed_path_t;
+
 struct found_goal {
     vertex_t g;
     found_goal(vertex_t _g) : g(_g) {};
