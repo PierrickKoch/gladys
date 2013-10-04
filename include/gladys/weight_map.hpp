@@ -56,6 +56,11 @@ public:
     }
     void _load();
 
+    //TODO, this is not a merge !
+    void merge(const weight_map& _wm) {
+        map = _wm.get_map();
+    }
+
     /**
      * NOTE: Don't forget to set_transform GeoData
      */
@@ -124,6 +129,9 @@ public:
     }
     const gdalwrap::gdal& get_region() const {
         return terrains;
+    }
+    const robot_model& get_robot() const {
+        return rmdl;
     }
 
     size_t get_width() const {
