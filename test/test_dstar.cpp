@@ -39,8 +39,10 @@ BOOST_AUTO_TEST_CASE( test_dstar )
     region.set_size(weight_map::N_RASTER, 9, 9);
     // add an obstacle at the center of the map
     region.bands[weight_map::FLAT    ].assign(9*9, 1);
-    region.bands[weight_map::FLAT    ][4+4*9] = 0.5;
-    region.bands[weight_map::OBSTACLE][4+4*9] = 0.5;
+    for ( int i=1 ; i < 9 ; i++ ) {
+        region.bands[gladys::weight_map::FLAT    ][i+5*9] = 0.2 ;
+        region.bands[gladys::weight_map::OBSTACLE][i+5*9] = 0.8 ;
+    }
     region.save(region_path);
 
     // create a navigation graph from the map
@@ -55,24 +57,27 @@ BOOST_AUTO_TEST_CASE( test_dstar )
     BOOST_CHECK_EQUAL( oss_graphviz.str().size() , 8812 );
 
     point_xy_t p1 = {1, 1};
-    point_xy_t p2 = {9, 9};
+    point_xy_t p2 = {5, 9};
     dstar_search dstar(ng.get_graph(), ng.get_closest_vertex(p1), ng.get_closest_vertex(p2));
     path_t path = dstar.get_path();
     BOOST_TEST_MESSAGE( "path: " + to_string(path) );
-    BOOST_CHECK_EQUAL( path.size() , 16 );
+    BOOST_CHECK_EQUAL( path.size() , 14 );
+    point_xy_t check_point = {1.0, 6.5} ;
+    BOOST_CHECK_EQUAL( path[7][0], check_point[0] );
+    BOOST_CHECK_EQUAL( path[7][1], check_point[1] );
+
 
     // replan must be instant, and do not change the plan
     dstar.replan(ng.get_closest_vertex(p1));
     path = dstar.get_path();
     BOOST_TEST_MESSAGE( "path: " + to_string(path) );
-    BOOST_CHECK_EQUAL( path.size() , 16 );
+    BOOST_CHECK_EQUAL( path.size() , 14 );
 
     dstar.replan(ng.get_closest_vertex(path[2]));
     path = dstar.get_path();
     BOOST_TEST_MESSAGE( "path: " + to_string(path) );
-    BOOST_CHECK_EQUAL( path.size() , 14 );
+    BOOST_CHECK_EQUAL( path.size() , 12 );
 
 }
-
 
 BOOST_AUTO_TEST_SUITE_END();
