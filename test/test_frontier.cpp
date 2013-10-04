@@ -53,6 +53,10 @@ BOOST_AUTO_TEST_CASE( test_frontier )
     gdalwrap::gdal region;
     region.set_size(weight_map::N_RASTER, 9, 9);
     region.bands[weight_map::FLAT    ].assign(9*9, 1);
+    // name bands
+    region.names[weight_map::FLAT    ] = "FLAT" ;
+    region.names[weight_map::OBSTACLE] = "OBSTACLE";
+    region.names[weight_map::NO_3D_CLASS] = "UNKNOWN";
     // add frontiers (top and bottom)
     for ( int i=0 ; i < 9 ; i++ ) {
         region.bands[weight_map::FLAT       ][i    ] = 0. ;
@@ -61,12 +65,11 @@ BOOST_AUTO_TEST_CASE( test_frontier )
         region.bands[weight_map::NO_3D_CLASS][i+8*9] = 1  ;
     }
     // add ostacle #1 (middle)
-    region.bands[weight_map::FLAT    ][3+5*9] = 0.2 ;
-    region.bands[weight_map::OBSTACLE][3+5*9] = 0.8 ;
-    region.bands[weight_map::FLAT    ][4+5*9] = 0.2 ;
-    region.bands[weight_map::OBSTACLE][4+5*9] = 0.8 ;
-    region.bands[weight_map::FLAT    ][5+5*9] = 0.2 ;
-    region.bands[weight_map::OBSTACLE][5+5*9] = 0.8 ;
+    for ( int i=3 ; i < 6 ; i++ ) {
+        region.bands[weight_map::FLAT    ][i+5*9] = 0.2 ;
+        region.bands[weight_map::OBSTACLE][i+5*9] = 0.8 ;
+    }
+
     // add ostacle #2 (bottom, centered)
     region.bands[weight_map::FLAT    ][4+8*9] = 0.2 ;
     region.bands[weight_map::OBSTACLE][4+8*9] = 0.8 ;
