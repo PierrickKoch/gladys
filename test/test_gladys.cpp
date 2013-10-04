@@ -34,6 +34,10 @@ BOOST_AUTO_TEST_CASE( test_raster_to_graph )
     // create a region map (GeoTiff image)
     gdalwrap::gdal region;
     region.set_size(weight_map::N_RASTER, 9, 9);
+    // name bands
+    region.names[weight_map::FLAT    ] = "FLAT" ;
+    region.names[weight_map::OBSTACLE] = "OBSTACLE";
+    region.names[weight_map::NO_3D_CLASS] = "UNKNOWN";
     // add an obstacle at the center of the map
     region.bands[weight_map::FLAT    ].assign(9*9, 1);
     for ( int i=1 ; i < 9 ; i++ ) {
