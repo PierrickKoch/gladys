@@ -15,6 +15,12 @@
 
 namespace gladys {
 
+/** compute a mix of ponderated classes
+ *
+ * w/ threshold on obstacle and unknown
+ * @returns weight from probabilities ponderated by robot model
+ *          (in seconds per meter)
+ */
 void weight_map::_load() {
     assert(terrains.bands.size() > 1);
     map.copy_meta(terrains, 1);
@@ -22,11 +28,24 @@ void weight_map::_load() {
     width = map.get_width();
     map.names[0] = "WEIGHT";
 
-    std::map<std::string, float> data;
+    float weight = 1.0;
+    std::map<std::string, float> costs = rmdl.get_costs();
+    size_t idx_no_3d_class = terrains.get_band_id("NO_3D_CLASS");
+    size_t idx_obstacle    = terrains.get_band_id("OBSTACLE");
+
     for (size_t pos = 0; pos < width * map.get_height(); pos++) {
-        for (size_t band_id = 0; band_id < data.size(); band_id++)
-            data[ terrains.names[band_id] ] = terrains.bands[band_id][pos];
-        weights[pos] = compute_weight(data);
+        if (terrains.bands[idx_no_3d_class][pos] > 0.9)
+            weights[pos] = W_UNKNOWN; // UNKNOWN
+        else if (terrains.bands[idx_obstacle][pos] > 0.4) // TODO tune this threshold
+            weights[pos] = std::numeric_limits<float>::infinity(); // OBSTACLE
+        else {
+            weight = 1.0;
+            // compute a mix of ponderated classes TODO dynamicaly json conf
+            for (const auto& kv : costs)
+                weight += kv.second * terrains.get_band(kv.first)[pos];
+
+            weights[pos] = weight / rmdl.get_velocity();
+        }
     }
 
 #if 0

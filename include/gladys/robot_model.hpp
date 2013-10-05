@@ -64,7 +64,7 @@ public:
         std::map<std::string, float> costs;
         costs["FLAT"]  = 0.0; // v-max     on flat   ground
         costs["ROUGH"] = 5.0; // v-max / 5 on rought ground
-        costs["SLOPE"] = 3.0; // v-max / 3 on slope  ground
+        // costs["SLOPE"] = 3.0; // v-max / 3 on slope  ground
         // threshold not cost ["OBSTACLE"] = 1E+6;
         // threshold not cost ["NO_3D_CLASS"] = -1;
         return costs;
