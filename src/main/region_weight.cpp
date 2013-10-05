@@ -20,7 +20,6 @@ int main(int argc, char * argv[])
         return EXIT_FAILURE;
     }
     gladys::weight_map wm(argv[1], argv[2]);
-    gladys::nav_graph ng(wm);
-    ng.save(argv[3]);
+    wm.save(argv[3]);
     return EXIT_SUCCESS;
 }
