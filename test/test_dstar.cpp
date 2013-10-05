@@ -36,16 +36,14 @@ BOOST_AUTO_TEST_CASE( test_dstar )
 
     // create a region map (GeoTiff image)
     gdalwrap::gdal region;
-    region.set_size(weight_map::N_RASTER, 9, 9);
+    region.set_size(4, 9, 9);
     // name bands
-    region.names[weight_map::FLAT    ] = "FLAT" ;
-    region.names[weight_map::OBSTACLE] = "OBSTACLE";
-    region.names[weight_map::NO_3D_CLASS] = "UNKNOWN";
+    region.names = {"NO_3D_CLASS", "FLAT", "OBSTACLE", "ROUGH"};
     // add an obstacle at the center of the map
-    region.bands[weight_map::FLAT    ].assign(9*9, 1);
+    region.bands[1].assign(9*9, 1);
     for ( int i=1 ; i < 9 ; i++ ) {
-        region.bands[gladys::weight_map::FLAT    ][i+5*9] = 0.2 ;
-        region.bands[gladys::weight_map::OBSTACLE][i+5*9] = 0.8 ;
+        region.bands[1][i+5*9] = 0.2 ;
+        region.bands[2][i+5*9] = 0.8 ;
     }
     region.save(region_path);
 
