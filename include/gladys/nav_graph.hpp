@@ -98,6 +98,8 @@ public:
         return pcu;
     }
 
+    detailed_path_t detailed_astar_search(const point_xy_t& start, const point_xy_t& goal) const;
+
     point_xy_t custom_to_utm(const point_xy_t& p) const {
         return map.get_map().point_custom2utm(p[0], p[1]);
     }

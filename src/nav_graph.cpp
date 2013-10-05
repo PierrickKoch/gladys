@@ -18,7 +18,7 @@
 
 namespace gladys {
 
-void nav_graph::_load() {
+void nav_graph::_load() {//{{{
     float weight;
     vertex_t vert_w, vert_n, vert_e, vert_s;
     const gdalwrap::raster& weight_map = map.get_weight_band();
@@ -64,9 +64,9 @@ void nav_graph::_load() {
         e.weight = std::abs(scale_x) * weight;
         boost::add_edge(vert_w, vert_e, e, g); // length = scale_x
     }
-}
+}//}}}
 
-path_t nav_graph::astar_search(const point_xy_t& start, const point_xy_t& goal) const {
+path_t nav_graph::astar_search(const point_xy_t& start, const point_xy_t& goal) const {//{{{
     vertex_t goal_v = get_closest_vertex(goal);
     astar_goal_visitor vis(goal_v);
     path_t shortest_path;
@@ -93,9 +93,42 @@ path_t nav_graph::astar_search(const point_xy_t& start, const point_xy_t& goal) 
         }
     }
     return shortest_path;
-}
+}//}}}
 
-path_cost_util_t nav_graph::astar_search(const points_t& start, const points_t& goal) const {
+detailed_path_t nav_graph::detailed_astar_search(const point_xy_t& start, const point_xy_t& goal) const {//{{{
+    detailed_path_t res;
+
+    vertex_t goal_v = get_closest_vertex(goal);
+    astar_goal_visitor vis(goal_v);
+    nav_goal_heuristic heuristic(g, goal_v);
+
+    std::vector<vertex_t> predecessors(num_vertices(g));
+    std::vector<double> distances(boost::num_vertices(g));
+    std::vector<double> ranks(boost::num_vertices(g), -1.0);
+    std::vector<boost::default_color_type> colors(boost::num_vertices(g));
+
+    try {
+        boost::astar_search(
+            g, get_closest_vertex(start), heuristic,
+            boost::predecessor_map(predecessors.data()).
+                distance_map(distances.data()).
+                weight_map(boost::get(&edge::weight, g)).
+                rank_map(ranks.data()).
+                color_map(colors.data()).
+                visitor(vis)
+        );
+    } catch (found_goal) {
+        for(vertex_t v = goal_v;; v = predecessors[v]) {
+            res.path.push_front(g[v].pt);
+            res.costs.push_front( distances[ v ]);
+            if (predecessors[v] == v)
+                break;
+        }
+    }
+    return res;
+}//}}}
+
+path_cost_util_t nav_graph::astar_search(const points_t& start, const points_t& goal) const {//{{{
     vertex_t gv;
     vertices_t goal_v;
     for (auto& p : goal)
@@ -135,23 +168,21 @@ path_cost_util_t nav_graph::astar_search(const points_t& start, const points_t& 
     else
         res.cost = distances[ gv ];
     return res;
-}
+}//}}}
 
-void 
-nav_graph::write_graphviz(std::ostream& out) const {
+void nav_graph::write_graphviz(std::ostream& out) const {//{{{
     std::vector<std::string> vert_label(vertices.size());
     for (auto& kv : vertices)
         vert_label[kv.second] = to_string(kv.first);
     // TODO write edge weight as well
     boost::write_graphviz( out, g,
         boost::make_label_writer(vert_label.data()) );
-}
+}//}}}
 
-void 
-nav_graph::write_graphviz(const std::string& filepath) const {
+void nav_graph::write_graphviz(const std::string& filepath) const {//{{{
     std::ofstream of( filepath );
     write_graphviz( of );
     of.close();
-}
+}//}}}
 
 } // namespace gladys
