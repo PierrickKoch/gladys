@@ -56,7 +56,7 @@ BOOST_AUTO_TEST_CASE( test_dstar )
     ng.save(weight_path);
 
     BOOST_TEST_MESSAGE( "oss_graphviz.size() = " << oss_graphviz.str().size() );
-    BOOST_CHECK_EQUAL( oss_graphviz.str().size() , 8812 );
+    BOOST_CHECK_EQUAL( oss_graphviz.str().size() , 8335 );
 
     point_xy_t p1 = {1, 1};
     point_xy_t p2 = {5, 9};

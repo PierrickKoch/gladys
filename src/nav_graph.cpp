@@ -49,6 +49,9 @@ void nav_graph::_load() {
         vert_e = new_vertex          (utm_x + scale_x * (px_x + 0.5), utm_y + scale_y * (px_y      ));
         vert_s = new_vertex          (utm_x + scale_x * (px_x      ), utm_y + scale_y * (px_y + 0.5));
 
+        if ( weight == std::numeric_limits<float>::infinity() ) // OBSTACLE
+            continue;
+
         // create edges and set weight
         // length = .5 * math.sqrt( scale_x**2 + scale_y**2 )
         edge e;
