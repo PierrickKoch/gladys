@@ -25,3 +25,6 @@ gdal_translate -outsize 10% 10% dsm.custom.tif dsm.custom.10p.tif
 # create a valid dtm GeoTiff
 clara_dsm_to_dtm dsm.custom.10p.tif dsm.custom.10p.dtm.tif
 
+# blend dtm
+gdal_translate -of JPEG image.custom.tif image.custom.jpg
+blender -P ~/work/morse/tools/terrain/blend_dtm.py -- dsm.custom.tif image.custom.jpg
