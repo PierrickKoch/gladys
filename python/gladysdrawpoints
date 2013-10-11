@@ -55,8 +55,11 @@ def main(argv=[]):
         buff = fpoints.read().strip().split('\n')
         points = [line.split() for line in buff]
     with open(argv[3]) as ftrajec:
-        buff = ftrajec.read().strip().split('\n')[1:-1]
-        trajec = [line.split() for line in buff]
+        try:
+            buff = ftrajec.read().strip().split('\n')[1:-1]
+            trajec = [line.split() for line in buff]
+        except Exception as e:
+            print(str(e))
 
     width   = geotiff.get_width()
     height  = geotiff.get_height()
