@@ -63,20 +63,14 @@ def main(argv=[]):
 
     width   = geotiff.get_width()
     height  = geotiff.get_height()
-    scale_x = geotiff.get_scale_x()
-    scale_y = geotiff.get_scale_y()
-    custm_x = geotiff.get_custom_x_origin()
-    custm_y = geotiff.get_custom_y_origin()
 
-    # rotate +90.0 (relatif Z center image) AND flip verticaly
     def point(x, y):
-        return QtCore.QPointF( (float(y) - custm_y ) / scale_y, \
-                               (float(x) - custm_x ) / scale_x)
-        #return QtCore.QPointF( (float(x) - custm_x ) / scale_x, \
-        #                       (float(y) - custm_y ) / scale_y)
+        p = gladys.point_custom2pix(geotiff, float(x), float(y) )
+        return QtCore.QPointF( *p )
 
-    bands = geotiff.get_bands_as_uchar()
-    image = i8u2rgb(width, height, bands['Z_MAX'])
+    image = QtGui.QImage( argv[1] ).convertToFormat(QtGui.QImage.Format_ARGB32)
+    # bands = geotiff.get_bands_as_uchar()
+    # image = i8u2rgb(width, height, bands['FLAT'])
     # image.fill(QtGui.QColor(0, 0, 0, 0)) # transparency
 
     polypts = QtGui.QPolygonF([ point(x, y) for x, y          in points ])
@@ -85,7 +79,7 @@ def main(argv=[]):
     painter = QtGui.QPainter(image)
     # painter.translate(width/2., -height/2.) # change center
     # painter.rotate(-90) # rotate
-    painter.setPen(QtGui.QPen(QtCore.Qt.black, 5))
+    painter.setPen(QtGui.QPen(QtCore.Qt.red, 8))
     painter.drawPoints(polypts) # draw points
     painter.setPen(QtGui.QPen(QtCore.Qt.white, 2))
     painter.drawPoints(polytra) # draw trajectory
