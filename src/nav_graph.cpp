@@ -132,6 +132,14 @@ detailed_path_t nav_graph::detailed_astar_search(const point_xy_t& start, const 
 }
 
 path_cost_util_t nav_graph::astar_search(const points_t& start, const points_t& goal) const {
+    path_cost_util_t pcu;
+    for (point : start) {
+        pcu = astar_search(point, goal);
+        // if (pcu.cost > 0) return pcu;
+    }
+    return pcu;
+}
+path_cost_util_t nav_graph::astar_search(const point_xy_t& start, const points_t& goal) const {
     vertex_t gv;
     vertices_t goal_v;
     for (auto& p : goal)
@@ -148,7 +156,7 @@ path_cost_util_t nav_graph::astar_search(const points_t& start, const points_t& 
     try {
         // NOTE: pass by a "virtual node" as a starting point in the OPEN list (see: color map)
         boost::astar_search(
-            g, get_closest_vertex(start[0]), heuristic,
+            g, get_closest_vertex(start), heuristic,
             boost::predecessor_map(predecessors.data()).
                 distance_map(distances.data()).
                 weight_map(boost::get(&edge::weight, g)).
