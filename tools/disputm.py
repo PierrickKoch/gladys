@@ -24,10 +24,10 @@ except ImportError:
 def draw_path(paintable, path, sx=1.0, sy=1.0):
     painter = QtGui.QPainter(paintable)
     painter.scale(sx, sy)
-    painter.setPen(QtGui.QPen(QtCore.Qt.green, 4))
+    painter.setPen(QtGui.QPen(QtCore.Qt.green, 4.0/sx))
     # draw path
     painter.drawPolyline(path)
-    painter.setPen(QtGui.QPen(QtCore.Qt.red, 4))
+    painter.setPen(QtGui.QPen(QtCore.Qt.red, 4.0/sx))
     for num, point in enumerate(path):
         painter.drawText(point, "%i"%num)
     painter.end()
@@ -62,7 +62,7 @@ class ImageLabel(QtGui.QLabel):
         QtGui.QLabel.paintEvent(self, event)
         painter = QtGui.QPainter(self)
         painter.scale( self.scale, self.scale )
-        painter.setPen(QtGui.QPen(QtCore.Qt.red, 4))
+        painter.setPen(QtGui.QPen(QtCore.Qt.red, 4.0/self.scale))
         # draw points
         painter.drawPoints(self.points)
         painter.end()
