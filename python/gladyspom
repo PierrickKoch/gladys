@@ -1,0 +1,49 @@
+#!/usr/bin/env python
+
+try:
+    from PySide import QtCore, QtGui
+except ImportError:
+    print("[error] sudo apt-get install python-pyside")
+    import sys; sys.exit(1)
+
+try:
+    import gladys
+except ImportError:
+    print("[error] install gladys [and setup PYTHONPATH]")
+    import sys; sys.exit(1)
+
+def main(argv=[]):
+    if len(argv) < 4:
+        print("usage: %s geo.tif pom.log out.png"%argv[0])
+        return 1
+
+    # get GeoTiff for scale info
+    geotiff = gladys.gdal(argv[1])
+
+    def point(x, y):
+        p = gladys.point_custom2pix(geotiff, float(x), float(y) )
+        return QtCore.QPointF( *p )
+
+    polypom = QtGui.QPolygonF()
+    with open(argv[2]) as fpom:
+        lines = fpom.readlines()
+        # remove first and last line of pom.log (header and trunc entry)
+        lines.pop(0); lines.pop(-1)
+        points = [line.split() for line in lines]
+        polypom = QtGui.QPolygonF([ point(x, y) for d,yaw,pitch,roll,x,y,z in points ])
+
+    image = QtGui.QImage( argv[1] ).convertToFormat(QtGui.QImage.Format_ARGB32)
+
+    painter = QtGui.QPainter(image)
+    painter.setPen(QtGui.QPen(QtCore.Qt.red, 3))
+    painter.drawPoints(polypom) # draw points
+    painter.end()
+
+    image.save(argv[3])
+
+    return 0
+
+if __name__ == '__main__':
+    import sys
+    sys.exit( main(sys.argv) )
+
