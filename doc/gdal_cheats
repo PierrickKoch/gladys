@@ -1,3 +1,9 @@
+# scale to 50cm per pixel
+gdalwarp -tr 0.5 0.5 image.custom.tif image.50cm.tif
+gdal_translate -srcwin 2000 2700 5500 5000 caylus.image.5cm.custom.tif image.tif
+
+
+####
 # region-map from ortho-image w/gimp
 
 # crop
@@ -14,6 +20,7 @@ gdal_translate -of GTiff image.custom.10p.png image.custom.10p.rgba.tif
 # create a valid region-map GeoTiff
 clara_rgba_to_region image.custom.10p.rgba.tif image.custom.10p.rgba.region.tif
 
+####
 # dtm from dsm
 
 # crop
@@ -25,6 +32,8 @@ gdal_translate -outsize 10% 10% dsm.custom.tif dsm.custom.10p.tif
 # create a valid dtm GeoTiff
 clara_dsm_to_dtm dsm.custom.10p.tif dsm.custom.10p.dtm.tif
 
+####
 # blend dtm
+
 gdal_translate -of JPEG image.custom.tif image.custom.jpg
 blender -P ~/work/morse/tools/terrain/blend_dtm.py -- dsm.custom.tif image.custom.jpg
