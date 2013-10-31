@@ -59,7 +59,7 @@ namespace gladys {
         // Check conditions on seed :
         // - inside the map
         std::cerr   << "[Frontier] seed is ("<<seed[0] <<","<<seed[1] 
-                    << ") ; index is " << map.index_utm( seed )
+                    << ") ; index_utm is " << map.index_utm( seed )
                     << " in map (" << width << "," << height << ")." << std::endl;
 
         if ( seed[0] < x_min + EPS || seed[0] > (x_max-1 - EPS) 
@@ -68,9 +68,8 @@ namespace gladys {
         }
         // - within the known area and not an obstacle
         std::cerr   << "[Frontier] data has size : " << data.size() << std::endl;
-        std::cerr   << "[Frontier] data(index_utm) = " << data[ map.index_utm( seed ) ] << std::endl;
-        if ( data[ map.index_utm( seed ) ]  < 0 + EPS 
-        ||   data[ map.index_utm( seed ) ] == 100 
+        std::cerr   << "[Frontier] data[index_utm(seed)] = " << data[ map.index_utm( seed ) ] << std::endl;
+        if ( data[ map.index_utm( seed ) ] < 0
         ||   map.is_obstacle(data[ map.index_utm( seed ) ]) ){
             throw std::runtime_error("[Frontier] The seed is unknown or obstacle : unable to compute frontiers (and yes, it's a feature! XD )") ;
         }
@@ -171,7 +170,7 @@ namespace gladys {
                 || mapOpenList[ map.index_utm( i ) ])
                 // and has at least one neighbour in "Open Space", ie a
                 // neighbour in the known area ard which is not an obstacle.
-                && ( ! (data[ map.index_utm( i )] == 100                // unknown
+                && ( ! (data[ map.index_utm( i )] < 0                     // unknown
                     || map.is_obstacle(data[ map.index_utm( i )]) ))) {   // obstacle
                     // then proceed
                     mQueue.push_back( i );
@@ -192,12 +191,12 @@ namespace gladys {
 
         // A point is a frontier iff it is in the open space 
         // (i.e. it is know and is not an obstacle )
-        if  ( data[ map.index_utm( p ) ] == 100
-        ||   map.is_obstacle( data[ map.index_utm( p )] )) //obstacle
+        if  ( data[ map.index_utm( p ) ] < 0                // unknown
+        ||   map.is_obstacle( data[ map.index_utm( p )] ))  //obstacle
             return false ;
         // and at least one of is neighbour is unknown.
         for ( auto i : find_neighbours( p, x_min, x_max, y_min, y_max) )
-            if ( data[ map.index_utm( i ) ] == 100 )          // unknown
+            if ( data[ map.index_utm( i ) ] < 0 )           // unknown
                 return true ;
 
         return false;
