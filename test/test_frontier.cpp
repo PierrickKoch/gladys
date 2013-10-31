@@ -3,7 +3,7 @@
  *
  * Test the Graph Library for Autonomous and Dynamic Systems
  *
- * author:  crobin /TODO
+ * author:  Cyril Robin <cyril.robin@laas.fr>
  * created: 2013-09-11
  * license: BSD
  */
@@ -69,6 +69,7 @@ BOOST_AUTO_TEST_CASE( test_frontier )
     }
 
     // add ostacle #2 (bottom, centered)
+    region.bands[0][4+8*9] = 0 ;
     region.bands[1][4+8*9] = 0.2 ;
     region.bands[2][4+8*9] = 0.8 ;
 
@@ -91,14 +92,14 @@ BOOST_AUTO_TEST_CASE( test_frontier )
 
     //Check the number of frontiers
     BOOST_TEST_MESSAGE( "Nbr of frontiers : frontiers.size() = " << frontiers.size() );
-    //BOOST_CHECK_EQUAL( frontiers.size() , 2 );
+    BOOST_CHECK_EQUAL( frontiers.size() , 2 );
 
     size_t c = 0 ;
     std::vector< f_attributes > attributes = fd.get_attributes() ;
     for ( auto& f : attributes )
         c += f.size ;
     BOOST_TEST_MESSAGE( "Nbr of frontier points : c = " << c );
-    //BOOST_CHECK_EQUAL( c , 18 );
+    BOOST_CHECK_EQUAL( c , 18 );
 
 }
 
