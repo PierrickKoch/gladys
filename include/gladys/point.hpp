@@ -99,13 +99,12 @@ inline double distance(const Point& pA, const Point& pB) {
 
 /* angle computation */
 // compute yaw ; return value in ]-Pi,Pi]
-inline double yaw_angle(const point_xy_t& pA, const point_xy_t& pB) {
-    double yaw = atan2(pB[1] - pA[1], pB[0] - pA[0]) ;
-    yaw = -yaw ;//TODO check the sign!
-    yaw = fmod(yaw, (2*M_PI)); //modulo
+// this version should be use when y-axis is inverted (goes down)
+inline double yaw_angle_y_inv(const point_xy_t& pA, const point_xy_t& pB) {
+    double yaw = atan2(pB[1] - pA[1], - pB[0] + pA[0]) ; // use (-y)
+    yaw = std::fmod(yaw, (2*M_PI)); //modulo
     if ( yaw >   M_PI ) yaw -= 2*M_PI; // consider yaw in ]-Pi,Pi]
     if ( yaw <= -M_PI ) yaw += 2*M_PI; // consider yaw in ]-Pi,Pi]
-
 
     return yaw;
 }

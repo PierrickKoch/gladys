@@ -348,7 +348,7 @@ namespace gladys {
             std::cerr   << "[Frontier #"<<i<<"][lookout] yaw after = " << yaw << std::endl ;
             for (auto& pt : frontiers[i] ) {
                 double d = distance( r_pos[0], pt) ;
-                double curr_yaw = yaw_angle( r_pos[0], pt) ;
+                double curr_yaw = yaw_angle_y_inv( r_pos[0], pt) ; // pixel reference uses an inverted y-axis (y -> -y)
                 std::cerr   << "[Frontier #"<<i<<"][lookout] considered curr_yaw = " << curr_yaw << std::endl ;
                 double curr_diff_yaw = yaw - curr_yaw ;
                 if ( curr_diff_yaw >   M_PI ) curr_diff_yaw -= 2*M_PI; // consider yaw in ]-Pi,Pi]
