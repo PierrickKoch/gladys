@@ -34,8 +34,10 @@ public:
     double ratio ;              // importance of the frontier among others 
                                 // ( max = 1  ; "value < 0" <=> unknown)
     point_xy_t lookout ;        // point from wich we want to observe the frontier
+    double distance ;           // euclidian distance to the lookout
+    double yaw_diff;            // yaw difference to the lookout
     path_t path ;               // path to the lookout, from the robot
-    double distance;            // the cost of this path
+    double cost ;               // the cost of this path
     unsigned int proximity ;    // proximity is the number of robot closer to
                                 // the look-out than the robot which computed
                                 // the frontier
@@ -44,7 +46,9 @@ public:
 std::ostream& operator<< (std::ostream &out, const f_attributes& f) {//{{{
     out << "{ #" << f.ID << ": size = " << f.size << "; ratio = " << f.ratio 
         << "; lookout = (" << f.lookout[0] << "," << f.lookout[1] 
-        << "); path size = " << f.path.size() << "; distance = " << f.distance
+        << "); euclidian distance = " << f.distance
+        << "; yaw difference = " << f.yaw_diff
+        << "; path size = " << f.path.size() << "; cost = " << f.cost
         << "; proximity = " << f.proximity 
         << " }";
     return out;
@@ -66,6 +70,12 @@ private:
     std::vector< points_t > frontiers ;         // the list of the frontiers
     std::vector< f_attributes > attributes ;    // the frontiers attributes
 
+    // area to explore (generally smaller than the whole weightmap)
+    int x_origin ;                              // x origin of the area to explore
+    int y_origin ;                              // y origin of the area to explore
+    size_t height_max ;                         // height of the area to explore
+    size_t width_max ;                          // width of the area to explore
+
     /* hidden computing functions */
     /** compute_frontiers_WFD
      *
@@ -82,12 +92,15 @@ private:
 
     /** filter frontiers
      *
-     * Aims at reducing the number of frontier by keeping only the nost
+     * Quickly compute some attributes to discard non-"valuable" frontiers.
+     * Aims at reducing the number of frontier by keeping only the most
      * promising ones, and discarding the others. (This speeds up the
-     * computation of attributes, and eases the planning beyond.)
+     * computation of costly attributes, and eases the planning beyond.)
      *
      */
-    void filter_frontiers( size_t max_nf, size_t min_size ) ;
+    void filter_frontiers(  const points_t& r_pos,
+                            size_t max_nf, size_t min_size,
+                            double min_dist, double max_dist) ;
 
     /** compute_attributes
      *
@@ -98,7 +111,8 @@ private:
      * is assume to be the robot running the algorithm.
      *
      */
-    void compute_attributes( const points_t &r_pos );
+    void compute_attributes( const points_t &r_pos, double yaw,
+                             double min_dist, double max_dist) ;
 
     /** is_frontier
      *
@@ -108,7 +122,7 @@ private:
      *
      */
     bool is_frontier(  const point_xy_t &p, 
-                      size_t height, size_t width,
+                      int x_min, int x_max, int y_min, int y_max,
                       const gdalwrap::raster& data, const weight_map& map ) ;
 
     /** find_neighbours()
@@ -122,7 +136,7 @@ private:
      * @param width : the height of the map.
      * 
      */
-    points_t find_neighbours( const point_xy_t &p, size_t height, size_t width);
+     points_t find_neighbours( const point_xy_t &p, int x_min, int x_max, int y_min, int y_max) ;
 
 public:
     /* Name of the available algorithms to compute frontiers */
@@ -132,7 +146,18 @@ public:
      *
      * @param nav_graph graph
      */
-    frontier_detector( const nav_graph& _ng ) : ng(_ng) {}
+    frontier_detector( const nav_graph& _ng,
+                       int _x_origin,
+                       int _y_origin,
+                       size_t _height_max,
+                       size_t _width_max ) :
+            ng(_ng) 
+    {//{{{
+        x_origin = _x_origin ;
+        y_origin = _y_origin ;
+        height_max = _height_max ;
+        width_max = _width_max ;
+    }//}}}
 
     /* public computing functions */
     /** compute_frontiers
@@ -156,8 +181,9 @@ public:
      * @throws : throw an exception if the algo provided is invalid.
      *
      */
-    void compute_frontiers( const points_t &r_pos,
-                            size_t max_nf = 10, size_t min_size = 2,
+    void compute_frontiers( const points_t &r_pos, double yaw,
+                            size_t max_nf = 20, size_t min_size = 2,
+                            double min_dist = 1.6, double max_dist = 50.0,
                             algo_t algo = WFD );
 
     /* getters */

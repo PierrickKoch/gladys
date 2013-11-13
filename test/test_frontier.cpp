@@ -3,7 +3,7 @@
  *
  * Test the Graph Library for Autonomous and Dynamic Systems
  *
- * author:  crobin /TODO
+ * author:  Cyril Robin <cyril.robin@laas.fr>
  * created: 2013-09-11
  * license: BSD
  */
@@ -69,6 +69,7 @@ BOOST_AUTO_TEST_CASE( test_frontier )
     }
 
     // add ostacle #2 (bottom, centered)
+    region.bands[0][4+8*9] = 0 ;
     region.bands[1][4+8*9] = 0.2 ;
     region.bands[2][4+8*9] = 0.8 ;
 
@@ -78,26 +79,27 @@ BOOST_AUTO_TEST_CASE( test_frontier )
     // (Create the weight_map, assumed to be good; cf other unit test)
     weight_map wm ( region_path, robotm_path ) ;
     nav_graph ng ( wm ) ;
-    frontier_detector fd ( ng ) ;
+    frontier_detector fd ( ng, -5, -5, 20, 20 ) ; // area wider than the map! (part of the test)
 
     // testing frontier detection with defult algorithm
     point_xy_t r1 {4,4};
     point_xy_t r2 {4,2};
     points_t r_pos {r1, r2} ;
-    fd.compute_frontiers( r_pos ) ;
+    double yaw = 0 ;
+    fd.compute_frontiers( r_pos, yaw ) ;
 
     std::vector< points_t > frontiers = fd.get_frontiers() ;
 
     //Check the number of frontiers
     BOOST_TEST_MESSAGE( "Nbr of frontiers : frontiers.size() = " << frontiers.size() );
-    //BOOST_CHECK_EQUAL( frontiers.size() , 2 );
+    BOOST_CHECK_EQUAL( frontiers.size() , 2 );
 
     size_t c = 0 ;
     std::vector< f_attributes > attributes = fd.get_attributes() ;
     for ( auto& f : attributes )
         c += f.size ;
     BOOST_TEST_MESSAGE( "Nbr of frontier points : c = " << c );
-    //BOOST_CHECK_EQUAL( c , 18 );
+    BOOST_CHECK_EQUAL( c , 18 );
 
 }
 
