@@ -22,16 +22,16 @@
 
 namespace gladys {
 
-/*{{{ f_atttributes class
+/* f_atttributes class
  ****************************************************************************/
 class f_attributes {
 
 public:
     /* the frontier attributes */
     // NB: the attributes of a frontier are dependent from others' attributes…
-    double ID;                  // ID of the frontier (= its position in the vector)
-    double size;                // nbr of frontier points
-    double ratio ;              // importance of the frontier among others 
+    size_t ID;                  // ID of the frontier (= its position in the vector)
+    double size;                // size of the frontiers (meters)
+    double ratio ;              // importance of the frontier among others
                                 // ( max = 1  ; "value < 0" <=> unknown)
     point_xy_t lookout ;        // point from wich we want to observe the frontier
     double distance ;           // euclidian distance to the lookout
@@ -43,7 +43,7 @@ public:
                                 // the frontier
 };
 
-std::ostream& operator<< (std::ostream &out, const f_attributes& f) {//{{{
+std::ostream& operator<< (std::ostream &out, const f_attributes& f) {
     out << "{ #" << f.ID << ": size = " << f.size << "; ratio = " << f.ratio 
         << "; lookout = (" << f.lookout[0] << "," << f.lookout[1] 
         << "); euclidian distance = " << f.distance
@@ -52,11 +52,9 @@ std::ostream& operator<< (std::ostream &out, const f_attributes& f) {//{{{
         << "; proximity = " << f.proximity 
         << " }";
     return out;
-}///}}}
+}
 
-//}}}
-
-/*{{{ frontier_detector class
+/* frontier_detector class
  ****************************************************************************/
 
 /* frontier_detector class */
@@ -71,10 +69,10 @@ private:
     std::vector< f_attributes > attributes ;    // the frontiers attributes
 
     // area to explore (generally smaller than the whole weightmap)
-    int x_origin ;                              // x origin of the area to explore
-    int y_origin ;                              // y origin of the area to explore
-    size_t height_max ;                         // height of the area to explore
-    size_t width_max ;                          // width of the area to explore
+    double x0_area ;                           // x origin of the area to explore (dtm frame)
+    double y0_area ;                           // y origin of the area to explore (dtm frame)
+    double height_max ;                        // height of the area to explore (dtm scale)
+    double width_max ;                         // width of the area to explore (dtm scale)
 
     /* hidden computing functions */
     /** compute_frontiers_WFD
@@ -99,7 +97,7 @@ private:
      *
      */
     void filter_frontiers(  const points_t& r_pos,
-                            size_t max_nf, size_t min_size,
+                            size_t max_nf, double min_size,
                             double min_dist, double max_dist) ;
 
     /** compute_attributes
@@ -122,8 +120,8 @@ private:
      *
      */
     bool is_frontier(  const point_xy_t &p, 
-                      int x_min, int x_max, int y_min, int y_max,
-                      const gdalwrap::raster& data, const weight_map& map ) ;
+             double x_min, double x_max, double y_min, double y_max,
+             const gdalwrap::raster& data, const weight_map& map ) ;
 
     /** find_neighbours()
      *
@@ -136,7 +134,8 @@ private:
      * @param width : the height of the map.
      * 
      */
-     points_t find_neighbours( const point_xy_t &p, int x_min, int x_max, int y_min, int y_max) ;
+     points_t find_neighbours( const point_xy_t &p, 
+             double x_min, double x_max, double y_min, double y_max) ;
 
 public:
     /* Name of the available algorithms to compute frontiers */
@@ -147,17 +146,17 @@ public:
      * @param nav_graph graph
      */
     frontier_detector( const nav_graph& _ng,
-                       int _x_origin,
-                       int _y_origin,
-                       size_t _height_max,
-                       size_t _width_max ) :
+                       double _x0_area,
+                       double _y0_area,
+                       double _height_max,
+                       double _width_max ) :
             ng(_ng) 
-    {//{{{
-        x_origin = _x_origin ;
-        y_origin = _y_origin ;
-        height_max = _height_max ;
-        width_max = _width_max ;
-    }//}}}
+    {
+        x0_area    = _x0_area     ;
+        y0_area    = _y0_area     ;
+        height_max = _height_max  ;
+        width_max  = _width_max   ;
+    }
 
     /* public computing functions */
     /** compute_frontiers
@@ -182,22 +181,22 @@ public:
      *
      */
     void compute_frontiers( const points_t &r_pos, double yaw,
-                            size_t max_nf = 20, size_t min_size = 2,
+                            size_t max_nf = 20, double min_size = 2.0,
                             double min_dist = 1.6, double max_dist = 50.0,
                             algo_t algo = WFD );
 
     /* getters */
-    const nav_graph& get_graph() const {//{{{
+    const nav_graph& get_graph() const {
         return ng;
-    }//}}}
-    const std::vector< points_t >& get_frontiers() const {//{{{
+    }
+    const std::vector< points_t >& get_frontiers() const {
         return frontiers;
-    }//}}}
-    const std::vector< f_attributes >& get_attributes() const {//{{{
+    }
+    const std::vector< f_attributes >& get_attributes() const {
         return attributes;
-    }//}}}
+    }
 
-};//}}}
+};
 
 } // namespace gladys
 
