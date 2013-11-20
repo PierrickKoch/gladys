@@ -74,7 +74,7 @@ namespace gladys {
                     << data[ map.index_utm( seed ) ] << std::endl;
         if ( data[ map.index_utm( seed ) ] < 0
         ||   map.is_obstacle(data[ map.index_utm( seed ) ]) ){
-            throw std::runtime_error("[Frontier] The seed is unknown or \ 
+            throw std::runtime_error("[Frontier] The seed is unknown or \
                 obstacle : unable to compute frontiers  \
                 (and yes, it's a feature! XD )") ;
         }
@@ -212,43 +212,47 @@ namespace gladys {
     {
         points_t neighbours ;
 
-            /* Orientation :
-             *
-             *  0 → width
-             *  ↓
-             *  height
-             *
-             *  NW  N   NE          (-1,-1)     ( 0,-1)     (+1,-1)
-             *  W   p   E           (-1, 0)     ( 0, 0)     (+1, 0)
-             *  SW  S   SE          (-1,+1)     ( 0,+1)     (+1,+1)
-             *
-             */
+        double delta_x = ng.get_map().get_scale_x();
+        double delta_y = ng.get_map().get_scale_y();
 
-            // North
-            if ( p[1] > y_min )
-                neighbours.push_back( point_xy_t { p[0]  , p[1]-1 } );
-            // South
-            if ( p[1] < y_max-1 )
-                neighbours.push_back( point_xy_t { p[0]  , p[1]+1 } );
-            // East
-            if ( p[0] < x_max-1 )
-                neighbours.push_back( point_xy_t { p[0]+1, p[1]   } );
-            // West
-            if ( p[0] > x_min )
-                neighbours.push_back( point_xy_t { p[0]-1, p[1]   } );
+        /* Orientation :
+         *
+         *  0 → width
+         *  ↓
+         *  height
+         *
+         *  NW  N   NE          (-1,-1)     ( 0,-1)     (+1,-1)
+         *  W   p   E           (-1, 0)     ( 0, 0)     (+1, 0)
+         *  SW  S   SE          (-1,+1)     ( 0,+1)     (+1,+1)
+         *
+         */
+
+        // North
+        if ( p[1] > y_min )
+            neighbours.push_back( point_xy_t { p[0]        , p[1]-delta_y } );
+        // South
+        if ( p[1] < y_max-1 )
+            neighbours.push_back( point_xy_t { p[0]        , p[1]+delta_y } );
+        // East
+        if ( p[0] < x_max-1 )
+            neighbours.push_back( point_xy_t { p[0]+delta_x, p[1]         } );
+        // West
+        if ( p[0] > x_min )
+            neighbours.push_back( point_xy_t { p[0]-delta_x, p[1]         } );
+
         #ifdef HEIGHT_CONNEXITY
-            // North-East
-            if ( p[0] < x_max-1 &&  p[1] > y_min )
-                neighbours.push_back( point_xy_t { p[0]+1, p[1]-1 } );
-            // Nopth-West
-            if ( p[0] > x_min   &&  p[1] > y_min )
-                neighbours.push_back( point_xy_t { p[0]-1, p[1]-1 } );
-            // South-West
-            if ( p[0] > x_min   &&  p[1] < y_max-1 )
-                neighbours.push_back( point_xy_t { p[0]-1, p[1]+1 } );
-            // South-East
-            if ( p[0] < x_max-1 &&  p[1] < y_max-1 )
-                neighbours.push_back( point_xy_t { p[0]+1, p[1]+1 } );
+        // North-East
+        if ( p[0] < x_max-1 &&  p[1] > y_min )
+            neighbours.push_back( point_xy_t { p[0]+delta_x, p[1]-delta_y } );
+        // Nopth-West
+        if ( p[0] > x_min   &&  p[1] > y_min )
+            neighbours.push_back( point_xy_t { p[0]-delta_x, p[1]-delta_y } );
+        // South-West
+        if ( p[0] > x_min   &&  p[1] < y_max-1 )
+            neighbours.push_back( point_xy_t { p[0]-delta_x, p[1]+delta_y } );
+        // South-East
+        if ( p[0] < x_max-1 &&  p[1] < y_max-1 )
+            neighbours.push_back( point_xy_t { p[0]+delta_x, p[1]+delta_y } );
         #endif
 
         return neighbours ;
