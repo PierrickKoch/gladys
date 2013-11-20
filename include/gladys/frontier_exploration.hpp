@@ -78,7 +78,8 @@ private:
 
     // miscellaneuos parameters used to cnstruct "valid" frontiers
     size_t max_nf   ;           // Max number of frontiers to consider
-    double min_size ;           // Min size of each frontier
+    double frontier_min_size ;  // Min size of each frontier
+    double frontier_max_size ;  // Max size of each frontier
     double min_dist ;           // Min distance to each frontier
     double max_dist ;           // Max distance to each frontier
 
@@ -185,8 +186,11 @@ public:
      * the filter uses some heuristics) ; default is 10
      * is WFD ( Wavefront Frontier Detection).
      *
-     * @param min_size : minimal size of the frontier (other are ignored) ;
+     * @param frontier_min_size : minimal size of the frontier (other are ignored) ;
      * default is 2.
+     *
+     * @param frontier_max_size : maximal size of the frontier (other are ignored) ;
+     * default is 30.0.
      *
      * @param algo : chose the algorithm used to compute the frontiers ; default
      * is WFD ( Wavefront Frontier Detection).
@@ -195,8 +199,9 @@ public:
      *
      */
     void compute_frontiers( const points_t &r_pos, double yaw,
-        size_t max_nf = 20, double min_size = 2.0,
-        double min_dist = 1.6, double max_dist = 50.0, algo_t algo = WFD );
+        size_t max_nf = 50, double frontier_min_size = 2.0,
+        double frontier_max_size = 30.0, double min_dist = 1.6, 
+        double max_dist = 50.0, algo_t algo = WFD );
 
     /* getters */
     const nav_graph& get_graph() const {

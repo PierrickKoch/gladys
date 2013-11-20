@@ -137,9 +137,14 @@ namespace gladys {
                     // if p is a frontier point,
                     // deal with it and its neighbours
                     if ( is_frontier( q ) ) {
-                        // Check onthe frontier size 
-                        //
-                        //
+                        // Check the frontier max size
+                        // Note that this is a rough estimation
+                        if ( frontiers.back().size() \
+                             * (map.get_scale_x() + map.get_scale_y() )/2 \
+                             > frontier_max_size )
+                            // create a new frontier
+                            frontiers.push_back( points_t() );
+
                         frontiers.back().push_back( q );
                         //for all neighbours of q
                         for ( auto i : find_neighbours( q ) ) {
@@ -253,14 +258,15 @@ namespace gladys {
     }
 
     void frontier_detector::compute_frontiers(const points_t &r_pos, double yaw,
-            size_t max_nf_, double min_size_, double min_dist_, double max_dist_,
-            algo_t algo )
+            size_t max_nf_, double frontier_min_size_, double frontier_max_size_,
+            double min_dist_, double max_dist_, algo_t algo )
     {
 
         assert( r_pos.size() > 0 );
 
         max_nf   = max_nf_  ;
-        min_size = min_size_ ;
+        frontier_min_size = frontier_min_size_ ;
+        frontier_max_size = frontier_max_size_ ;
         min_dist = min_dist_ ;
         max_dist = max_dist_ ;
 
@@ -305,7 +311,7 @@ namespace gladys {
         // Quikly compute some "cheap" attributes
         // and filter over them
         for ( unsigned int i = 0 ; i < frontiers.size() ; i++ ) {
-            if (frontiers[i].size() < min_size)
+            if (frontiers[i].size() < frontier_min_size)
                 continue; //too small
 
             // check if a lookout respects distance criterias
