@@ -37,14 +37,12 @@ namespace gladys {
 
     /* computing functions */
     void frontier_detector::compute_frontiers_WFD(const point_xy_t &_seed) {
-        // Get the map
-        const weight_map& map = ng.get_map();
 
         // Get size of the map
         size_t width, height;
         width   = map.get_width();
         height  = map.get_height();
-        double x_min, x_max, y_min, y_max;
+
         x_min = std::max( map.get_utm_pose_x(), x0_area );
         y_min = std::max( map.get_utm_pose_y(), y0_area );
         x_max = std::min( map.get_utm_pose_x() + width, x0_area + height_max ) ;
@@ -54,9 +52,6 @@ namespace gladys {
                     << x_min << ", " << y_min << ", "
                     << x_max << ", " << y_max << ") "
                     << std::endl;
-
-        // Get the raster band
-        const gdalwrap::raster& data = map.get_weight_band() ;
 
         // Deal with rounded value (ease the checks for position)
         point_xy_t seed {std::round(_seed[0]), std::round(_seed[1]) };
@@ -118,7 +113,7 @@ namespace gladys {
 
             // else, if p is a frontier point,
             // compute the whole related frontier
-            if ( is_frontier( p, x_min, x_max, y_min, y_max, data, map ) ) {
+            if ( is_frontier( p ) ) {
 
                 fQueue.clear();
                 // create a new frontier
@@ -141,10 +136,13 @@ namespace gladys {
 
                     // if p is a frontier point,
                     // deal with it and its neighbours
-                    if ( is_frontier( q, x_min, x_max, y_min, y_max, data, map) ) {
+                    if ( is_frontier( q ) ) {
+                        // Check onthe frontier size 
+                        //
+                        //
                         frontiers.back().push_back( q );
                         //for all neighbours of q
-                        for ( auto i : find_neighbours( q, x_min, x_max, y_min, y_max) ) {
+                        for ( auto i : find_neighbours( q ) ) {
                             // if NOT marked yet
                             if  ( !( mapCloseList[ map.index_utm( i ) ]
                             || frontierCloseList[ map.index_utm( i ) ]
@@ -169,7 +167,7 @@ namespace gladys {
             }
 
             //for all neighbours of p
-            for ( auto i : find_neighbours( p, x_min, x_max, y_min, y_max) ) {
+            for ( auto i : find_neighbours( p ) ){
                 // if NOT marked yet
                 if  ( !( mapCloseList[ map.index_utm( i ) ]
                 || mapOpenList[ map.index_utm( i ) ])
@@ -188,10 +186,7 @@ namespace gladys {
         }
     }
 
-    bool frontier_detector::is_frontier(  const point_xy_t &p,
-            //size_t height, size_t width,
-            double x_min, double x_max, double y_min, double y_max,
-            const gdalwrap::raster& data, const weight_map& map ) 
+    bool frontier_detector::is_frontier(  const point_xy_t &p )
     {
 
         // A point is a frontier iff it is in the open space 
@@ -200,15 +195,14 @@ namespace gladys {
         ||   map.is_obstacle( data[ map.index_utm( p )] ))  //obstacle
             return false ;
         // and at least one of is neighbour is unknown.
-        for ( auto i : find_neighbours( p, x_min, x_max, y_min, y_max) )
+        for ( auto i : find_neighbours( p ) )
             if ( data[ map.index_utm( i ) ] < 0 )           // unknown
                 return true ;
 
         return false;
     }
 
-    points_t frontier_detector::find_neighbours( const point_xy_t &p, 
-            double x_min, double x_max, double y_min, double y_max )
+    points_t frontier_detector::find_neighbours( const point_xy_t &p )
     {
         points_t neighbours ;
 
@@ -259,12 +253,16 @@ namespace gladys {
     }
 
     void frontier_detector::compute_frontiers(const points_t &r_pos, double yaw,
-            size_t max_nf, double min_size, double min_dist, double max_dist,
+            size_t max_nf_, double min_size_, double min_dist_, double max_dist_,
             algo_t algo )
     {
 
         assert( r_pos.size() > 0 );
 
+        max_nf   = max_nf_  ;
+        min_size = min_size_ ;
+        min_dist = min_dist_ ;
+        max_dist = max_dist_ ;
 
         // try running the algo
         std::cerr   << "[Frontier] Running frontier detection..." << std::endl ;
@@ -285,13 +283,13 @@ namespace gladys {
         // filter frontiers (only keep "promising ones")
         std::cerr   << "[Frontier] Filtering frontiers (among #" 
                     << frontiers.size() << " frontiers)." << std::endl ;
-        filter_frontiers(r_pos, max_nf, min_size, min_dist, max_dist ) ;
+        filter_frontiers( r_pos ) ;
 
         //TODO check if there are any frontier left (return something if not)
         
         // compute the frontiers attributes
         std::cerr   << "[Frontier] Computing frontiers attributes..." << std::endl ;
-        compute_attributes( r_pos, yaw, min_dist, max_dist );
+        compute_attributes( r_pos, yaw );
 
         std::cerr   << "[Frontier] Done." << std::endl ;
 
@@ -299,10 +297,8 @@ namespace gladys {
         
     }
 
-    void frontier_detector::filter_frontiers(   const points_t& r_pos,
-            size_t max_nf, double min_size, double min_dist, double max_dist ) 
+    void frontier_detector::filter_frontiers( const points_t& r_pos )
     {
-
         /* init */
         std::vector< points_t > ff ;  // the filtered frontiers fist
 
@@ -334,7 +330,7 @@ namespace gladys {
     }
 
     void frontier_detector::compute_attributes( const points_t &r_pos, 
-            double yaw, double min_dist, double max_dist ) 
+            double yaw )
     {
         /* init */
         size_t total_fPoints = 0 ;

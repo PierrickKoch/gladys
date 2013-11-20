@@ -62,17 +62,32 @@ class frontier_detector {
 
 private:
     /* internal data */
-    const nav_graph& ng ;                       // use for its weight_map and
-                                                // the path pjanning
-                                                // TODO  use as constant
+    const nav_graph& ng ;           // use for its weight_map and
+                                    // the path planning
+    const weight_map& map ;         // the weightmap linked with the nav graph
+    const gdalwrap::raster& data ;  // the gdal raster of the weightmap
+
     std::vector< points_t > frontiers ;         // the list of the frontiers
     std::vector< f_attributes > attributes ;    // the frontiers attributes
 
     // area to explore (generally smaller than the whole weightmap)
-    double x0_area ;                           // x origin of the area to explore (dtm frame)
-    double y0_area ;                           // y origin of the area to explore (dtm frame)
-    double height_max ;                        // height of the area to explore (dtm scale)
-    double width_max ;                         // width of the area to explore (dtm scale)
+    double x0_area ;            // x origin of the area to explore (dtm frame)
+    double y0_area ;            // y origin of the area to explore (dtm frame)
+    double height_max ;         // height of the area to explore (dtm scale)
+    double width_max ;          // width of the area to explore (dtm scale)
+
+    // miscellaneuos parameters used to cnstruct "valid" frontiers
+    size_t max_nf   ;           // Max number of frontiers to consider
+    double min_size ;           // Min size of each frontier
+    double min_dist ;           // Min distance to each frontier
+    double max_dist ;           // Max distance to each frontier
+
+    // internal parameters
+    // x/y min/max define the focused bounded area.
+    double x_min ; 
+    double x_max ;
+    double y_min ; 
+    double y_max ;
 
     /* hidden computing functions */
     /** compute_frontiers_WFD
@@ -96,9 +111,7 @@ private:
      * computation of costly attributes, and eases the planning beyond.)
      *
      */
-    void filter_frontiers(  const points_t& r_pos,
-                            size_t max_nf, double min_size,
-                            double min_dist, double max_dist) ;
+    void filter_frontiers(  const points_t& r_pos );
 
     /** compute_attributes
      *
@@ -109,8 +122,7 @@ private:
      * is assume to be the robot running the algorithm.
      *
      */
-    void compute_attributes( const points_t &r_pos, double yaw,
-                             double min_dist, double max_dist) ;
+    void compute_attributes( const points_t &r_pos, double yaw ) ;
 
     /** is_frontier
      *
@@ -119,9 +131,7 @@ private:
      * @param p : the point which is tested.
      *
      */
-    bool is_frontier(  const point_xy_t &p, 
-             double x_min, double x_max, double y_min, double y_max,
-             const gdalwrap::raster& data, const weight_map& map ) ;
+    bool is_frontier(  const point_xy_t &p ) ;
 
     /** find_neighbours()
      *
@@ -134,8 +144,7 @@ private:
      * @param width : the height of the map.
      * 
      */
-     points_t find_neighbours( const point_xy_t &p, 
-             double x_min, double x_max, double y_min, double y_max) ;
+     points_t find_neighbours( const point_xy_t &p ); 
 
 public:
     /* Name of the available algorithms to compute frontiers */
@@ -150,7 +159,12 @@ public:
                        double _y0_area,
                        double _height_max,
                        double _width_max ) :
-            ng(_ng) 
+            ng (_ng),
+            map ( ng.get_map() ),
+            data ( map.get_weight_band() )
+
+
+
     {
         x0_area    = _x0_area     ;
         y0_area    = _y0_area     ;
@@ -181,9 +195,8 @@ public:
      *
      */
     void compute_frontiers( const points_t &r_pos, double yaw,
-                            size_t max_nf = 20, double min_size = 2.0,
-                            double min_dist = 1.6, double max_dist = 50.0,
-                            algo_t algo = WFD );
+        size_t max_nf = 20, double min_size = 2.0,
+        double min_dist = 1.6, double max_dist = 50.0, algo_t algo = WFD );
 
     /* getters */
     const nav_graph& get_graph() const {
