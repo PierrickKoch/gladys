@@ -69,7 +69,7 @@ static bpy::list py_get_band(gdalwrap::gdal& self, const std::string& name) {
 }
 
 static bpy::list py_get_band_as_uchar(gdalwrap::gdal& self, const std::string& name) {
-    return std_vector_to_py_list(gdalwrap::vfloat2vuchar(self.get_band(name)));
+    return std_vector_to_py_list(gdalwrap::raster2bytes(self.get_band(name)));
 }
 
 static bpy::dict py_get_bands(gdalwrap::gdal& self) {
@@ -83,7 +83,7 @@ static bpy::dict py_get_bands_as_uchar(gdalwrap::gdal& self) {
     bpy::dict retval;
     for (size_t idx = 0; idx < self.bands.size(); idx++)
         retval[ self.names[idx] ] = std_vector_to_py_list(
-            gdalwrap::vfloat2vuchar( self.bands[idx] ) );
+            gdalwrap::raster2bytes( self.bands[idx] ) );
     return retval;
 }
 
