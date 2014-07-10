@@ -40,6 +40,28 @@ static bpy::list py_search(gladys::nav_graph& self, bpy::tuple start, bpy::tuple
     return retval;
 }
 
+static bpy::list py_search_with_cost(gladys::nav_graph& self, bpy::tuple start, bpy::tuple goal) {
+    // optionally check that start and goal have the required
+    // size of 2 using bpy::len()
+
+    // convert arguments and call the C++ search method
+    gladys::point_xy_t _start = {bpy::extract<double>(start[0]), bpy::extract<double>(start[1])};
+    gladys::point_xy_t _goal  = {bpy::extract<double>(goal[0]), bpy::extract<double>(goal[1])};
+    gladys::points_t _starts = {_start};
+    gladys::points_t _goals  = {_goal};
+    gladys::path_cost_util_t cxx_retval = self.astar_search(_starts, _goals);
+
+    // converts the returned value into a list of 2-tuples
+    bpy::list retval;
+    bpy::list path;
+    for (auto &i : cxx_retval.path)
+        path.append(bpy::make_tuple(i[0], i[1]));
+    retval.append(path);
+    retval.append(cxx_retval.cost);
+    
+    return retval;
+}
+
 static bpy::list py_compute_frontiers(gladys::frontier_detector& self, bpy::tuple seed) {
     // optionally check that seed has the required
     // size of 2 using bpy::len()
@@ -136,6 +158,7 @@ BOOST_PYTHON_MODULE(libgladys_python)
         .def("save", &gladys::nav_graph::save)
         // nav_graph::astar_search
         .def("search", &py_search)
+        .def("search_with_cost", &py_search_with_cost)
         ;
     // weight_map
     bpy::class_<gladys::weight_map>("weight_map", bpy::init<std::string, std::string>())
