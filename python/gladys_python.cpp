@@ -7,8 +7,8 @@
  * created: 2013-08-09
  * license: BSD
  */
-#include <string>
 #include <boost/python.hpp>
+#include <string>
 
 #include "gdalwrap/gdal.hpp"
 #include "gladys/nav_graph.hpp"
