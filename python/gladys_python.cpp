@@ -40,7 +40,7 @@ static bpy::list py_search(gladys::nav_graph& self, bpy::tuple start, bpy::tuple
     return retval;
 }
 
-static bpy::list py_search_with_cost(gladys::nav_graph& self, bpy::tuple start, bpy::tuple goal) {
+static bpy::tuple py_search_with_cost(gladys::nav_graph& self, bpy::tuple start, bpy::tuple goal) {
     // optionally check that start and goal have the required
     // size of 2 using bpy::len()
 
@@ -52,14 +52,11 @@ static bpy::list py_search_with_cost(gladys::nav_graph& self, bpy::tuple start, 
     gladys::path_cost_util_t cxx_retval = self.astar_search(_starts, _goals);
 
     // converts the returned value into a list of 2-tuples
-    bpy::list retval;
     bpy::list path;
     for (auto &i : cxx_retval.path)
         path.append(bpy::make_tuple(i[0], i[1]));
-    retval.append(path);
-    retval.append(cxx_retval.cost);
-    
-    return retval;
+
+    return bpy::make_tuple(path, cxx_retval.cost);
 }
 
 static bpy::list py_compute_frontiers(gladys::frontier_detector& self, bpy::tuple seed) {
