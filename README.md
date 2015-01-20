@@ -5,6 +5,8 @@ GLADYS
 
 [![Build Status](https://travis-ci.org/pierriko/gladys.png?branch=master)]
 (https://travis-ci.org/pierriko/gladys)
+[![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.14085.svg)]
+(http://dx.doi.org/10.5281/zenodo.14085)
 
 Provide an API for high level robotic planners from Georeferenced data.
 
@@ -24,12 +26,16 @@ Provide an API for high level robotic planners from Georeferenced data.
 INSTALL
 -------
 
+First, install [`gdalwrap`](https://github.com/pierriko/gdalwrap#install), then
+
     git clone http://trac.laas.fr/git/gladys && cd gladys
     mkdir build && cd build
     cmake -DCMAKE_INSTALL_PREFIX=$HOME/devel ..
     make -j8 && make test && make install
     # for verbose test:
     ./test/test_gladys --log_level=test_suite
+
+*cf.* [.travis.yml](.travis.yml)
 
 
 CONTRIBUTE
@@ -59,4 +65,6 @@ Other ideas can be found in Google Guides:
 LICENSE
 -------
 
-[BSD 3-Clause](http://opensource.org/licenses/BSD-3-Clause)
+[BSD 2-Clause](http://opensource.org/licenses/BSD-2-Clause)
+
+Copyright © 2013-2015 CNRS-LAAS
