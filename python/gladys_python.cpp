@@ -13,6 +13,7 @@
 #include "gdalwrap/gdal.hpp"
 #include "gladys/nav_graph.hpp"
 #include "gladys/frontier_exploration.hpp"
+#include "gladys/gladys.hpp"
 
 namespace bpy = boost::python;
 
@@ -57,6 +58,35 @@ static bpy::tuple py_search_with_cost(gladys::nav_graph& self, bpy::tuple start,
         path.append(bpy::make_tuple(i[0], i[1]));
 
     return bpy::make_tuple(path, cxx_retval.cost);
+}
+
+static bpy::tuple py_gladys_navigation(gladys::gladys& self,  bpy::tuple start, bpy::tuple goal){
+    // optionally check that start and goal have the required
+    // size of 2 using bpy::len()
+
+    // convert arguments and call the C++ search method
+    gladys::point_xy_t _start = {bpy::extract<double>(start[0]), bpy::extract<double>(start[1])};
+    gladys::point_xy_t _goal  = {bpy::extract<double>(goal[0]), bpy::extract<double>(goal[1])};
+    gladys::points_t _starts = {_start};
+    gladys::points_t _goals  = {_goal};
+    gladys::path_cost_util_t cxx_retval = self.navigation(_starts, _goals);
+
+    // converts the returned value into a list of 2-tuples
+    bpy::list path;
+    for (auto &i : cxx_retval.path)
+        path.append(bpy::make_tuple(i[0], i[1]));
+
+    return bpy::make_tuple(path, cxx_retval.cost);
+}
+
+static bool py_gladys_is_visible(gladys::gladys& self,  bpy::tuple start, bpy::tuple goal){
+    // optionally check that start and goal have the required
+    // size of 2 using bpy::len()
+
+    // convert arguments and call the C++ search method
+    gladys::point_xy_t _start = {bpy::extract<double>(start[0]), bpy::extract<double>(start[1])};
+    gladys::point_xy_t _goal  = {bpy::extract<double>(goal[0]), bpy::extract<double>(goal[1])};
+    return self.is_visible(_start, _goal);
 }
 
 static bpy::list py_compute_frontiers(gladys::frontier_detector& self, bpy::tuple seed) {
@@ -174,5 +204,11 @@ BOOST_PYTHON_MODULE(libgladys_python)
     // frontier_exploration
     bpy::class_<gladys::frontier_detector>("frontier_detector", bpy::init<gladys::nav_graph, int, int, size_t, size_t>())
         .def("compute_frontiers", &py_compute_frontiers)
+        ;
+
+    //gladys
+    bpy::class_<gladys::gladys>("gladys", bpy::init<std::string, std::string, std::string>())
+        .def("navigation", &py_gladys_navigation)
+        .def("is_visible", &py_gladys_is_visible)
         ;
 }
