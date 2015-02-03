@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_CASE( test_bresenham )
     BOOST_CHECK_EQUAL( b , true );
 
     // Check one specific point
-    b ==  ( l[5][0] == 3 && l[5][1] == 5 ) ;
+    b =  ( l[5][0] == 3 && l[5][1] == 5 ) ;
     BOOST_TEST_MESSAGE( "Check the coordinate of some specific point" );
     BOOST_CHECK_EQUAL( b , true );
 }
