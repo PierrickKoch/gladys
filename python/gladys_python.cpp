@@ -89,6 +89,16 @@ static bool py_gladys_is_visible(gladys::gladys& self,  bpy::tuple start, bpy::t
     return self.is_visible(_start, _goal);
 }
 
+static bool py_gladys_can_communicate(gladys::gladys& self,  bpy::tuple start, bpy::tuple goal){
+    // optionally check that start and goal have the required
+    // size of 3 using bpy::len()
+
+    // convert arguments and call the C++ search method
+    gladys::point_xyz_t _start = {bpy::extract<double>(start[0]), bpy::extract<double>(start[1]), bpy::extract<double>(start[2])};
+    gladys::point_xyz_t _goal  = {bpy::extract<double>(goal[0]), bpy::extract<double>(goal[1]), bpy::extract<double>(start[2])};
+    return self.can_communicate(_start, _goal);
+}
+
 static bpy::list py_compute_frontiers(gladys::frontier_detector& self, bpy::tuple seed) {
     // optionally check that seed has the required
     // size of 2 using bpy::len()
@@ -210,5 +220,6 @@ BOOST_PYTHON_MODULE(libgladys_python)
     bpy::class_<gladys::gladys>("gladys", bpy::init<std::string, std::string, std::string>())
         .def("navigation", &py_gladys_navigation)
         .def("is_visible", &py_gladys_is_visible)
+        .def("can_communicate", &py_gladys_can_communicate)
         ;
 }
