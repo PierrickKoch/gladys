@@ -62,6 +62,10 @@ path_cost_util_t gladys::navigation(const points_t& start, const points_t& goal)
     return navigation_graph.astar_search_custom(start, goal);
 }
 
+std::vector<double> gladys::single_source_all_costs(const point_xy_t& start, const points_t& goals){
+    return navigation_graph.single_source_all_costs(start, goals);
+}
+
 /* perception */
 
 bool gladys::is_visible(const point_xy_t& locA, const point_xy_t& locB) const

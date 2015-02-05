@@ -99,6 +99,25 @@ static bool py_gladys_can_communicate(gladys::gladys& self,  bpy::tuple start, b
     return self.can_communicate(_start, _goal);
 }
 
+static bpy::list py_gladys_single_source_all_costs(gladys::gladys& self,  bpy::tuple start, bpy::list goals){
+    bpy::list retval;
+
+    gladys::point_xy_t _start = {bpy::extract<double>(start[0]), bpy::extract<double>(start[1])};
+    std::vector<gladys::point_xy_t> _goals;
+    for(unsigned int i = 0; i < len(goals); ++i){
+        bpy::tuple _pt = bpy::extract<bpy::tuple>(goals[i]);
+        _goals.push_back(gladys::point_xy_t{bpy::extract<double>(_pt[0]), bpy::extract<double>(_pt[1])});
+    }
+
+    std::vector<double> costs = self.single_source_all_costs(_start, _goals);
+
+    for(unsigned int i = 0; i < costs.size(); ++i){
+        retval.append(costs[i]);
+    }
+
+    return retval;
+}
+
 static bpy::list py_compute_frontiers(gladys::frontier_detector& self, bpy::tuple seed) {
     // optionally check that seed has the required
     // size of 2 using bpy::len()
@@ -221,5 +240,6 @@ BOOST_PYTHON_MODULE(libgladys_python)
         .def("navigation", &py_gladys_navigation)
         .def("is_visible", &py_gladys_is_visible)
         .def("can_communicate", &py_gladys_can_communicate)
+        .def("single_source_all_costs", &py_gladys_single_source_all_costs)
         ;
 }

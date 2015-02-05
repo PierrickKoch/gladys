@@ -13,6 +13,7 @@
 #include <limits>
 
 #include <boost/graph/graphviz.hpp>
+#include <boost/graph/dijkstra_shortest_paths.hpp>
 
 #include "gladys/nav_graph.hpp"
 
@@ -171,6 +172,30 @@ path_cost_util_t nav_graph::astar_search(const points_t& start, const points_t& 
     else
         res.cost = distances[ gv ];
     return res;
+}
+
+std::vector<double> nav_graph::single_source_all_costs(const point_xy_t& start, const points_t& goals){
+
+    std::vector<vertex_t> predecessors(num_vertices(g));
+    std::vector<double> distances(boost::num_vertices(g));
+
+    dijkstra_shortest_paths(g, get_closest_vertex(custom_to_utm(start)),
+            boost::predecessor_map(boost::make_iterator_property_map(predecessors.begin(), get(boost::vertex_index, g))).
+                    distance_map(boost::make_iterator_property_map(distances.begin(), get(boost::vertex_index, g))).
+                    weight_map(boost::get(&edge::weight, g)));
+
+    std::vector<double> retval;
+    boost::property_map<graph_t, boost::vertex_index_t>::type index = get(boost::vertex_index, g);
+    for(auto pt : goals){
+        unsigned int i = index[get_closest_vertex(custom_to_utm(pt))];
+        if(predecessors[i] == i){
+            retval.push_back(std::numeric_limits<double>::infinity());
+        } else {
+            retval.push_back(distances[i]);
+        }
+    }
+
+    return retval;
 }
 
 void nav_graph::write_graphviz(std::ostream& out) const {
