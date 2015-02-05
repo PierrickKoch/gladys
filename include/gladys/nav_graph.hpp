@@ -98,6 +98,8 @@ public:
         return pcu;
     }
 
+    std::vector<double> single_source_all_costs(const point_xy_t& start, const points_t& goals);
+
     detailed_path_t detailed_astar_search(const point_xy_t& start, const point_xy_t& goal) const;
 
     point_xy_t custom_to_utm(const point_xy_t& p) const {

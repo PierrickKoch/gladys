@@ -78,6 +78,8 @@ public:
     //path_cost_util_t navigation(const points_t& start, const points_t& goal,
     //    int optimisation, const motion_constraints_t& constraints);
     path_cost_util_t navigation(const points_t& start, const points_t& goal);
+    std::vector<double> single_source_all_costs(const point_xy_t& start, const points_t& goal);
+
     /* perception TODO location = <X,Y,W> */
     bool is_visible(const point_xy_t& locA, const point_xy_t& locB) const;
     points_probs_t can_see(const point_xy_t& locA, const points_t& llocB) const;

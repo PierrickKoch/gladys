@@ -29,12 +29,23 @@ typedef std::array<double, 4> point_xyzt_t; // XYZ + Theta
 typedef std::vector<point_xy_t> points_t; // list of points
 typedef std::deque<point_xy_t> path_t; // path = deque for push_front
 
+
+template<typename Container>
+inline std::ostream& stream_it(std::ostream& os, Container& c);
+
 template <typename T>
-std::string to_string(const T& t)
-{
-    std::ostringstream oss;
-    oss << t;
-    return oss.str();
+inline std::ostream& operator<<(std::ostream& os, const std::vector<T>& v) {
+    return stream_it(os, v);
+}
+
+template <typename T>
+inline std::ostream& operator<<(std::ostream& os, const std::deque<T>& v) {
+    return stream_it(os, v);
+}
+
+template <typename T, size_t N>
+inline std::ostream& operator<<(std::ostream& os, const std::array<T, N>& v) {
+    return stream_it(os, v);
 }
 
 template<typename Container>
@@ -53,18 +64,11 @@ inline std::ostream& stream_it(std::ostream& os, Container& c)
 }
 
 template <typename T>
-inline std::ostream& operator<<(std::ostream& os, const std::vector<T>& v) {
-    return stream_it(os, v);
-}
-
-template <typename T>
-inline std::ostream& operator<<(std::ostream& os, const std::deque<T>& v) {
-    return stream_it(os, v);
-}
-
-template <typename T, size_t N>
-inline std::ostream& operator<<(std::ostream& os, const std::array<T, N>& v) {
-    return stream_it(os, v);
+std::string to_string(const T& t)
+{
+    std::ostringstream oss;
+    oss << t;
+    return oss.str();
 }
 
 inline bool operator> (const points_t &v1, const points_t& v2) {
