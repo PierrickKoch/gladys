@@ -53,6 +53,7 @@ public:
     /* computing function */
 
     /** test if point 't' (target) is visible from 's' (sensor)
+     * Assume an height of 0 for the target and use the sensor pose for the sensor height
      *
      * @param s the position of the sensor
      *
@@ -62,6 +63,17 @@ public:
      *
      */
     bool is_visible( const point_xy_t& s, const point_xy_t& t) const ;
+
+    /** test if point 't' (target) is visible from 's' (sensor)
+     *
+     * @param s the position of the sensor
+     *
+     * @param t the position of the target
+     *
+     * @returns true if visible.
+     *
+     */
+    bool is_visible( const point_xyz_t& s, const point_xyz_t& t) const ;
 
     /** Get the index of the point in the raster
      *

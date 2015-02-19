@@ -109,9 +109,7 @@ double gladys::look_at(int sensor, const points_t& observe) const {
 
 bool gladys::can_communicate(const point_xyz_t& locA, const point_xyz_t& locB) const
 {
-    point_xy_t xyA = {locA[0], locA[1]};
-    point_xy_t xyB = {locB[0], locB[1]};
-    return is_visible(xyA, xyB);
+    return visibility.is_visible(locA, locB);
 }
 
 } // namespace gladys
