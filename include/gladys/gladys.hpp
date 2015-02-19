@@ -81,7 +81,7 @@ public:
     std::vector<double> single_source_all_costs(const point_xy_t& start, const points_t& goal);
 
     /* perception TODO location = <X,Y,W> */
-    bool is_visible(const point_xy_t& locA, const point_xy_t& locB) const;
+    bool is_visible(const point_xy_t& locSensor, const point_xy_t& locTarget) const;
     points_probs_t can_see(const point_xy_t& locA, const points_t& llocB) const;
     points_t is_visible_from(const point_xy_t& locA, const points_t& llocB,
         float qmin) const;

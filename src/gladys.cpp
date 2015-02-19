@@ -68,9 +68,9 @@ std::vector<double> gladys::single_source_all_costs(const point_xy_t& start, con
 
 /* perception */
 
-bool gladys::is_visible(const point_xy_t& locA, const point_xy_t& locB) const
+bool gladys::is_visible(const point_xy_t& locSensor, const point_xy_t& locTarget) const
 {
-    return visibility.is_visible(locA, locB);
+    return visibility.is_visible(locSensor, locTarget);
 }
 
 points_probs_t gladys::can_see(const point_xy_t& locA, const points_t& llocB) const
