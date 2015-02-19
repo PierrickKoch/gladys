@@ -21,7 +21,7 @@ BOOST_AUTO_TEST_CASE( test_bresenham )
     // two arbitrary points
     gladys::point_xy_t s {  1, 1 } ;
     gladys::point_xy_t t { 11, 5 } ;
-    
+
     // ascending line
     gladys::points_t l = gladys::bresenham( s, t );
 
@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_CASE( test_bresenham )
     BOOST_CHECK_EQUAL( b , true );
 
     // Check one specific point
-    b =  ( l[5][0] == 3 && l[5][1] == 5 ) ;
+    b =  ( l[4][0] == 5 && l[4][1] == 3 ) ;
     BOOST_TEST_MESSAGE( "Check the coordinate of some specific point" );
     BOOST_CHECK_EQUAL( b , true );
 }

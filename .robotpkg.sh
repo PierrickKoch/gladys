@@ -1,6 +1,6 @@
 #!/bin/sh
 
-NEW_VER=0.2.5
+NEW_VER=0.2.6
 
 PKGNAME=gladys
 PKGTYPE=wip
@@ -49,7 +49,7 @@ echo "" >> $COMMITM
 cat $SHORTLG >> $COMMITM
 git commit . -F $COMMITM
 
-scp $RPKROOT/distfiles/$ARCHIVE www.openrobots.org:/var/ftp/pub/openrobots/$PKGNAME/
+scp $RPKROOT/distfiles/$ARCHIVE ftp.openrobots.org:/var/ftp/pub/openrobots/$PKGNAME/
 
 echo "You need to push in '$RPKROOT/$PKGTYPE/$PKGNAME' and '$OLDPWD'"
 echo "... After checking everything is fine :-)"
