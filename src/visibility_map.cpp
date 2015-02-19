@@ -25,16 +25,20 @@ void visibility_map::_load() {//{{{
     // TODO cache stuff
 }//}}}
 
+bool visibility_map::is_visible( const point_xy_t& s, const point_xy_t& t) const {
+    point_xyzt_t _s = rmdl.get_sensor_pose() ; // relative sensor position
+
+    return is_visible({s[0], s[1], _s[2]}, {t[0], t[1], 0});
+}
+
 /* computing function */
-bool visibility_map::is_visible( const point_xy_t& s, const point_xy_t& t) const {//{{{
+bool visibility_map::is_visible( const point_xyz_t& s3d, const point_xyz_t& t3d) const {//{{{
     // gdalwrap::raster aka. vector<float>
     const auto& heightmap = get_heightmap();
     const auto& npointsmap = get_npointsmap();
 
-    point_xyzt_t _s = rmdl.get_sensor_pose() ; // relative sensor position
-    point_xy_t ns ;   // sensor position
-    ns[0] = s[0] + _s[0] ; // x
-    ns[1] = s[1] + _s[1] ; // y
+    point_xy_t s({s3d[0], s3d[1]});
+    point_xy_t t({t3d[0], t3d[1]});
 
     /* Check trivial cases : "s is next to t" or "t out of range" */
     double distance_st = distance( s, t );
@@ -65,8 +69,8 @@ bool visibility_map::is_visible( const point_xy_t& s, const point_xy_t& t) const
     // where x = distance to the sensor (projection)
     // and y = height of the point
     double zs, zt, d0, a, d, z;
-    zs = _s[2] + heightmap[ index(s) ] ;   // height of the sensor
-    zt = heightmap[ index(t) ] ;           // height of the target
+    zs = s3d[2] + heightmap[ index(s) ] ;   // height of the sensor
+    zt = t3d[2] + heightmap[ index(t) ] ;           // height of the target
     d0 = distance_st ;
 
     a = (zs - zt) / d0 ; // d > 0
