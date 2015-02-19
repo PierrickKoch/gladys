@@ -102,9 +102,9 @@ public:
      */
     point_xyzt_t get_sensor_pose() const {
         point_xyzt_t p ;
-        p[3] = pt.get<double>("sensor.pose.x");
-        p[3] = pt.get<double>("sensor.pose.y");
-        p[3] = pt.get<double>("sensor.pose.z");
+        p[0] = pt.get<double>("sensor.pose.x");
+        p[1] = pt.get<double>("sensor.pose.y");
+        p[2] = pt.get<double>("sensor.pose.z");
         p[3] = pt.get<double>("sensor.pose.t");
         return p ;
     }
