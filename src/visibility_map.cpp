@@ -28,7 +28,10 @@ void visibility_map::_load() {//{{{
 bool visibility_map::is_visible( const point_xy_t& s, const point_xy_t& t) const {
     point_xyzt_t _s = rmdl.get_sensor_pose() ; // relative sensor position
 
-    return is_visible({s[0], s[1], _s[2]}, {t[0], t[1], 0});
+    point_xyz_t s3D = {s[0], s[1], _s[2]};
+    point_xyz_t t3D = {t[0], t[1], 0};
+
+    return is_visible(s3D, t3D);
 }
 
 /* computing function */
@@ -37,8 +40,8 @@ bool visibility_map::is_visible( const point_xyz_t& s3d, const point_xyz_t& t3d)
     const auto& heightmap = get_heightmap();
     const auto& npointsmap = get_npointsmap();
 
-    point_xy_t s({s3d[0], s3d[1]});
-    point_xy_t t({t3d[0], t3d[1]});
+    point_xy_t s = {s3d[0], s3d[1]};
+    point_xy_t t = {t3d[0], t3d[1]};
 
     /* Check trivial cases : "s is next to t" or "t out of range" */
     double distance_st = distance( s, t );
