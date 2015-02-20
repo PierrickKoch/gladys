@@ -80,6 +80,10 @@ BOOST_AUTO_TEST_CASE( test_visibility_map )
     BOOST_TEST_MESSAGE( "t3 visible from s ? " + b );
     BOOST_CHECK_EQUAL( b, false );
 
+    b = vm.is_visible( gladys::point_xyz_t({0,5,20}) , gladys::point_xyz_t({8,8,20})) ;
+    BOOST_TEST_MESSAGE( "t3 visible from s above the walls ? " + b );
+    BOOST_CHECK_EQUAL( b, true );
+
 }
 
 BOOST_AUTO_TEST_SUITE_END();
