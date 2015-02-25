@@ -102,6 +102,11 @@ public:
 
     detailed_path_t detailed_astar_search(const point_xy_t& start, const point_xy_t& goal) const;
 
+    // returns the closest point in the navigation graph
+    point_xy_t get_closest_point_custom(const point_xy_t& pt){
+        return utm_to_custom(g[get_closest_vertex(custom_to_utm(pt))].pt);
+    }
+
     point_xy_t custom_to_utm(const point_xy_t& p) const {
         return map.get_map().point_custom2utm(p[0], p[1]);
     }

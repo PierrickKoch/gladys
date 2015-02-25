@@ -118,6 +118,13 @@ static bpy::list py_gladys_single_source_all_costs(gladys::gladys& self,  bpy::t
     return retval;
 }
 
+static bpy::tuple py_gladys_get_closest_point(gladys::gladys& self,  bpy::tuple pt){
+    gladys::point_xy_t _pt = {bpy::extract<double>(pt[0]), bpy::extract<double>(pt[1])};
+    gladys::point_xy_t _retval = self.get_closest_point(_pt);
+
+    return bpy::make_tuple(_retval[0], _retval[1]);
+}
+
 static bpy::list py_compute_frontiers(gladys::frontier_detector& self, bpy::tuple seed) {
     // optionally check that seed has the required
     // size of 2 using bpy::len()
@@ -241,5 +248,7 @@ BOOST_PYTHON_MODULE(libgladys_python)
         .def("is_visible", &py_gladys_is_visible)
         .def("can_communicate", &py_gladys_can_communicate)
         .def("single_source_all_costs", &py_gladys_single_source_all_costs)
+        .def("get_closest_point", &py_gladys_get_closest_point)
+
         ;
 }

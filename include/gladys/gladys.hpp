@@ -91,6 +91,10 @@ public:
     /* communication location = <X,Y,Z> */
     bool can_communicate(const point_xyz_t& locA, const point_xyz_t& locB) const;
 
+    point_xy_t get_closest_point(const point_xy_t& pt){
+        return navigation_graph.get_closest_point_custom(pt);
+    }
+
 };
 
 } // namespace gladys
