@@ -66,6 +66,13 @@ BOOST_AUTO_TEST_CASE( test_raster_to_graph )
     BOOST_CHECK_EQUAL( path[7][0], check_point[0] );
     BOOST_CHECK_EQUAL( path[7][1], check_point[1] );
 
+    point_xy_t p3 = {7, 9};
+    points_t goals = {p1, p2, p3};
+    std::vector<double> costs = ng.single_source_all_costs(p1, goals);
+    BOOST_CHECK_EQUAL( costs[0], ng.astar_search(points_t({p1}), points_t({goals[0]})).cost);
+    BOOST_CHECK_EQUAL( costs[1], ng.astar_search(points_t({p1}), points_t({goals[1]})).cost);
+    BOOST_CHECK_EQUAL( costs[2], ng.astar_search(points_t({p1}), points_t({goals[2]})).cost);
+
     robot_cfg.open(robotm_path);
     robot_cfg<<"{\"robot\":{\"mass\":1.0,\"radius\":2.0,\"velocity\":1.0}}";
     robot_cfg.close();

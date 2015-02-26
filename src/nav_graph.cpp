@@ -178,17 +178,19 @@ std::vector<double> nav_graph::single_source_all_costs(const point_xy_t& start, 
 
     std::vector<vertex_t> predecessors(num_vertices(g));
     std::vector<double> distances(boost::num_vertices(g));
+    vertex_t closest_start =  get_closest_vertex(custom_to_utm(start));
 
-    dijkstra_shortest_paths(g, get_closest_vertex(custom_to_utm(start)),
+    dijkstra_shortest_paths(g, closest_start,
             boost::predecessor_map(boost::make_iterator_property_map(predecessors.begin(), get(boost::vertex_index, g))).
                     distance_map(boost::make_iterator_property_map(distances.begin(), get(boost::vertex_index, g))).
                     weight_map(boost::get(&edge::weight, g)));
 
     std::vector<double> retval;
-    boost::property_map<graph_t, boost::vertex_index_t>::type index = get(boost::vertex_index, g);
     for(auto pt : goals){
-        unsigned int i = index[get_closest_vertex(custom_to_utm(pt))];
-        if(predecessors[i] == i){
+        vertex_t i = get_closest_vertex(custom_to_utm(pt));
+        if(i == closest_start){
+            retval.push_back(0);
+        } else if(predecessors[i] == i){
             retval.push_back(std::numeric_limits<double>::infinity());
         } else {
             retval.push_back(distances[i]);
