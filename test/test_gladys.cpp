@@ -74,8 +74,17 @@ BOOST_AUTO_TEST_CASE( test_raster_to_graph )
     BOOST_CHECK_EQUAL( costs[2], ng.astar_search(points_t({p1}), points_t({goals[2]})).cost);
 
     robot_cfg.open(robotm_path);
-    robot_cfg<<"{\"robot\":{\"mass\":1.0,\"radius\":2.0,\"velocity\":1.0}}";
+    robot_cfg   << "{"
+    << "\"robot\":{\"mass\":1.0,\"radius\":2.0,\"velocity\":1.0},"
+    << "\"sensor\":{\"range\":20.0,\"fov\":6.28,"
+    <<   "\"pose\":{\"x\":0.1,\"y\":0.2,\"z\":0.7,\"t\":0.0}"
+    << "},"
+    << "\"antenna\":{\"range\":5.0,\"fov\":6.28,"
+    <<   "\"pose\":{\"x\":0.1,\"y\":0.2,\"z\":0.7,\"t\":0.0}"
+    << "}"
+    << "}" ;
     robot_cfg.close();
+
     std::string dtm_path = "/tmp/test_gladys_dtm.tif";
     gdalwrap::gdal dtm;
     dtm.set_size(2, 9, 9);
@@ -87,6 +96,40 @@ BOOST_AUTO_TEST_CASE( test_raster_to_graph )
     path_cost_util_t pcu = obj.navigation(start, goal);
     BOOST_TEST_MESSAGE( "pcu path: " + to_string(pcu.path) );
     BOOST_CHECK_EQUAL( path.size() , pcu.path.size() );
+
+    // DTM from test_visibility
+    dtm.clear();
+    dtm.set_size(2, 9, 9);
+    // add a small wall in the middle of the map
+    dtm.names[0] = "Z_MAX";
+    dtm.get_band("Z_MAX").assign(9*9, 0.5);
+    for (int i=0 ; i<9 ; i++ )
+    dtm.get_band("Z_MAX")[ 5 + i*9 ] = 1.3;
+    // two special points to observe + the observer point
+    dtm.get_band("Z_MAX")[ 8 + 0*9 ] = 1.9;
+    dtm.get_band("Z_MAX")[ 8 + 8*9 ] = 1.1;
+    dtm.get_band("Z_MAX")[ 0 + 5*9 ] = 0.6;
+    // add a small band of never-observed points
+    dtm.names[1] = "N_POINTS";
+    dtm.get_band("N_POINTS").assign(9*9, 5.);
+    for (int i=0 ; i<9 ; i++ )
+    dtm.get_band("N_POINTS")[ 3 + i*9 ] = 0.0;
+    // one special point to observe
+    dtm.get_band("N_POINTS")[ 8 + 5*9 ] = 0.0;
+
+    dtm.save(dtm_path);
+
+    gladys g(region_path, dtm_path, robotm_path);
+
+    point_xy_t pS = {0, 5};
+    point_xy_t pT = {8, 0};
+
+    //Test different range for sensor and antenna
+    bool b = g.is_visible(pS, pT);
+    BOOST_CHECK_EQUAL(b, true);
+
+    b = g.can_communicate(pS, pT);
+    BOOST_CHECK_EQUAL(b, false);
 }
 
 

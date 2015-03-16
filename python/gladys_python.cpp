@@ -89,13 +89,23 @@ static bool py_gladys_is_visible(gladys::gladys& self,  bpy::tuple start, bpy::t
     return self.is_visible(_start, _goal);
 }
 
-static bool py_gladys_can_communicate(gladys::gladys& self,  bpy::tuple start, bpy::tuple goal){
+static bool py_gladys_can_communicate_3d(gladys::gladys& self,  bpy::tuple start, bpy::tuple goal){
     // optionally check that start and goal have the required
     // size of 3 using bpy::len()
 
     // convert arguments and call the C++ search method
     gladys::point_xyz_t _start = {bpy::extract<double>(start[0]), bpy::extract<double>(start[1]), bpy::extract<double>(start[2])};
     gladys::point_xyz_t _goal  = {bpy::extract<double>(goal[0]), bpy::extract<double>(goal[1]), bpy::extract<double>(start[2])};
+    return self.can_communicate(_start, _goal);
+}
+
+static bool py_gladys_can_communicate(gladys::gladys& self,  bpy::tuple start, bpy::tuple goal){
+    // optionally check that start and goal have the required
+    // size of 2 using bpy::len()
+
+    // convert arguments and call the C++ search method
+    gladys::point_xy_t _start = {bpy::extract<double>(start[0]), bpy::extract<double>(start[1])};
+    gladys::point_xy_t _goal  = {bpy::extract<double>(goal[0]), bpy::extract<double>(goal[1])};
     return self.can_communicate(_start, _goal);
 }
 
@@ -247,6 +257,7 @@ BOOST_PYTHON_MODULE(libgladys_python)
         .def("navigation", &py_gladys_navigation)
         .def("is_visible", &py_gladys_is_visible)
         .def("can_communicate", &py_gladys_can_communicate)
+        .def("can_communicate_3d", &py_gladys_can_communicate_3d)
         .def("single_source_all_costs", &py_gladys_single_source_all_costs)
         .def("get_closest_point", &py_gladys_get_closest_point)
 

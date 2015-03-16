@@ -89,6 +89,8 @@ public:
         float qmin) const;
     double look_at(int sensor, const points_t& observe) const;
     /* communication location = <X,Y,Z> */
+    //uses position and range of the antenna defined in the robot model
+    bool can_communicate(const point_xy_t& locA, const point_xy_t& locB) const;
     bool can_communicate(const point_xyz_t& locA, const point_xyz_t& locB) const;
 
     point_xy_t get_closest_point(const point_xy_t& pt){

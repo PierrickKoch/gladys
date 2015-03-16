@@ -70,7 +70,7 @@ std::vector<double> gladys::single_source_all_costs(const point_xy_t& start, con
 
 bool gladys::is_visible(const point_xy_t& locSensor, const point_xy_t& locTarget) const
 {
-    return visibility.is_visible(locSensor, locTarget);
+    return visibility.is_sensor_visible(locSensor, locTarget);
 }
 
 points_probs_t gladys::can_see(const point_xy_t& locA, const points_t& llocB) const
@@ -107,9 +107,14 @@ double gladys::look_at(int sensor, const points_t& observe) const {
 
 /* communication */
 
+bool gladys::can_communicate(const point_xy_t& locA, const point_xy_t& locB) const
+{
+    return visibility.is_antenna_visible(locA, locB);
+}
+
 bool gladys::can_communicate(const point_xyz_t& locA, const point_xyz_t& locB) const
 {
-    return visibility.is_visible(locA, locB);
+    return visibility.is_antenna_visible(locA, locB);
 }
 
 } // namespace gladys

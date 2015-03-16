@@ -26,10 +26,61 @@ void visibility_map::_load() {//{{{
 }//}}}
 
 bool visibility_map::is_visible( const point_xy_t& s, const point_xy_t& t) const {
+
+    point_xyz_t s3D = {s[0], s[1], 0};
+    point_xyz_t t3D = {t[0], t[1], 0};
+
+    return is_visible(s3D, t3D);
+}
+
+bool visibility_map::is_sensor_visible( const point_xy_t& s, const point_xy_t& t) const {
     point_xyzt_t _s = rmdl.get_sensor_pose() ; // relative sensor position
 
-    point_xyz_t s3D = {s[0], s[1], _s[2]};
+    point_xyz_t s3D = {s[0] + _s[0], s[1] + _s[1], _s[2]};
     point_xyz_t t3D = {t[0], t[1], 0};
+
+    double distance_st = distance( s3D, t3D );
+    if ( distance_st > rmdl.get_sensor_range() - EPS )
+        return false ;
+
+    return is_visible(s3D, t3D);
+}
+
+bool visibility_map::is_sensor_visible( const point_xyz_t& s, const point_xyz_t& t) const {
+    point_xyzt_t _s = rmdl.get_sensor_pose() ; // relative sensor position
+
+    point_xyz_t s3D = {s[0] + _s[0], s[1] + _s[1], s[2] + _s[2]};
+    point_xyz_t t3D = {t[0], t[1], t[2]};
+
+    double distance_st = distance( s3D, t3D );
+    if ( distance_st > rmdl.get_sensor_range() - EPS )
+        return false ;
+
+    return is_visible(s3D, t3D);
+}
+
+bool visibility_map::is_antenna_visible( const point_xy_t& a, const point_xy_t& t) const {
+    point_xyzt_t _a = rmdl.get_antenna_pose() ; // relative sensor position
+
+    point_xyz_t s3D = {a[0] + _a[0], a[1] + _a[1], _a[2]};
+    point_xyz_t t3D = {t[0], t[1], 0};
+
+    double distance_st = distance( s3D, t3D );
+    if ( distance_st > rmdl.get_antenna_range() - EPS )
+        return false ;
+
+    return is_visible(s3D, t3D);
+}
+
+bool visibility_map::is_antenna_visible( const point_xyz_t& a, const point_xyz_t& t) const {
+    point_xyzt_t _a = rmdl.get_antenna_pose() ; // relative sensor position
+
+    point_xyz_t s3D = {a[0] + _a[0], a[1] + _a[1], a[2] + _a[2]};
+    point_xyz_t t3D = {t[0], t[1], t[2]};
+
+    double distance_st = distance( s3D, t3D );
+    if ( distance_st > rmdl.get_antenna_range() - EPS )
+        return false ;
 
     return is_visible(s3D, t3D);
 }
@@ -48,8 +99,6 @@ bool visibility_map::is_visible( const point_xyz_t& s3d, const point_xyz_t& t3d)
     // TODO check if this threshold is valid (robot.radius)
     if ( distance_st < rmdl.get_radius()  + EPS )
         return true ;
-    else if ( distance_st > rmdl.get_sensor_range() - EPS )
-        return false ;
 
     /* Check if both s and t are known (we need zmax !)
      * else we cannot say if they are visible or not,

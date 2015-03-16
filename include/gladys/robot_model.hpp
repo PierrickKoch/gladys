@@ -132,6 +132,54 @@ public:
         pt.put("sensor.range", range );
     }
 
+    /** get the position of the antenna
+     * If none are defined, use the sensor pose
+     *
+     * (relative to the ground level, aka. sensor's height)
+     * used to computue the visibility for communication
+     * we need to consider a better orientation for flying observers
+     */
+    point_xyzt_t get_antenna_pose() const {
+        if(pt.count("antenna") == 0){
+            return get_sensor_pose();
+        }
+        point_xyzt_t p ;
+        p[0] = pt.get<double>("antenna.pose.x");
+        p[1] = pt.get<double>("antenna.pose.y");
+        p[2] = pt.get<double>("antenna.pose.z");
+        p[3] = pt.get<double>("antenna.pose.t");
+        return p ;
+    }
+
+    double get_antenna_fov() const {
+        if(pt.count("antenna") == 0){
+            return get_sensor_fov();
+        }
+        return pt.get<double>("antenna.fov");
+    }
+
+    double get_antenna_range() const {
+        if(pt.count("antenna") == 0){
+            return get_sensor_range();
+        }
+        return pt.get<double>("antenna.range");
+    }
+
+    void set_antenna_pose( point_xyzt_t p ) {
+        pt.put("antenna.pose.x", p[0] );
+        pt.put("antenna.pose.y", p[1] );
+        pt.put("antenna.pose.z", p[2] );
+        pt.put("antenna.pose.t", p[3] );
+    }
+
+    void set_antenna_fov(double fov) {
+        pt.put("antenna.fov", fov );
+    }
+
+    void set_antenna_range(double range) {
+        pt.put("antenna.range", range );
+    }
+
     void save(const std::string& filepath) const {
         write_json(filepath, pt);
     }
