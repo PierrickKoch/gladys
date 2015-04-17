@@ -5,6 +5,8 @@ set(PACKAGE_VERSION "0.2.6")
 
 option(BUILD_TESTS  "Build tests" ON)
 option(BUILD_PYTHON "Build Python bindings" ON)
+set(PYTHON_VERSION "2.7" CACHE STRING "Python version. Default is 2.7")
+set(PYTHON_SUFFIX "" CACHE STRING "Python version suffix. Default is -py27")
 
 # C++11 for GCC 4.6
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
@@ -44,11 +46,14 @@ add_subdirectory(src)
 # Python bindings
 if (BUILD_PYTHON)
     # Find Python (optional)
-    find_package(PythonLibs)
-    find_package(PythonInterp)
+    if (${PYTHON_VERSION} VERSION_GREATER 3)
+        set(Python_ADDITIONAL_VERSIONS 3.3 3.4)
+    endif()
+    find_package(PythonLibs ${PYTHON_VERSION} REQUIRED)
+    find_package(PythonInterp ${PYTHON_VERSION} REQUIRED)
 
     if (PYTHONINTERP_FOUND AND PYTHONLIBS_FOUND)
-        find_package(Boost ${BOOST_MIN_VERSION} COMPONENTS python REQUIRED)
+        find_package(Boost ${BOOST_MIN_VERSION} COMPONENTS python${PYTHON_SUFFIX} REQUIRED)
         include_directories(${PYTHON_INCLUDE_DIRS})
         add_subdirectory(python)
     else()

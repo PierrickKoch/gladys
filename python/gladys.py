@@ -1,6 +1,6 @@
 try: # relative import
     from .libgladys_python import *
-except ValueError:
+except (ValueError, SystemError):
     from libgladys_python import *
 
 
