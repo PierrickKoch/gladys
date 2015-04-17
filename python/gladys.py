@@ -1,8 +1,4 @@
-try: # relative import
-    from .libgladys_python import *
-except (ValueError, SystemError):
-    from libgladys_python import *
-
+from libgladys_python import *
 
 def point_pix2utm(gdal, x, y):
     return ( x * gdal.get_scale_x() + gdal.get_utm_pose_x() ,
