@@ -82,6 +82,7 @@ public:
 
     /* perception TODO location = <X,Y,W> */
     bool is_visible(const point_xy_t& locSensor, const point_xy_t& locTarget) const;
+    bool is_visible(const point_xyz_t& locSensor, const point_xyz_t& locTarget) const;
     points_probs_t can_see(const point_xy_t& locA, const points_t& llocB) const;
     points_t is_visible_from(const point_xy_t& locA, const points_t& llocB,
         float qmin) const;

@@ -73,6 +73,12 @@ bool gladys::is_visible(const point_xy_t& locSensor, const point_xy_t& locTarget
     return visibility.is_sensor_visible(locSensor, locTarget);
 }
 
+bool gladys::is_visible(const point_xyz_t& locSensor, const point_xyz_t& locTarget) const
+{
+    return visibility.is_sensor_visible(locSensor, locTarget);
+}
+
+
 points_probs_t gladys::can_see(const point_xy_t& locA, const points_t& llocB) const
 {
     points_probs_t pbs(llocB.size());
