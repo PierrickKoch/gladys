@@ -1,6 +1,6 @@
 #!/bin/sh
 
-NEW_VER=0.2.6
+NEW_VER=0.2.7
 
 PKGNAME=gladys
 PKGTYPE=wip

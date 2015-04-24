@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 
 set(PACKAGE_NAME gladys)
-set(PACKAGE_VERSION "0.2.6")
+set(PACKAGE_VERSION "0.2.7")
 
 option(BUILD_TESTS  "Build tests" ON)
 option(BUILD_PYTHON "Build Python bindings" ON)
