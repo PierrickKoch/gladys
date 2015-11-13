@@ -24,6 +24,7 @@ namespace gladys {
  * to single layers weight map (after inflating obstacles by robot size)
  */
 class weight_map {
+protected:
     gdalwrap::gdal terrains; // probalistic models (multi-layers GeoTiff)
     gdalwrap::gdal map; // weight map (after inflating robot size)
     robot_model rmdl;
@@ -148,7 +149,11 @@ public:
     }
 };
 
+class costmap : weight_map {
+public:
+    void _load();
+};
+
 } // namespace gladys
 
 #endif // WEIGHT_MAP_HPP
-

@@ -15,6 +15,23 @@
 
 namespace gladys {
 
+void costmap::_load() {
+    assert(terrains.bands.size() > 1);
+    map.copy_meta(terrains, 1);
+    gdalwrap::raster& weights = map.bands[0];
+    width = map.get_width();
+    map.names[0] = "WEIGHT";
+    for (size_t pos = 0; pos < width * map.get_height(); pos++) {
+        if (terrains.bands[1][pos] < 100) // confidence bellow 100 -> unknown
+            weights[pos] = W_UNKNOWN;
+        else if (terrains.bands[0][pos] > 252) // TODO tune this threshold
+            weights[pos] = std::numeric_limits<float>::infinity(); // obstacle
+        else {
+            weights[pos] = terrains.bands[0][pos] / rmdl.get_velocity();
+        }
+    }
+}
+
 /** compute a mix of ponderated classes
  *
  * w/ threshold on obstacle and unknown
