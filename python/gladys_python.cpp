@@ -243,6 +243,8 @@ BOOST_PYTHON_MODULE(libgladys_python)
         .def("get_region", &py_weight_map_get_region)
         .def("get_weight_band_uchar", &py_weight_map_get_weight_band_uchar)
         ;
+    bpy::class_<gladys::costmap, bpy::bases<gladys::weight_map>>("costmap",
+        bpy::init<std::string, std::string>());
     // frontier_exploration
     bpy::class_<gladys::frontier_detector>("frontier_detector", bpy::init<gladys::nav_graph, int, int, size_t, size_t>())
         .def("compute_frontiers", &py_compute_frontiers)

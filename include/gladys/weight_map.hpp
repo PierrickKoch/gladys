@@ -52,7 +52,7 @@ public:
         rmdl.load(f_robot_model);
         _load();
     }
-    void _load();
+    virtual void _load();
 
     //TODO, this is not a merge !
     void merge(const weight_map& _wm) {
@@ -149,8 +149,11 @@ public:
     }
 };
 
-class costmap : weight_map {
+class costmap : public weight_map {
 public:
+    costmap(const std::string& f_region, const std::string& f_robot_model) {
+        load(f_region, f_robot_model);
+    }
     void _load();
 };
 
