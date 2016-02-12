@@ -1,0 +1,7 @@
+before_script:
+ - apt-get update -qy
+ - apt-get install -qy cmake libgdal1-dev libboost-graph-dev libboost-test-dev libboost-python-dev python-dev
+
+test:
+  script:
+  - "time ./.travis.bash"
