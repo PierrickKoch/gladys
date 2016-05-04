@@ -27,7 +27,7 @@ void costmap::_load() {
         else if (terrains.bands[0][pos] > 252) // TODO tune this threshold
             weights[pos] = std::numeric_limits<float>::infinity(); // obstacle
         else {
-            weights[pos] = terrains.bands[0][pos] / rmdl.get_velocity();
+            weights[pos] = 1 + terrains.bands[0][pos] / rmdl.get_velocity();
         }
     }
 }
