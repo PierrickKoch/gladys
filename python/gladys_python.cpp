@@ -92,6 +92,19 @@ static bool py_gladys_is_visible(gladys::gladys& self,  bpy::tuple start, bpy::t
     return self.is_visible(_start, _goal);
 }
 
+static bool py_visibility_map_is_visible(gladys::visibility_map& self,  bpy::tuple start, bpy::tuple goal){
+    // convert arguments and call the C++ search method
+    // If a z coordinate is not provided, assume a 0
+
+    double zStart = (bpy::len(start) == 3) ? bpy::extract<double>(start[2]) : 0.0;
+    double zGoal =  (bpy::len(goal) == 3)  ? bpy::extract<double>(goal[2])  : 0.0;
+
+    gladys::point_xyz_t _start = {bpy::extract<double>(start[0]), bpy::extract<double>(start[1]), zStart};
+    gladys::point_xyz_t _goal  = {bpy::extract<double>(goal[0]),  bpy::extract<double>(goal[1]),  zGoal};
+
+    return self.is_visible(_start, _goal);
+}
+
 static bool py_gladys_can_communicate(gladys::gladys& self,  bpy::tuple start, bpy::tuple goal){
     // optionally check that start and goal have the required
     // If a z coordinate is not provided, assume a 0
@@ -248,6 +261,10 @@ BOOST_PYTHON_MODULE(libgladys_python)
     // frontier_exploration
     bpy::class_<gladys::frontier_detector>("frontier_detector", bpy::init<gladys::nav_graph, int, int, size_t, size_t>())
         .def("compute_frontiers", &py_compute_frontiers)
+        ;
+    // visibility_map
+    bpy::class_<gladys::visibility_map>("visibility_map", bpy::init<std::string, std::string>())
+        .def("is_visible", &py_visibility_map_is_visible)
         ;
 
     //gladys
