@@ -5,8 +5,8 @@ GLADYS
 
 [![Build Status](https://travis-ci.org/pierriko/gladys.png?branch=master)]
 (https://travis-ci.org/pierriko/gladys)
-[![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.17205.svg)]
-(http://dx.doi.org/10.5281/zenodo.17205)
+[![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.51721.svg)]
+(http://dx.doi.org/10.5281/zenodo.51721)
 
 Provide an API for high level robotic planners from Georeferenced data.
 
